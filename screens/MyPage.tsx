@@ -1,14 +1,14 @@
-import { StyleSheet } from 'react-native';
-import { Text, View } from '../components/Themed';
+import { StyleSheet, View, Text } from 'react-native';
 
-export default function MyPageScreen() {
+export default function MyPage() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      <View style={styles.separator} />
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

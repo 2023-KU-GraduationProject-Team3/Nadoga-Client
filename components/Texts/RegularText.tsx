@@ -2,12 +2,12 @@ import React, {FunctionComponent} from 'react';
 import styled from 'styled-components/native';
 
 // colors
-import tintColorLight from '../../constants/Colors';
+// import tintColorLight from '../../constants/Colors';
 
 
 const StyledText = styled.Text`
 font-size: 37px;
-color: ${tintColorLight};
+color: #000;
 text-align: left;
 font-family: Lato-Regular;
 `

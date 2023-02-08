@@ -10,17 +10,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
 
-import Colors from '../constants/Colors';
+import { colors }from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import ModalScreen from '../screens/ModalScreen';
-import SearchLibraryScreen from '../screens/SearchLibraryScreen';
-import NotFoundScreen from '../screens/NotFoundScreen';
-import TabTwoScreen from '../screens/SearchBookScreen';
-import TabThreeScreen from '../screens/MyPageScreen'
+import ModalScreen from '../screens/Modal';
+import SearchLibraryScreen from '../screens/SearchLibrary';
+import NotFoundScreen from '../screens/NotFound';
+import TabTwoScreen from '../screens/SearchBook';
+import TabThreeScreen from '../screens/MyPage'
 import { RootStackParamList, MainTabParamsList, RootTabScreenProps, AuthStackParamList } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
-import LoginScreen from '../screens/LoginScreen';
-import SignupScreen from '../screens/SignupScreen';
+import LoginScreen from '../screens/Login';
+import SignupScreen from '../screens/SignUp';
 
 
 export function Auth({ colorScheme }: { colorScheme: ColorSchemeName }) {
@@ -77,13 +77,13 @@ function MainTabNavigator() {
 const BottomTab = createBottomTabNavigator<MainTabParamsList>();
 
 function BottomTabNavigator() { 
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
 
   return (
     <BottomTab.Navigator
       initialRouteName="SearchLibrary"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarActiveTintColor: colors.black,
       }}>
       <BottomTab.Screen
         name="SearchLibrary"
@@ -100,7 +100,7 @@ function BottomTabNavigator() {
               <FontAwesome
                 name="info-circle"
                 size={25}
-                color={Colors[colorScheme].text}
+                color={colors.gray1}
                 style={{ marginRight: 15 }}
               />
             </Pressable>

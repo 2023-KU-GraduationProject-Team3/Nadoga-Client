@@ -1,6 +1,5 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { Text, View } from "../components/Themed";
 import { RootTabScreenProps } from "../types";
 
 export default function SearchLibraryScreen({
@@ -11,8 +10,6 @@ export default function SearchLibraryScreen({
       <Text style={styles.title}>SearchLibrary Screen</Text>
       <View
         style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
       />
     </View>
   );
