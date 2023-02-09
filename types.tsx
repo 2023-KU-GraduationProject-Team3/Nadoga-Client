@@ -3,9 +3,12 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import {
+  CompositeScreenProps,
+  NavigatorScreenParams,
+} from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 declare global {
   namespace ReactNavigation {
@@ -16,7 +19,7 @@ declare global {
 export type AuthStackParamList = {
   Login: undefined;
   SignUp: undefined;
-}
+};
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<MainTabParamsList> | undefined;
@@ -25,18 +28,18 @@ export type RootStackParamList = {
   NotFound: undefined;
 };
 
-export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
-  RootStackParamList,
-  Screen
->;
+export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
+  NativeStackScreenProps<RootStackParamList, Screen>;
 
 export type MainTabParamsList = {
-  SearchLibrary: undefined;
   SearchBook: undefined;
-  MyPage: undefined;
+  SearchLibrary: undefined;
+  MyLibrary: undefined;
+  Settings: undefined;
 };
 
-export type RootTabScreenProps<Screen extends keyof MainTabParamsList> = CompositeScreenProps<
-  BottomTabScreenProps<MainTabParamsList, Screen>,
-  NativeStackScreenProps<RootStackParamList>
->;
+export type RootTabScreenProps<Screen extends keyof MainTabParamsList> =
+  CompositeScreenProps<
+    BottomTabScreenProps<MainTabParamsList, Screen>,
+    NativeStackScreenProps<RootStackParamList>
+  >;

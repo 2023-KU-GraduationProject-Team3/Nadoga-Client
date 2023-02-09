@@ -1,9 +1,9 @@
 import { StyleSheet, View, Text } from 'react-native';
 
-export default function MyPage() {
+export default function MyLibrary() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
+      <Text style={styles.title}>My Library</Text>
       <View style={styles.separator} />
     </View>
   );

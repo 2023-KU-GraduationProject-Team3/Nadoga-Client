@@ -4,7 +4,7 @@ import { colors } from '../constants/Colors';
 export default function SearchBook() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
+      <Text style={styles.title}>Search Book</Text>
       <View style={styles.separator}  />
     </View>
   );
