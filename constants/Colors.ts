@@ -1,15 +1,16 @@
 export const colors = {
   white: "#fff",
-  gray1: '#f8f8f8',
-  gray2: '#e3e3e3',
-  gray3: '#c0c0c2',
-  gray4: '#979797',
-  semiblack: '#313131',
-  black: '#000',
-  lightgreen: '#b6e13d',
+  gray1: "#f8f8f8",
+  gray2: "#e3e3e3",
+  gray3: "#c0c0c2",
+  gray4: "#979797",
+  semiblack: "#313131",
+  black: "#000",
+  lightgreen: "#b6e13d",
   green: "#507612",
-  red: '#a60028'
-}
+  red: "#a60028",
+  bgGray: "#F8F8F8",
+};
 
 // export default {
 //   light: {

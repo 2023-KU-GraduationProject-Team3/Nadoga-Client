@@ -12,7 +12,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
-import { ColorSchemeName, Pressable, Image, View } from "react-native";
+import { ColorSchemeName, Pressable, Image, View, Text } from "react-native";
 
 import { colors } from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -117,8 +117,11 @@ function BottomTabNavigator() {
         tabBarActiveBackgroundColor: colors.green,
         tabBarInactiveBackgroundColor: colors.white,
         tabBarStyle: {
-          height: 70,
+          height: 80,
+          paddingLeft: 20,
+          paddingRight: 20,
         },
+        headerShown: false,
       }}
     >
       <BottomTab.Screen
@@ -130,9 +133,10 @@ function BottomTabNavigator() {
             <Image
               source={require("../assets/icons/searchbook-icon.png")}
               style={{
-                width: 26,
-                height: 26,
+                width: 36,
+                height: 36,
                 tintColor: focused ? colors.white : colors.black,
+                paddingBottom: 0,
               }}
             />
           ),
@@ -158,12 +162,13 @@ function BottomTabNavigator() {
         component={SearchLibraryScreen}
         options={{
           title: "도서관 찾기",
+
           tabBarIcon: ({ focused }) => (
             <Image
               source={require("../assets/icons/searchlibrary-icon.png")}
               style={{
-                width: 26,
-                height: 26,
+                width: 36,
+                height: 36,
                 tintColor: focused ? colors.white : colors.black,
               }}
             />
@@ -179,8 +184,8 @@ function BottomTabNavigator() {
             <Image
               source={require("../assets/icons/mylibrary-icon.png")}
               style={{
-                width: 26,
-                height: 26,
+                width: 36,
+                height: 36,
                 tintColor: focused ? colors.white : colors.black,
               }}
             />
@@ -196,8 +201,8 @@ function BottomTabNavigator() {
             <Image
               source={require("../assets/icons/settings-icon.png")}
               style={{
-                width: 26,
-                height: 26,
+                width: 36,
+                height: 36,
                 tintColor: focused ? colors.white : colors.black,
               }}
             />

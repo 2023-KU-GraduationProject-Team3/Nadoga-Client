@@ -1,11 +1,13 @@
-import { StyleSheet, View, Text } from 'react-native';
-import { colors } from '../constants/Colors';
+import { StyleSheet, View, Text } from "react-native";
+import { colors } from "../constants/Colors";
+
+// components
+import SearchBar from "../components/SearchBar/SearchBar";
 
 export default function SearchBook() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Search Book</Text>
-      <View style={styles.separator}  />
+      <SearchBar placeholder="노인과 바다" />
     </View>
   );
 }
@@ -13,16 +15,16 @@ export default function SearchBook() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    backgroundColor: colors.bgGray,
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
+    width: "80%",
   },
 });
