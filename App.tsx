@@ -23,6 +23,8 @@ export default function App() {
     NotoSansKR_Medium: require("./assets/fonts/NotoSansKR-Medium.otf"),
     NotoSansKR_Regular: require("./assets/fonts/NotoSansKR-Regular.otf"),
     NotoSansKR_Thin: require("./assets/fonts/NotoSansKR-Thin.otf"),
+    Poppins_Medium: require("./assets/fonts/Poppins-Medium.ttf"),
+    Poppins_Regular: require("./assets/fonts/Poppins-Regular.ttf"),
   });
   if (!fontsLoaded) {
     return null;

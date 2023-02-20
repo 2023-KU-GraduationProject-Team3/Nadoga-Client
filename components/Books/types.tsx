@@ -7,5 +7,5 @@ export interface BookProps {
 }
 
 export interface BookSectionProps {
-  data: Array<BookProps>;
+  books: Array<BookProps>;
 }

@@ -16,8 +16,8 @@ const SearchBarContainer = styled.View`
   background-color: #fff;
   border-radius: 10px;
   padding: 10px;
-
   width: ${layout.window.width - 40}px;
+  background-color: ${colors.white};
 `;
 
 const SearchBarInput = styled.TextInput`
@@ -25,6 +25,8 @@ const SearchBarInput = styled.TextInput`
   color: #000;
   text-align: left;
   font-family: NotoSansKR_Bold;
+  width: 80%;
+  flex-direction: row;
 `;
 
 interface SearchBarProps {
