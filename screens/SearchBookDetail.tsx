@@ -1,7 +1,6 @@
 import { StyleSheet, View, Text } from "react-native";
 import { colors } from "../constants/Colors";
 import { useState } from "react";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 // components
 import SearchBar from "../components/SearchBar/SearchBar";
@@ -9,14 +8,9 @@ import RecommendHeader from "../components/Header/Recommend";
 import BookItem from "../components/Books/BookItem";
 import BookSection from "../components/Books/BookSection";
 
-import { SearchBookScreenProps } from "../types";
-
-export default function SearchBook({
-  navigation,
-  route,
-}: SearchBookScreenProps) {
+export default function SearchBookDetail() {
   // data : books
-  const bookList = [
+  const searchResult = [
     {
       book_isbn: 1,
       book_name: "노인과 바다1",
@@ -113,7 +107,7 @@ export default function SearchBook({
     <View style={styles.container}>
       <SearchBar placeholder="노인과 바다" />
       <RecommendHeader
-        title={"추천 도서"}
+        title={"SearchBookDetail"}
         description={"도서 기록을 분석하여 추천하는 도서입니다."}
         titleTextStyle={{
           fontSize: 26,
@@ -128,7 +122,7 @@ export default function SearchBook({
           fontFamily: "NotoSansKR_Regular",
         }}
       />
-      <BookSection books={bookList} />
+      <BookSection books={searchResult} />
     </View>
   );
 }
@@ -138,7 +132,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: colors.bgGray,
-    paddingTop: 70,
+    marginTop: 70,
   },
   title: {
     fontSize: 20,

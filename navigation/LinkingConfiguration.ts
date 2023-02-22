@@ -15,9 +15,11 @@ const linking: LinkingOptions<RootStackParamList> = {
     screens: {
       Root: {
         screens: {
-          SearchBook: {
+          SearchBookRoot: {
             screens: {
               SearchBookScreen: "SearchBook",
+              SearchBookResultScreen: "SearchBookResult",
+              SearchBookDetailScreen: "SearchBookDetail",
             },
           },
           SearchLibrary: {

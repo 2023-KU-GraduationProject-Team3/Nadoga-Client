@@ -9,6 +9,7 @@ import {
   NavigationContainer,
   DefaultTheme,
   DarkTheme,
+  useNavigationContainerRef,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
@@ -27,28 +28,37 @@ import {
   MainTabParamsList,
   RootTabScreenProps,
   AuthStackParamList,
+  SearchBookParamsList,
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/SignUp";
+import SearchBookResult from "../screens/SearchBookResult";
+import SearchBookDetail from "../screens/SearchBookDetail";
 
 // import SearchLibraryIcon from '../assets/icons/searchLibrary';
 
 export function Auth({ colorScheme }: { colorScheme: ColorSchemeName }) {
+  const navigationRef = useNavigationContainerRef();
+
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      ref={navigationRef}
     >
       <AuthNavigator />
     </NavigationContainer>
   );
 }
 export function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+  const navigationRef = useNavigationContainerRef();
+
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      ref={navigationRef}
     >
       <MainTabNavigator />
     </NavigationContainer>
@@ -61,6 +71,7 @@ export function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
  */
 const MainStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const SearchBookStack = createNativeStackNavigator<SearchBookParamsList>();
 
 function AuthNavigator() {
   return (
@@ -99,6 +110,28 @@ function MainTabNavigator() {
   );
 }
 
+function SerachBookNavigator() {
+  return (
+    <SearchBookStack.Navigator initialRouteName="SearchBook">
+      <SearchBookStack.Screen
+        name="SearchBook"
+        component={SearchBookScreen}
+        options={{ headerShown: false }}
+      />
+      <SearchBookStack.Screen
+        name="SearchBookResult"
+        component={SearchBookResult}
+        options={{ headerShown: false }}
+      />
+      <SearchBookStack.Screen
+        name="SearchBookDetail"
+        component={SearchBookDetail}
+        options={{ headerShown: false }}
+      />
+    </SearchBookStack.Navigator>
+  );
+}
+
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
  * https://reactnavigation.org/docs/bottom-tab-navigator
@@ -110,7 +143,7 @@ function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="SearchBook"
+      initialRouteName="SearchBookRoot"
       screenOptions={{
         tabBarActiveTintColor: colors.white,
         tabBarInactiveTintColor: colors.black,
@@ -125,9 +158,9 @@ function BottomTabNavigator() {
       }}
     >
       <BottomTab.Screen
-        name="SearchBook"
-        component={SearchBookScreen}
-        options={({ navigation }: RootTabScreenProps<"SearchBook">) => ({
+        name="SearchBookRoot"
+        component={SerachBookNavigator}
+        options={{
           title: "도서 검색",
           tabBarIcon: ({ focused }) => (
             <Image
@@ -140,22 +173,22 @@ function BottomTabNavigator() {
               }}
             />
           ),
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate("Modal")}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={colors.gray1}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
-        })}
+          // headerRight: () => (
+          //   <Pressable
+          //     onPress={() => navigation.navigate("Modal")}
+          //     style={({ pressed }) => ({
+          //       opacity: pressed ? 0.5 : 1,
+          //     })}
+          //   >
+          //     <FontAwesome
+          //       name="info-circle"
+          //       size={25}
+          //       color={colors.gray1}
+          //       style={{ marginRight: 15 }}
+          //     />
+          //   </Pressable>
+          // ),
+        }}
       />
       <BottomTab.Screen
         name="SearchLibrary"
@@ -216,9 +249,9 @@ function BottomTabNavigator() {
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
-}
+// function TabBarIcon(props: {
+//   name: React.ComponentProps<typeof FontAwesome>["name"];
+//   color: string;
+// }) {
+//   return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
+// }

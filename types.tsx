@@ -32,11 +32,31 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
 export type MainTabParamsList = {
-  SearchBook: undefined;
+  SearchBookRoot: undefined;
   SearchLibrary: undefined;
   MyLibrary: undefined;
   Settings: undefined;
 };
+
+export type SearchBookParamsList = {
+  SearchBook: undefined;
+  SearchBookResult: {
+    bookName: string;
+  };
+  SearchBookDetail: {
+    bookIsbn: number;
+  };
+};
+
+export type SearchBookScreenProps = NativeStackScreenProps<
+  SearchBookParamsList,
+  "SearchBook"
+>;
+
+export type SearchBookResultScreenProps = NativeStackScreenProps<
+  SearchBookParamsList,
+  "SearchBookResult"
+>;
 
 export type RootTabScreenProps<Screen extends keyof MainTabParamsList> =
   CompositeScreenProps<

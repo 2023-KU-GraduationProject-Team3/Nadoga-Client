@@ -11,20 +11,27 @@ import { BookSectionProps } from "./types";
 
 // components
 import BookItem from "./BookItem";
-const BookListContainer = styled.FlatList`
-  width: ${layout.window.width - 40}px;
+
+const BookListContainer = styled.View`
+  width: ${layout.window.width}px;
+  flex: 1;
+  background-color: ${colors.bgGray};
+  align-items: center;
 `;
+const BookList = styled.FlatList``;
 
 const BookSection: FunctionComponent<BookSectionProps> = (props) => {
   return (
-    <BookListContainer
-      data={props.books}
-      numColumns={3}
-      horizontal={false}
-      showsVerticalScrollIndicator={false}
-      keyExtractor={({ book_isbn }: any) => book_isbn.toString()}
-      renderItem={({ item }: any) => <BookItem {...item} />}
-    />
+    <BookListContainer>
+      <BookList
+        data={props.books}
+        numColumns={3}
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={({ book_isbn }: any) => book_isbn.toString()}
+        renderItem={({ item }: any) => <BookItem {...item} />}
+      />
+    </BookListContainer>
   );
 };
 
