@@ -16,124 +16,119 @@ export default function SearchBookResult({
 }: SearchBookResultScreenProps) {
   const { bookName } = route.params;
 
-  // data : books
-  const searchResult = [
+  // data
+  const books = [
     {
       book_isbn: 1,
-      book_name: "노인과 바다1",
+      book_name: "노인과 바다",
       book_publisher: "출판사아",
       book_author: "헤밍웨이",
       book_image_url: "../assets/images/book-sample-img.png",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 2,
+      book_name: "책책책",
       book_publisher: "출판사아",
-      book_name: "노인과 바다2",
       book_author: "헤밍웨이",
       book_image_url: "../assets/images/book-sample-img.png",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 3,
+      book_name: "마법천자문",
       book_publisher: "출판사아",
-      book_name: "노인과 바다3",
       book_author: "헤밍웨이",
       book_image_url: "../assets/images/book-sample-img.png",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 4,
+      book_name: "이것이 자바다",
       book_publisher: "출판사아",
-      book_name: "노인과 바다",
       book_author: "헤밍웨이",
       book_image_url: "../assets/images/book-sample-img.png",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 5,
+      book_name: "파이썬 코딩 인터뷰",
       book_publisher: "출판사아",
-      book_name: "노인과 바다",
       book_author: "헤밍웨이",
       book_image_url: "../assets/images/book-sample-img.png",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 6,
+      book_name: "book",
       book_publisher: "출판사아",
-      book_name: "노인과 바다",
       book_author: "헤밍웨이",
       book_image_url: "../assets/images/book-sample-img.png",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-    },
-    {
-      book_isbn: 7,
-      book_publisher: "출판사아",
-      book_name: "노인과 바다",
-      book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
-      book_rating: 4.5,
-      book_description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-    },
-    {
-      book_isbn: 8,
-      book_publisher: "출판사아",
-      book_name: "노인과 바다",
-      book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
-      book_rating: 4.5,
-      book_description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-    },
-    {
-      book_isbn: 9,
-      book_publisher: "출판사아",
-      book_name: "노인과 바다",
-      book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
-      book_rating: 4.5,
-      book_description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
   ];
 
+  const [filteredBooks, setFilteredBooks] = useState(books);
+
+  const onPressWishlist = (book_isbn: number) => {
+    setFilteredBooks(
+      filteredBooks.map((book) =>
+        book.book_isbn === book_isbn
+          ? { ...book, is_wishlist: !book.is_wishlist }
+          : book
+      )
+    );
+  };
+
   useEffect(() => {
-    console.log("bookName", bookName);
-  }, []);
+    console.log(bookName);
+
+    // 검색어로 books 필터링
+    setFilteredBooks(books.filter((book) => book.book_name.includes(bookName)));
+    console.log(filteredBooks);
+  }, [bookName]);
 
   return (
     <View style={styles.container}>
       <SearchBar placeholder="노인과 바다" />
-      <RecommendHeader
-        title={"SearchBookResult"}
-        description={"도서 기록을 분석하여 추천하는 도서입니다."}
-        titleTextStyle={{
-          fontSize: 26,
-          fontWeight: "900",
-          color: colors.black,
-          fontFamily: "NotoSansKR_Bold",
-        }}
-        descriptionTextStyle={{
-          fontSize: 14,
-          fontWeight: "normal",
-          color: colors.black,
-          fontFamily: "NotoSansKR_Regular",
-        }}
-      />
-      <BookSection books={searchResult} />
+
+      {filteredBooks.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text>검색 결과가 없습니다.</Text>
+        </View>
+      ) : (
+        <BookSection
+          books={filteredBooks}
+          isSearchResult={true}
+          isDetail={false}
+          bookName={bookName}
+          onPressWishlist={onPressWishlist}
+        />
+      )}
     </View>
   );
 }

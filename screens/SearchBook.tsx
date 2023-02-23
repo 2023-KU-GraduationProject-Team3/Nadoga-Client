@@ -15,8 +15,8 @@ export default function SearchBook({
   navigation,
   route,
 }: SearchBookScreenProps) {
-  // data : books
-  const bookList = [
+  // data
+  const recommendResult = [
     {
       book_isbn: 1,
       book_name: "노인과 바다1",
@@ -26,6 +26,7 @@ export default function SearchBook({
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 2,
@@ -36,6 +37,7 @@ export default function SearchBook({
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 3,
@@ -46,6 +48,7 @@ export default function SearchBook({
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 4,
@@ -56,6 +59,7 @@ export default function SearchBook({
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 5,
@@ -66,6 +70,7 @@ export default function SearchBook({
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 6,
@@ -76,6 +81,7 @@ export default function SearchBook({
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 7,
@@ -86,6 +92,7 @@ export default function SearchBook({
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 8,
@@ -96,6 +103,7 @@ export default function SearchBook({
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
     {
       book_isbn: 9,
@@ -106,6 +114,7 @@ export default function SearchBook({
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
+      is_wishlist: false,
     },
   ];
 
@@ -128,7 +137,7 @@ export default function SearchBook({
           fontFamily: "NotoSansKR_Regular",
         }}
       />
-      <BookSection books={bookList} />
+      <BookSection books={recommendResult} isSearchResult={false} />
     </View>
   );
 }

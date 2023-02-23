@@ -58,6 +58,11 @@ export type SearchBookResultScreenProps = NativeStackScreenProps<
   "SearchBookResult"
 >;
 
+export type SerachBookDetailScreenProps = NativeStackScreenProps<
+  SearchBookParamsList,
+  "SearchBookDetail"
+>;
+
 export type RootTabScreenProps<Screen extends keyof MainTabParamsList> =
   CompositeScreenProps<
     BottomTabScreenProps<MainTabParamsList, Screen>,

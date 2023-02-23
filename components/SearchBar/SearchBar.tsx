@@ -1,21 +1,21 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import styled from "styled-components/native";
 import { StyleProp, TextStyle, TouchableOpacity } from "react-native";
-import { RootTabScreenProps } from "../../types";
-
-interface SearchBarProps {
-  placeholder: string;
-  searchBarStyles?: StyleProp<TextStyle>;
-}
+import { useRoute, useNavigation } from "@react-navigation/native";
 
 // constants
 import { colors } from "../../constants/Colors";
 import layout from "../../constants/Layout";
 
-// search icon
+// icons
 import { Feather } from "@expo/vector-icons";
-import { useRoute, useNavigation } from "@react-navigation/native";
+
+// types
 import { SearchBookResultScreenProps } from "../../types";
+interface SearchBarProps {
+  placeholder: string;
+  searchBarStyles?: StyleProp<TextStyle>;
+}
 
 // components
 const SearchBarContainer = styled.View`
