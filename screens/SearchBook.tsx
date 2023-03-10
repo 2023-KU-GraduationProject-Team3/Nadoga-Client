@@ -137,7 +137,11 @@ export default function SearchBook({
           fontFamily: "NotoSansKR_Regular",
         }}
       />
-      <BookSection books={recommendResult} isSearchResult={false} />
+      <BookSection
+        books={recommendResult}
+        isSearchResult={false}
+        isDetail={false}
+      />
     </View>
   );
 }

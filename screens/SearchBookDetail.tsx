@@ -196,7 +196,7 @@ export default function SearchBookDetail({
         <Text
           style={{
             fontSize: 15,
-            fontFamily: "NotoSansKR_DemiLight",
+            fontFamily: "NotoSansKR_Light",
             color: colors.gray4,
           }}
         >
