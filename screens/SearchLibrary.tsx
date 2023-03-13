@@ -6,13 +6,14 @@ import {
   Animated,
   Platform,
 } from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import MapViewComponent from "../components/Map/MapViewComponent";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { RootTabScreenProps } from "../types";
 import styled from "styled-components/native";
 import Geolocation from "@react-native-community/geolocation";
 import { useFocusEffect } from "@react-navigation/native";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 // constants
 import Layout from "../constants/Layout";
@@ -36,25 +37,57 @@ export default function SearchLibraryScreen({
   });
   const [markers, setMarkers] = useState([{}]);
   const SPACING_FOR_CARD_INSET = Layout.window.width * 0.05 - 10;
+  const CARD_WIDTH = Layout.window.width - 40;
+
+  let mapIndex = 0;
+  let mapAnimation = new Animated.Value(0);
+
+  const _map = useRef<MapView>(null);
+  const _scrollview = useRef<View>(null);
+
+  const interpolations = markers.map((marker, index) => {
+    const inputRange = [
+      (index - 1) * CARD_WIDTH,
+      index * CARD_WIDTH,
+      (index + 1) * CARD_WIDTH,
+    ];
+
+    const scale = mapAnimation.interpolate({
+      inputRange,
+      outputRange: [1, 1.5, 1],
+      extrapolate: "clamp",
+    });
+
+    return { scale };
+  });
+
+  const onMarkerPress = (mapEventData) => {
+    const markerID = mapEventData._targetInst.return.key;
+
+    let x = markerID * CARD_WIDTH + markerID * 20;
+    if (Platform.OS === "ios") {
+      x = x - SPACING_FOR_CARD_INSET;
+    }
+
+    _scrollview.current.scrollTo({ x: x, y: 0, animated: true });
+  };
 
   useFocusEffect(
     useCallback(() => {
       Geolocation.getCurrentPosition((pos) => {
         // Get user current location
         const { latitude, longitude } = pos.coords;
-        setPosition((prev) => {
-          return {
-            latitude,
-            longitude,
-            latitudeDelta: 0.0421,
-            longitudeDelta: 0.0421,
-          };
+        setPosition({
+          latitude,
+          longitude,
+          latitudeDelta: 0.0421,
+          longitudeDelta: 0.0421,
         });
 
         // Set example markers
         setMarkers([
           {
-            id: 1,
+            id: "1",
             coordinate: {
               latitude: latitude + 0.001,
               longitude: longitude + 0.001,
@@ -64,7 +97,7 @@ export default function SearchLibraryScreen({
             image: require("../assets/images/map/library_1.png"),
           },
           {
-            id: 2,
+            id: "2",
             coordinate: {
               latitude: latitude + 0.002,
               longitude: longitude - 0.001,
@@ -74,7 +107,7 @@ export default function SearchLibraryScreen({
             image: require("../assets/images/map/library_2.png"),
           },
           {
-            id: 3,
+            id: "3",
             coordinate: {
               latitude: latitude - 0.001,
               longitude: longitude + 0.002,
@@ -85,12 +118,83 @@ export default function SearchLibraryScreen({
           },
         ]);
       });
-    }, [position])
+    }, [])
   );
+
+  useEffect(() => {
+    mapAnimation.addListener(({ value }) => {
+      let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
+      if (index >= markers.length) {
+        index = markers.length - 1;
+      }
+      if (index <= 0) {
+        index = 0;
+      }
+
+      clearTimeout(regionTimeout);
+
+      const regionTimeout = setTimeout(() => {
+        if (mapIndex !== index) {
+          mapIndex = index;
+          const { coordinate } = markers[index];
+          _map.current.animateToRegion(
+            {
+              ...coordinate,
+              latitudeDelta: position.latitudeDelta,
+              longitudeDelta: position.longitudeDelta,
+            },
+            350
+          );
+        }
+      }, 10);
+    });
+  });
 
   return (
     <View style={styles.container}>
-      <MapViewComponent position={position} markers={markers} />
+      <MapView
+        provider={PROVIDER_GOOGLE}
+        ref={_map}
+        style={styles.map}
+        initialRegion={position}
+        showsUserLocation={true}
+        followsUserLocation={true}
+        showsMyLocationButton={false}
+        showsCompass={false}
+        scrollEnabled={true}
+        zoomEnabled={true}
+        pitchEnabled={true}
+        rotateEnabled={true}
+        mapPadding={{ top: 0, right: 0, bottom: 0, left: 0 }}
+      >
+        {
+          // Set markers
+          markers.map((marker, index) => {
+            const scaleStyle = {
+              transform: [
+                {
+                  scale: interpolations[index].scale,
+                },
+              ],
+            };
+            return (
+              <Marker
+                key={index}
+                coordinate={marker.coordinate}
+                onPress={(e) => onMarkerPress(e)}
+              >
+                <Animated.View style={[styles.markerWrap]}>
+                  <Animated.Image
+                    source={require("../assets/icons/map/map-marker.png")}
+                    style={[styles.marker, scaleStyle]}
+                    resizeMode="center"
+                  />
+                </Animated.View>
+              </Marker>
+            );
+          })
+        }
+      </MapView>
       <SearchBar
         placeholder="도서관을 입력하세요."
         searchBarStyles={{
@@ -98,17 +202,29 @@ export default function SearchLibraryScreen({
           top: 50,
         }}
       />
-      <MyLocationButton>
+      <MyLocationButton
+        onPress={() => {
+          _map.current.animateToRegion(
+            {
+              ...position,
+              latitudeDelta: position.latitudeDelta,
+              longitudeDelta: position.longitudeDelta,
+            },
+            350
+          );
+        }}
+      >
         <Image
           source={require("../assets/icons/map/my-location-button.png")}
         ></Image>
       </MyLocationButton>
       <Animated.ScrollView
+        ref={_scrollview}
         horizontal
         pagingEnabled
         scrollEventThrottle={1}
         showsHorizontalScrollIndicator={false}
-        snapToInterval={Layout.window.width - 20}
+        snapToInterval={CARD_WIDTH + 20}
         snapToAlignment="center"
         style={styles.scrollView}
         contentInset={{
@@ -119,8 +235,20 @@ export default function SearchLibraryScreen({
         }}
         contentContainerStyle={{
           paddingHorizontal:
-            Platform.OS === "android" ? SPACING_FOR_CARD_INSET : 0,
+            Platform.OS === "android" ? SPACING_FOR_CARD_INSET - 5 : 0,
         }}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  x: mapAnimation,
+                },
+              },
+            },
+          ],
+          { useNativeDriver: true }
+        )}
       >
         {markers.map((marker) => {
           return (
@@ -176,6 +304,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  markerWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 50,
+    height: 50,
+  },
+  marker: {
+    width: 30,
+    height: 30,
   },
   scrollView: {
     position: "absolute",
