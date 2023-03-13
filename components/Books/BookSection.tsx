@@ -14,10 +14,10 @@ import BookItem from "./BookItem";
 
 const BookListContainer = styled.View`
   width: ${layout.window.width}px;
-  flex: 1;
   background-color: ${colors.bgGray};
-  align-items: center;
   margin-top: 20px;
+  flex: 1;
+  padding-left: 20px;
 `;
 const BookList = styled.FlatList``;
 
@@ -27,6 +27,10 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
   return (
     <BookListContainer>
       <BookList
+        contentContainerStyle={{
+          alignItems: "center",
+          justifyContent: "center",
+        }}
         data={props.books}
         numColumns={props.isSearchResult ? 1 : 3}
         horizontal={false}

@@ -12,9 +12,11 @@ import { Feather } from "@expo/vector-icons";
 
 // types
 import { SearchBookResultScreenProps } from "../../types";
+import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 interface SearchBarProps {
   placeholder: string;
-  searchBarStyles?: StyleProp<TextStyle>;
+  searchBarStyles?: StyleProp<ViewProps>;
+  searchBarTextStyles?: StyleProp<TextStyle>;
 }
 
 // components
@@ -34,10 +36,14 @@ const SearchBarInput = styled.TextInput`
   text-align: left;
   font-family: NotoSansKR_Bold;
   width: 80%;
-  flex-direction: row;
+  line-height: 14px;
+  padding: 0;
 `;
 
-const SearchBar: FunctionComponent<SearchBarProps> = (props) => {
+const SearchBar: FunctionComponent<SearchBarProps> = ({
+  placeholder,
+  searchBarStyles,
+}) => {
   // navigation hooks
   const route = useRoute<SearchBookResultScreenProps["route"]>();
   const navigation = useNavigation<SearchBookResultScreenProps["navigation"]>();
@@ -45,9 +51,9 @@ const SearchBar: FunctionComponent<SearchBarProps> = (props) => {
   const [searchValue, setSearchValue] = useState<string>("");
 
   return (
-    <SearchBarContainer>
+    <SearchBarContainer style={{ ...searchBarStyles }}>
       <SearchBarInput
-        placeholder={props.placeholder}
+        placeholder={placeholder}
         value={searchValue}
         onChange={(e) => {
           setSearchValue(e.nativeEvent.text);
