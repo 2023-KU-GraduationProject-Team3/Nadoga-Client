@@ -72,54 +72,53 @@ export default function SearchLibraryScreen({
     _scrollview.current.scrollTo({ x: x, y: 0, animated: true });
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      Geolocation.getCurrentPosition((pos) => {
-        // Get user current location
-        const { latitude, longitude } = pos.coords;
-        setPosition({
-          latitude,
-          longitude,
-          latitudeDelta: 0.0421,
-          longitudeDelta: 0.0421,
-        });
-
-        // Set example markers
-        setMarkers([
-          {
-            id: "1",
-            coordinate: {
-              latitude: latitude + 0.001,
-              longitude: longitude + 0.001,
-            },
-            title: "광진구 도서관",
-            distance: "1.2",
-            image: require("../assets/images/map/library_1.png"),
-          },
-          {
-            id: "2",
-            coordinate: {
-              latitude: latitude + 0.002,
-              longitude: longitude - 0.001,
-            },
-            title: "화양동 도서관",
-            distance: "1.4",
-            image: require("../assets/images/map/library_2.png"),
-          },
-          {
-            id: "3",
-            coordinate: {
-              latitude: latitude - 0.001,
-              longitude: longitude + 0.002,
-            },
-            title: "어린이대공원역 도서관",
-            distance: "1.6",
-            image: require("../assets/images/map/library_3.png"),
-          },
-        ]);
+  useEffect(() => {
+    Geolocation.getCurrentPosition((pos) => {
+      // Get user current location
+      const { latitude, longitude } = pos.coords;
+      setPosition({
+        latitude,
+        longitude,
+        latitudeDelta: 0.0421,
+        longitudeDelta: 0.0421,
       });
-    }, [])
-  );
+
+      // Set example markers
+      let exampleMarkers = [
+        {
+          id: "1",
+          coordinate: {
+            latitude: latitude + 0.001,
+            longitude: longitude + 0.001,
+          },
+          title: "광진구 도서관",
+          distance: "1.2",
+          image: require("../assets/images/map/library_1.png"),
+        },
+        {
+          id: "2",
+          coordinate: {
+            latitude: latitude + 0.002,
+            longitude: longitude - 0.001,
+          },
+          title: "화양동 도서관",
+          distance: "1.4",
+          image: require("../assets/images/map/library_2.png"),
+        },
+        {
+          id: "3",
+          coordinate: {
+            latitude: latitude - 0.001,
+            longitude: longitude + 0.002,
+          },
+          title: "어린이대공원역 도서관",
+          distance: "1.6",
+          image: require("../assets/images/map/library_3.png"),
+        },
+      ];
+      setMarkers([...exampleMarkers]);
+    });
+  }, []);
 
   useEffect(() => {
     mapAnimation.addListener(({ value }) => {
@@ -169,30 +168,31 @@ export default function SearchLibraryScreen({
       >
         {
           // Set markers
-          markers.map((marker, index) => {
-            const scaleStyle = {
-              transform: [
-                {
-                  scale: interpolations[index].scale,
-                },
-              ],
-            };
-            return (
-              <Marker
-                key={index}
-                coordinate={marker.coordinate}
-                onPress={(e) => onMarkerPress(e)}
-              >
-                <Animated.View style={[styles.markerWrap]}>
-                  <Animated.Image
-                    source={require("../assets/icons/map/map-marker.png")}
-                    style={[styles.marker, scaleStyle]}
-                    resizeMode="center"
-                  />
-                </Animated.View>
-              </Marker>
-            );
-          })
+          markers.length > 0 &&
+            markers.map((marker, index) => {
+              const scaleStyle = {
+                transform: [
+                  {
+                    scale: interpolations[index].scale,
+                  },
+                ],
+              };
+              return (
+                <Marker
+                  key={index}
+                  coordinate={marker.coordinate}
+                  onPress={(e) => onMarkerPress(e)}
+                >
+                  <Animated.View style={[styles.markerWrap]}>
+                    <Animated.Image
+                      source={require("../assets/icons/map/map-marker.png")}
+                      style={[styles.marker, scaleStyle]}
+                      resizeMode="center"
+                    />
+                  </Animated.View>
+                </Marker>
+              );
+            })
         }
       </MapView>
       <SearchBar
@@ -250,49 +250,50 @@ export default function SearchLibraryScreen({
           { useNativeDriver: true }
         )}
       >
-        {markers.map((marker) => {
-          return (
-            <View key={marker.id} style={styles.card}>
-              <Image
-                source={marker.image}
-                style={styles.cardImage}
-                resizeMode={"cover"}
-              />
-              <View style={styles.cardTextContainer}>
-                <View style={{ height: "70%" }}>
-                  <Text
-                    style={{
-                      height: "100%",
-                      marginBottom: 20,
-                      fontSize: 22,
-                      fontFamily: "NotoSansKR_Medium",
-                      color: colors.black,
-                      overflow: "visible",
-                    }}
-                  >
-                    {marker.title}
-                  </Text>
-                </View>
+        {markers.length > 0 &&
+          markers.map((marker, index) => {
+            return (
+              <View key={index} style={styles.card}>
+                <Image
+                  source={marker.image}
+                  style={styles.cardImage}
+                  resizeMode={"cover"}
+                />
+                <View style={styles.cardTextContainer}>
+                  <View style={{ height: "70%" }}>
+                    <Text
+                      style={{
+                        height: "100%",
+                        marginBottom: 20,
+                        fontSize: 22,
+                        fontFamily: "NotoSansKR_Medium",
+                        color: colors.black,
+                        overflow: "visible",
+                      }}
+                    >
+                      {marker.title}
+                    </Text>
+                  </View>
 
-                <View style={styles.cardTextDistanceContainer}>
-                  <Image
-                    source={require("../assets/icons/map/map-card-marker.png")}
-                    style={{ marginRight: 10 }}
-                  ></Image>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontFamily: "NotoSansKR_Medium",
-                      color: colors.gray3,
-                    }}
-                  >
-                    {marker.distance}km
-                  </Text>
+                  <View style={styles.cardTextDistanceContainer}>
+                    <Image
+                      source={require("../assets/icons/map/map-card-marker.png")}
+                      style={{ marginRight: 10 }}
+                    ></Image>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontFamily: "NotoSansKR_Medium",
+                        color: colors.gray3,
+                      }}
+                    >
+                      {marker.distance}km
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          );
-        })}
+            );
+          })}
       </Animated.ScrollView>
     </View>
   );

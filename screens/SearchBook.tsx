@@ -15,7 +15,7 @@ export default function SearchBook({
   navigation,
   route,
 }: SearchBookScreenProps) {
-  // data
+  // recommend Result
   const recommendResult = [
     {
       book_isbn: 1,

@@ -1,11 +1,12 @@
 import React, { FunctionComponent } from "react";
 import styled from "styled-components/native";
-import { StyleProp, TextStyle, Text } from "react-native";
+import { StyleProp, TextStyle, Text, View } from "react-native";
 
 // constants
 import { colors } from "../../constants/Colors";
 import layout from "../../constants/Layout";
 
+// components
 const HeaderContainer = styled.View`
   flex-direction: column;
   align-items: flex-start;
@@ -14,6 +15,7 @@ const HeaderContainer = styled.View`
   margin-top: 20px;
 `;
 
+// types
 interface HeaderProps {
   title: string;
   description: string;
@@ -24,7 +26,14 @@ interface HeaderProps {
 const RecommendHeader: FunctionComponent<HeaderProps> = (props) => {
   return (
     <HeaderContainer>
-      <Text style={props.titleTextStyle}>{props.title}</Text>
+      <View
+        style={{
+          width: "100%",
+          backgroundColor: "lightgray",
+        }}
+      >
+        <Text style={props.titleTextStyle}>{props.title}</Text>
+      </View>
       <Text style={props.descriptionTextStyle}>{props.description}</Text>
     </HeaderContainer>
   );

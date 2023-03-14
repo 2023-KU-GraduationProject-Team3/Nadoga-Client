@@ -46,6 +46,7 @@ export type SearchBookParamsList = {
   SearchBookDetail: {
     bookIsbn: number;
   };
+  SearchLibrary: undefined;
 };
 
 export type SearchBookScreenProps = NativeStackScreenProps<

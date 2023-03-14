@@ -167,7 +167,11 @@ export default function SearchBookDetail({
         isDetail={true}
         onPressWishlist={onPressWishlist}
       />
-      <SearchLibraryContainer>
+      <SearchLibraryContainer
+        onPress={() => {
+          navigation.navigate("SearchLibrary");
+        }}
+      >
         <Feather name="search" size={24} color="#000" />
         <Text
           style={{
