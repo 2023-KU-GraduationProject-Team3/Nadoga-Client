@@ -19,12 +19,28 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import Layout from "../constants/Layout";
 import { colors } from "../constants/Colors";
 
+// react-query
+import { useQuery } from "react-query";
+
+// axios
+import axios from "axios";
+
+// fetch
+import fetch from "node-fetch";
+
 // components
 const MyLocationButton = styled.TouchableOpacity`
   position: absolute;
   top: 110px;
   right: 20px;
 `;
+
+// api authkey
+const AUTHKEY =
+  "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
+
+// xml to json
+const parseString = require("react-native-xml2js").parseString;
 
 export default function SearchLibraryScreen({
   navigation,
@@ -35,7 +51,10 @@ export default function SearchLibraryScreen({
     latitudeDelta: 0.001,
     longitudeDelta: 0.001,
   });
-  const [markers, setMarkers] = useState([{}]);
+
+  const [isPositionReady, setIsPositionReady] = useState(false);
+
+  const [markers, setMarkers] = useState([]);
   const SPACING_FOR_CARD_INSET = Layout.window.width * 0.05 - 10;
   const CARD_WIDTH = Layout.window.width - 40;
 
@@ -70,11 +89,7 @@ export default function SearchLibraryScreen({
     }
 
     _scrollview.current.scrollTo({ x: x, y: 0, animated: true });
-  };
-
-  useEffect(() => {
     Geolocation.getCurrentPosition((pos) => {
-      // Get user current location
       const { latitude, longitude } = pos.coords;
       setPosition({
         latitude,
@@ -82,42 +97,112 @@ export default function SearchLibraryScreen({
         latitudeDelta: 0.0421,
         longitudeDelta: 0.0421,
       });
-
-      // Set example markers
-      let exampleMarkers = [
-        {
-          id: "1",
-          coordinate: {
-            latitude: latitude + 0.001,
-            longitude: longitude + 0.001,
-          },
-          title: "광진구 도서관",
-          distance: "1.2",
-          image: require("../assets/images/map/library_1.png"),
-        },
-        {
-          id: "2",
-          coordinate: {
-            latitude: latitude + 0.002,
-            longitude: longitude - 0.001,
-          },
-          title: "화양동 도서관",
-          distance: "1.4",
-          image: require("../assets/images/map/library_2.png"),
-        },
-        {
-          id: "3",
-          coordinate: {
-            latitude: latitude - 0.001,
-            longitude: longitude + 0.002,
-          },
-          title: "어린이대공원역 도서관",
-          distance: "1.6",
-          image: require("../assets/images/map/library_3.png"),
-        },
-      ];
-      setMarkers([...exampleMarkers]);
     });
+  };
+
+  // get distance between two points
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    if (lat1 == lat2 && lon1 == lon2) return 0;
+
+    var radLat1 = (Math.PI * lat1) / 180;
+    var radLat2 = (Math.PI * lat2) / 180;
+    var theta = lon1 - lon2;
+    var radTheta = (Math.PI * theta) / 180;
+    var dist =
+      Math.sin(radLat1) * Math.sin(radLat2) +
+      Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
+    if (dist > 1) dist = 1;
+
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515 * 1.609344 * 1000;
+    if (dist < 100) dist = Math.round(dist / 10) * 10;
+    else dist = Math.round(dist / 100) * 100;
+
+    return dist;
+  };
+
+  // API function
+  const fetchLibraryData = async () => {
+    // const response = await fetch(
+    //   `http://data4library.kr/api/libSrch?authKey=${process.env.REACT_APP_LIBRARY_AUTHKEY}&pageSize=10&pageNo=1`
+    // );
+    // return response.text();
+    const response = await axios.get(
+      `http://data4library.kr/api/libSrch?authKey=${AUTHKEY}&region=11&pageSize=325`
+    );
+    return response.data;
+  };
+  const { data, isLoading, refetch } = useQuery(
+    "GET_LIBRARY",
+    fetchLibraryData,
+    {
+      enabled: false,
+      onSuccess: (data) => {
+        parseString(data, function (err: Error, result: any) {
+          const res = JSON.parse(JSON.stringify(result));
+          const libArray = res.response.libs[0].lib;
+
+          let sortedMarkers: Array<Object> = [];
+
+          libArray.map((lib, index) => {
+            const distance = getDistance(
+              Number(lib.latitude[0]),
+              Number(lib.longitude[0]),
+              position.latitude,
+              position.longitude
+            );
+            // console.log(distance);
+
+            if (distance <= 3000) {
+              let libObj = {
+                id: index,
+                coordinate: {
+                  latitude: Number(lib.latitude[0]),
+                  longitude: Number(lib.longitude[0]),
+                },
+                title: lib.libName[0],
+                distance: distance / 1000,
+                image: require("../assets/images/map/library_1.png"),
+              };
+              //setMarkers((markers) => [...markers, libObj]);
+              sortedMarkers.push(libObj);
+            }
+            if (sortedMarkers.length === 5) {
+              console.log("markers length", markers.length);
+              console.log("reached max");
+              // markers - distance 기준으로 정렬
+              sortedMarkers.sort((a, b) => {
+                return a.distance - b.distance;
+              });
+
+              setMarkers([...sortedMarkers]);
+              return;
+            }
+          });
+        });
+      },
+    }
+  );
+
+  useEffect(() => {
+    // Get user current location
+    if (!isPositionReady) {
+      Geolocation.getCurrentPosition((pos) => {
+        const { latitude, longitude } = pos.coords;
+        setPosition({
+          latitude,
+          longitude,
+          latitudeDelta: 0.0421,
+          longitudeDelta: 0.0421,
+        });
+
+        setIsPositionReady(true);
+
+        // user position 구했으니, marker 데이터 불러오기 가능
+        refetch();
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -155,7 +240,7 @@ export default function SearchLibraryScreen({
         provider={PROVIDER_GOOGLE}
         ref={_map}
         style={styles.map}
-        initialRegion={position}
+        initialRegion={isPositionReady && position}
         showsUserLocation={true}
         followsUserLocation={true}
         showsMyLocationButton={false}
@@ -218,6 +303,7 @@ export default function SearchLibraryScreen({
           source={require("../assets/icons/map/my-location-button.png")}
         ></Image>
       </MyLocationButton>
+
       <Animated.ScrollView
         ref={_scrollview}
         horizontal
@@ -250,7 +336,7 @@ export default function SearchLibraryScreen({
           { useNativeDriver: true }
         )}
       >
-        {markers.length > 0 &&
+        {markers.length > 0 ? (
           markers.map((marker, index) => {
             return (
               <View key={index} style={styles.card}>
@@ -293,7 +379,39 @@ export default function SearchLibraryScreen({
                 </View>
               </View>
             );
-          })}
+          })
+        ) : (
+          <View
+            style={{
+              padding: 15,
+              elevation: 2,
+              backgroundColor: "#FFF",
+              borderRadius: 10,
+              marginHorizontal: 10,
+              shadowColor: "#000",
+              shadowRadius: 5,
+              shadowOpacity: 0.3,
+              width: Layout.window.width - 20,
+              height: Layout.window.height / 5,
+              overflow: "hidden",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              marginBottom: 10,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "NotoSansKR_Medium",
+                color: colors.gray3,
+              }}
+            >
+              5km 이내에 도서관이 없습니다.
+            </Text>
+          </View>
+        )}
       </Animated.ScrollView>
     </View>
   );

@@ -118,12 +118,22 @@ export default function SearchBook({
     },
   ];
 
+  const [menuNum, setMenuNum] = useState(0);
+
+  const handleMenuNum = (num: number) => {
+    setMenuNum(num);
+  };
+
   return (
     <View style={styles.container}>
       <SearchBar placeholder="노인과 바다" />
       <RecommendHeader
         title={"추천 도서"}
-        description={"도서 기록을 분석하여 추천하는 도서입니다."}
+        description={
+          menuNum === 0
+            ? "찜 목록을 분석하여 추천한 도서 결과입니다."
+            : "평점 목록을 분석하여 추천한 도서 결과입니다."
+        }
         titleTextStyle={{
           fontSize: 26,
           fontWeight: "900",
@@ -136,6 +146,8 @@ export default function SearchBook({
           color: colors.black,
           fontFamily: "NotoSansKR_Regular",
         }}
+        menuNum={menuNum}
+        handleMenuNum={handleMenuNum}
       />
       <BookSection
         books={recommendResult}

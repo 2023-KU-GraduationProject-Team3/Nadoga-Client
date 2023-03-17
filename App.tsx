@@ -10,6 +10,10 @@ import { Auth } from "./navigation";
 
 import { useFonts } from "expo-font";
 
+// react query
+import { QueryClient, QueryClientProvider } from "react-query";
+const queryClient = new QueryClient();
+
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
@@ -35,12 +39,14 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        {isLogin ? (
-          <Navigation colorScheme={colorScheme} />
-        ) : (
-          <Auth colorScheme={colorScheme} />
-        )}
-        <StatusBar />
+        <QueryClientProvider client={queryClient}>
+          {isLogin ? (
+            <Navigation colorScheme={colorScheme} />
+          ) : (
+            <Auth colorScheme={colorScheme} />
+          )}
+          <StatusBar />
+        </QueryClientProvider>
       </SafeAreaProvider>
     );
   }
