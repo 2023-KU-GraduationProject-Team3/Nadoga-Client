@@ -21,12 +21,6 @@ const HeaderContainer = styled.View`
   margin-top: 20px;
 `;
 
-// react-query
-import { useQuery } from "react-query";
-
-// axios
-import axios from "axios";
-
 // types
 interface HeaderProps {
   title: string;
@@ -38,16 +32,6 @@ interface HeaderProps {
 }
 
 const RecommendHeader: FunctionComponent<HeaderProps> = (props) => {
-  // const fetchLibraryData = async () => {
-  //   return await axios.get(
-  //     `https://data4library.kr/api/libSrch?authKey=${process.env.LIBRARY_AUTHKEY}&pageSize=10&pageNo=1`
-  //   );
-  // };
-
-  // const getLibraryData = () => {
-  //   const { data, isLoading } = useQuery("GET_LIBRARY", fetchLibraryData);
-  //   return data;
-  // };
   return (
     <HeaderContainer>
       <View

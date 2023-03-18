@@ -19,11 +19,13 @@ const BookContainer = styled.TouchableOpacity`
   position: relative;
 	width: ${(props) => (props.isSearchResult ? layout.window.width - 40 : 115)}px;
 	height: 200px;
+  margin-right: ${(props) => (props.isSearchResult ? 20 : 0)}px;
+  margin-bottom: ${(props) => (props.isSearchResult ? 0 : 50)}px;
 `;
 
 const BookImage = styled.Image`
-  width: 110px;
-  height: 150px;
+  width: 100%;
+  height: 100%;
 `;
 
 const BookRating = styled.View`
@@ -31,7 +33,7 @@ const BookRating = styled.View`
   right: ${(props) =>
     props.isSearchResult ? (props.isDetail ? 200 : 10) : 20}px;
   top: ${(props) =>
-    props.isSearchResult ? (props.isDetail ? 100 : 0) : 120}px;
+    props.isSearchResult ? (props.isDetail ? 100 : 0) : 130}px;
   background-color: ${colors.lightgreen};
   width: 40px;
   height: 23px;
@@ -82,7 +84,21 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
       disabled={props.isDetail}
     >
       {/* <BookImage source={{ uri: props.book_image_url }} /> */}
-      <BookImage source={require("../../assets/images/book-sample-img.png")} />
+      <View
+        style={{
+          width: 90,
+          height: 150,
+        }}
+      >
+        <BookImage
+          source={{
+            uri:
+              props.book_image_url ||
+              "http://image.aladin.co.kr/product/4086/97/cover/8936434128_2.jpg",
+          }}
+        />
+      </View>
+
       <BookRating
         isSearchResult={props.isSearchResult}
         isDetail={props.isDetail}

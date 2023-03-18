@@ -22,9 +22,10 @@ const linking: LinkingOptions<RootStackParamList> = {
               SearchBookDetailScreen: "SearchBookDetail",
             },
           },
-          SearchLibrary: {
+          SearchLibraryRoot: {
             screens: {
               SearchLibraryScreen: "SearchLibrary",
+              SearchLibraryDetailScreen: "SearchLibraryDetail",
             },
           },
 

@@ -14,6 +14,7 @@ import BookItem from "./BookItem";
 
 const BookListContainer = styled.View`
   width: ${layout.window.width}px;
+  height: ${layout.window.height - 100}px;
   background-color: ${colors.bgGray};
   margin-top: 20px;
   flex: 1;

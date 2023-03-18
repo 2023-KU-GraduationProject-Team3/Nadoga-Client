@@ -5,15 +5,21 @@ import {
   Image,
   Animated,
   Platform,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import MapViewComponent from "../components/Map/MapViewComponent";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { RootTabScreenProps } from "../types";
+
 import styled from "styled-components/native";
 import Geolocation from "@react-native-community/geolocation";
 import { useFocusEffect } from "@react-navigation/native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, {
+  Marker,
+  MarkerPressEvent,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 
 // constants
 import Layout from "../constants/Layout";
@@ -24,9 +30,6 @@ import { useQuery } from "react-query";
 
 // axios
 import axios from "axios";
-
-// fetch
-import fetch from "node-fetch";
 
 // components
 const MyLocationButton = styled.TouchableOpacity`
@@ -39,14 +42,16 @@ const MyLocationButton = styled.TouchableOpacity`
 const AUTHKEY =
   "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
 
-// xml to json
-const parseString = require("react-native-xml2js").parseString;
+// types
+import { RootTabScreenProps, SearchLibraryScreenProps } from "../types";
+
 const SPACING_FOR_CARD_INSET = Layout.window.width * 0.05 - 10;
 const CARD_WIDTH = Layout.window.width - 40;
 
-export default function SearchLibraryScreen({
+export default function SearchLibrary({
   navigation,
-}: RootTabScreenProps<"SearchLibrary">) {
+  route,
+}: SearchLibraryScreenProps) {
   const [position, setPosition] = useState({
     latitude: 10,
     longitude: 10,
@@ -83,7 +88,7 @@ export default function SearchLibraryScreen({
     return { scale };
   });
 
-  const onMarkerPress = (mapEventData) => {
+  const onMarkerPress = (mapEventData: MarkerPressEvent) => {
     const markerID = mapEventData._targetInst.return.key;
 
     let x = markerID * CARD_WIDTH + markerID * 20;
@@ -104,7 +109,12 @@ export default function SearchLibraryScreen({
   };
 
   // get distance between two points
-  const getDistance = (lat1, lon1, lat2, lon2) => {
+  const getDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ) => {
     if (lat1 == lat2 && lon1 == lon2) return 0;
 
     var radLat1 = (Math.PI * lat1) / 180;
@@ -148,7 +158,7 @@ export default function SearchLibraryScreen({
   // API function
   const fetchLibraryData = async () => {
     const response = await axios.get(
-      `http://data4library.kr/api/libSrch?authKey=${AUTHKEY}&pageSize=1480`
+      `http://data4library.kr/api/libSrch?authKey=${AUTHKEY}&pageSize=1480&format=json`
     );
     return response.data;
   };
@@ -162,58 +172,55 @@ export default function SearchLibraryScreen({
       refetchOnWindowFocus: true,
 
       onSuccess: (data) => {
-        parseString(data, function (err: Error, result: any) {
-          const res = JSON.parse(JSON.stringify(result));
-          const libArray = res.response.libs[0].lib;
+        const libArray = data.response.libs;
 
-          let sortedMarkers: Array<Object> = [];
-          let libraryList = [];
+        let sortedMarkers: Array<Object> = [];
+        let libraryList = [];
 
-          libArray.map((lib, index) => {
-            const distance = getDistance(
-              Number(lib.latitude[0]),
-              Number(lib.longitude[0]),
-              position.latitude,
-              position.longitude
-            );
-            // console.log(distance);
-            let libObj = {
-              id: index,
-              libCode: lib.libCode[0],
-              coordinate: {
-                latitude: Number(lib.latitude[0]),
-                longitude: Number(lib.longitude[0]),
-              },
-              title: lib.libName[0],
-              distance: distance / 1000,
-              image: require("../assets/images/map/library_1.png"),
-            };
+        libArray.map((item, index) => {
+          const distance = getDistance(
+            Number(item.lib.latitude),
+            Number(item.lib.longitude),
+            position.latitude,
+            position.longitude
+          );
+          // console.log(distance);
+          let libObj = {
+            id: index,
+            libCode: item.lib.libCode,
+            coordinate: {
+              latitude: Number(item.lib.latitude),
+              longitude: Number(item.lib.longitude),
+            },
+            title: item.lib.libName,
+            distance: distance / 1000,
+            image: require("../assets/images/map/library_1.png"),
+          };
 
-            if (distance <= 3000 && sortedMarkers.length <= 5) {
-              //setMarkers((markers) => [...markers, libObj]);
-              sortedMarkers.push(libObj);
+          if (distance <= 3000 && sortedMarkers.length <= 5) {
+            //setMarkers((markers) => [...markers, libObj]);
+            sortedMarkers.push(libObj);
 
-              if (sortedMarkers.length === 5) {
-                sortedMarkers.sort((a, b) => {
-                  return a.distance - b.distance;
-                });
+            if (sortedMarkers.length === 5) {
+              sortedMarkers.sort((a, b) => {
+                return a.distance - b.distance;
+              });
 
-                setMarkers([...sortedMarkers]);
-                _map.current.animateToRegion(
-                  {
-                    latitude: sortedMarkers[0].coordinate.latitude,
-                    longitude: sortedMarkers[0].coordinate.longitude,
-                    latitudeDelta: 0.0421,
-                    longitudeDelta: 0.0421,
-                  },
-                  350
-                );
-              }
+              setMarkers([...sortedMarkers]);
+              _map.current.animateToRegion(
+                {
+                  latitude: sortedMarkers[0].coordinate.latitude,
+                  longitude: sortedMarkers[0].coordinate.longitude,
+                  latitudeDelta: 0.0421,
+                  longitudeDelta: 0.0421,
+                },
+                350
+              );
             }
-            libraryList.push(libObj);
-          });
-          setLibraryList([...libraryList]);
+          }
+          libraryList.push(libObj);
         });
+        setLibraryList([...libraryList]);
       },
     }
   );
@@ -221,6 +228,8 @@ export default function SearchLibraryScreen({
   useFocusEffect(
     useCallback(() => {
       // 도서관 찾기 화면 올떄마다 데이터 다시 불러오기
+      setMarkers([]);
+      setLibraryList([]);
       refetch();
     }, [])
   );
@@ -247,7 +256,7 @@ export default function SearchLibraryScreen({
 
       setMarkers([...searchLibraryList.slice(0, 5)]);
     } else {
-      alert("검색 결과가 없습니다.");
+      Alert.alert("알림", "검색 결과가 없습니다.");
     }
   };
 
@@ -397,47 +406,100 @@ export default function SearchLibraryScreen({
           { useNativeDriver: true }
         )}
       >
-        {markers.length > 0 ? (
+        {isLoading ? (
+          <View
+            style={{
+              padding: 15,
+              elevation: 2,
+              backgroundColor: "#FFF",
+              borderRadius: 10,
+              marginHorizontal: 10,
+              shadowColor: "#000",
+              shadowRadius: 5,
+              shadowOpacity: 0.3,
+              width: Layout.window.width - 20,
+              height: Layout.window.height / 5,
+              overflow: "hidden",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              marginBottom: 10,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "NotoSansKR_Medium",
+                color: colors.gray3,
+              }}
+            >
+              불러오는 중...
+            </Text>
+          </View>
+        ) : markers.length > 0 ? (
           markers.map((marker, index) => {
             return (
-              <View key={index} style={styles.card}>
-                <Image
-                  source={marker.image}
-                  style={styles.cardImage}
-                  resizeMode={"cover"}
-                />
-                <View style={styles.cardTextContainer}>
-                  <View style={{ height: "70%" }}>
-                    <Text
-                      style={{
-                        height: "100%",
-                        marginBottom: 20,
-                        fontSize: 18,
-                        fontFamily: "NotoSansKR_Medium",
-                        color: colors.black,
-                        overflow: "visible",
-                      }}
-                    >
-                      {marker.title}
-                    </Text>
-                  </View>
-
-                  <View style={styles.cardTextDistanceContainer}>
+              <View key={marker.libCode} style={styles.card}>
+                <TouchableOpacity
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                  onPress={() => {
+                    navigation.navigate("SearchLibraryDetail", {
+                      libCode: marker.libCode,
+                    });
+                  }}
+                >
+                  <View
+                    key={marker.libCode}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      flex: 1,
+                      flexDirection: "row",
+                    }}
+                  >
                     <Image
-                      source={require("../assets/icons/map/map-card-marker.png")}
-                      style={{ marginRight: 10 }}
-                    ></Image>
-                    <Text
-                      style={{
-                        fontSize: 14,
-                        fontFamily: "NotoSansKR_Medium",
-                        color: colors.gray3,
-                      }}
-                    >
-                      {marker.distance}km
-                    </Text>
+                      source={marker.image}
+                      style={styles.cardImage}
+                      resizeMode={"cover"}
+                    />
+                    <View style={styles.cardTextContainer}>
+                      <View style={{ height: "70%" }}>
+                        <Text
+                          style={{
+                            height: "100%",
+                            marginBottom: 20,
+                            fontSize: 18,
+                            fontFamily: "NotoSansKR_Medium",
+                            color: colors.black,
+                            overflow: "visible",
+                          }}
+                        >
+                          {marker.title}
+                        </Text>
+                      </View>
+
+                      <View style={styles.cardTextDistanceContainer}>
+                        <Image
+                          source={require("../assets/icons/map/map-card-marker.png")}
+                          style={{ marginRight: 10 }}
+                        ></Image>
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontFamily: "NotoSansKR_Medium",
+                            color: colors.gray3,
+                          }}
+                        >
+                          {marker.distance}km
+                        </Text>
+                      </View>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               </View>
             );
           })
@@ -469,7 +531,8 @@ export default function SearchLibraryScreen({
                 color: colors.gray3,
               }}
             >
-              {isLoading ? "불러오는 중..." : "3km 이내에 도서관이 없습니다."}
+              {/* {isLoading ? "불러오는 중..." : "검색 결과가 없습니다."} */}
+              불러오는 중...
             </Text>
           </View>
         )}
@@ -508,10 +571,10 @@ const styles = StyleSheet.create({
   card: {
     padding: 15,
     elevation: 2,
-    backgroundColor: "#FFF",
+    backgroundColor: colors.white,
     borderRadius: 10,
     marginHorizontal: 10,
-    shadowColor: "#000",
+    shadowColor: colors.black,
     shadowRadius: 5,
     shadowOpacity: 0.3,
     shadowOffset: { x: 2, y: -2 },

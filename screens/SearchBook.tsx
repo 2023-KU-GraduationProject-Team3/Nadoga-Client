@@ -22,7 +22,8 @@ export default function SearchBook({
       book_name: "노인과 바다1",
       book_publisher: "출판사아",
       book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
+      book_image_url:
+        "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
@@ -33,7 +34,8 @@ export default function SearchBook({
       book_publisher: "출판사아",
       book_name: "노인과 바다2",
       book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
+      book_image_url:
+        "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
@@ -44,7 +46,8 @@ export default function SearchBook({
       book_publisher: "출판사아",
       book_name: "노인과 바다3",
       book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
+      book_image_url:
+        "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
@@ -55,7 +58,8 @@ export default function SearchBook({
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
+      book_image_url:
+        "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
@@ -66,7 +70,8 @@ export default function SearchBook({
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
+      book_image_url:
+        "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
@@ -77,7 +82,8 @@ export default function SearchBook({
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
+      book_image_url:
+        "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
@@ -88,7 +94,8 @@ export default function SearchBook({
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
+      book_image_url:
+        "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
@@ -99,7 +106,8 @@ export default function SearchBook({
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
+      book_image_url:
+        "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
@@ -110,7 +118,8 @@ export default function SearchBook({
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
-      book_image_url: "../assets/images/book-sample-img.png",
+      book_image_url:
+        "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
       book_rating: 4.5,
       book_description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",

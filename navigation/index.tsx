@@ -18,7 +18,8 @@ import { ColorSchemeName, Pressable, Image, View, Text } from "react-native";
 import { colors } from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import ModalScreen from "../screens/Modal";
-import SearchLibraryScreen from "../screens/SearchLibrary";
+import SearchLibrary from "../screens/SearchLibrary";
+import SearchLibraryDetail from "../screens/SearchLibraryDetail";
 import NotFoundScreen from "../screens/NotFound";
 import SearchBookScreen from "../screens/SearchBook";
 import MyLibraryScreen from "../screens/MyLibrary";
@@ -29,6 +30,7 @@ import {
   RootTabScreenProps,
   AuthStackParamList,
   SearchBookParamsList,
+  SearchLibraryParamsList,
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import LoginScreen from "../screens/Login";
@@ -72,6 +74,8 @@ export function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
 const MainStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const SearchBookStack = createNativeStackNavigator<SearchBookParamsList>();
+const SearchLibraryStack =
+  createNativeStackNavigator<SearchLibraryParamsList>();
 
 function AuthNavigator() {
   return (
@@ -132,6 +136,23 @@ function SerachBookNavigator() {
   );
 }
 
+function SearchLibraryNavigator() {
+  return (
+    <SearchLibraryStack.Navigator initialRouteName="SearchLibrary">
+      <SearchLibraryStack.Screen
+        name="SearchLibrary"
+        component={SearchLibrary}
+        options={{ headerShown: false }}
+      />
+      <SearchLibraryStack.Screen
+        name="SearchLibraryDetail"
+        component={SearchLibraryDetail}
+        options={{ headerShown: false }}
+      />
+    </SearchLibraryStack.Navigator>
+  );
+}
+
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
  * https://reactnavigation.org/docs/bottom-tab-navigator
@@ -173,26 +194,11 @@ function BottomTabNavigator() {
               }}
             />
           ),
-          // headerRight: () => (
-          //   <Pressable
-          //     onPress={() => navigation.navigate("Modal")}
-          //     style={({ pressed }) => ({
-          //       opacity: pressed ? 0.5 : 1,
-          //     })}
-          //   >
-          //     <FontAwesome
-          //       name="info-circle"
-          //       size={25}
-          //       color={colors.gray1}
-          //       style={{ marginRight: 15 }}
-          //     />
-          //   </Pressable>
-          // ),
         }}
       />
       <BottomTab.Screen
-        name="SearchLibrary"
-        component={SearchLibraryScreen}
+        name="SearchLibraryRoot"
+        component={SearchLibraryNavigator}
         options={{
           title: "도서관 찾기",
 
