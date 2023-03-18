@@ -14,36 +14,24 @@ import layout from "../constants/Layout";
 // icons
 import { Feather } from "@expo/vector-icons";
 
-// react-query
-import { useQuery } from "react-query";
-
-// axios
-import axios from "axios";
-
-// api authkey
-const AUTHKEY =
-  "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
-
 // components
 import SearchBar from "../components/SearchBar/SearchBar";
 import RecommendHeader from "../components/Header/Recommend";
 import BookItem from "../components/Books/BookItem";
 import BookSection from "../components/Books/BookSection";
-import React from "react";
 
 const DetailHeader = styled.TouchableOpacity`
   flex-direction: row;
-  width: 170px;
+  width: 120px;
   height: 50px;
   background-color: ${colors.bgGray};
   align-items: center;
   margin: 10px 220px 10px 0;
-  padding-left: 30px;
 `;
 
 const SearchLibraryContainer = styled.TouchableOpacity`
   flex-direction: row;
-  width: ${layout.window.width - 50}px;
+  width: 200px;
   height: 30px;
   background-color: ${colors.bgGray};
   align-items: center;
@@ -58,71 +46,33 @@ const BookDescrptionContainer = styled.View`
   background-color: ${colors.bgGray};
 `;
 
-export default function SearchBookDetail({
+export default function PopularBookDetail({
   route,
   navigation,
 }: SerachBookDetailScreenProps) {
   // data : books
 
-  const [foundBook, setFoundBook] = useState<BookProps>();
-  const [bookIsbn, setBookIsbn] = useState(route.params.bookIsbn);
-  const [isFromBookResult, setIsFromBookResult] = useState(
-    route.params.isFromBookResult
-  );
-
-  // API function - getBookDetailWithISBN
-  const getBookDetail = async () => {
-    const response = await axios.get(
-      `http://data4library.kr/api/srchDtlList?authKey=${AUTHKEY}&isbn13=${bookIsbn}&loaninfoYN=Y&displayInfo=gender&format=json`
-    );
-    return response.data;
+  const onPressWishlist = (book_isbn: number) => {
+    setFoundBook((prev) => {
+      if (prev) {
+        return {
+          ...prev,
+          is_wishlist: !prev.is_wishlist,
+        };
+      }
+    });
   };
 
-  // react-query - GET_BOOK_DETAIL
-  const { data, isLoading, error } = useQuery(
-    "GET_BOOK_DETAIL",
-    getBookDetail,
-    {
-      refetchOnWindowFocus: false,
-      onSuccess: (data) => {
-        console.log(data);
-
-        const book = data.response.detail[0].book;
-        setFoundBook({
-          book_isbn: book.isbn13,
-          book_name: book.bookname,
-          book_author: book.authors,
-          book_publisher: book.publisher,
-          book_description: book.description,
-          book_image_url: book.bookImageURL,
-          book_rating: 4.5,
-          is_wishlist: false,
-        });
-      },
-    }
-  );
-
-  // const onPressWishlist = (book_isbn: number) => {
-  //   setFoundBook((prev) => {
-  //     if (prev) {
-  //       return {
-  //         ...prev,
-  //         is_wishlist: !prev.is_wishlist,
-  //       };
-  //     }
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   // 검색어로 books 필터링
-  //   const foundBook = books.find((book) => book.book_isbn === bookIsbn);
-  //   setFoundBook(foundBook);
-  //   console.log(foundBook);
-  // }, []);
+  useEffect(() => {
+    // 검색어로 books 필터링
+    const foundBook = books.find((book) => book.book_isbn === bookIsbn);
+    setFoundBook(foundBook);
+    console.log(foundBook);
+  }, []);
 
   return (
     <View style={styles.container}>
-      {isFromBookResult ?? <SearchBar placeholder="노인과 바다" />}
+      <SearchBar placeholder="노인과 바다" />
       <DetailHeader
         onPress={() => {
           navigation.goBack();
@@ -137,14 +87,14 @@ export default function SearchBookDetail({
             color: colors.semiblack,
           }}
         >
-          {isFromBookResult ? "도서 정보" : "도서관 상세정보"}
+          도서 정보
         </Text>
       </DetailHeader>
       <BookItem
         {...foundBook}
         isSearchResult={true}
         isDetail={true}
-        // onPressWishlist={onPressWishlist}
+        onPressWishlist={onPressWishlist}
       />
       <SearchLibraryContainer
         onPress={() => {
@@ -161,7 +111,7 @@ export default function SearchBookDetail({
             color: colors.semiblack,
           }}
         >
-          현 도서 소장하고 있는 도서관 찾기
+          근처 도서관 찾기
         </Text>
       </SearchLibraryContainer>
       <BookDescrptionContainer>
@@ -195,7 +145,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: colors.bgGray,
-    paddingTop: 30,
+    marginTop: 70,
   },
   title: {
     fontSize: 20,

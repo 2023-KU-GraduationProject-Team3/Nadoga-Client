@@ -124,6 +124,7 @@ export default function SearchBookResult({
         <BookSection
           books={filteredBooks}
           isSearchResult={true}
+          isFromBookResult={true}
           isDetail={false}
           bookName={bookName}
           onPressWishlist={onPressWishlist}

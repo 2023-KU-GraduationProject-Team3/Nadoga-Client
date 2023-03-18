@@ -20,7 +20,8 @@ const BookContainer = styled.TouchableOpacity`
 	width: ${(props) => (props.isSearchResult ? layout.window.width - 40 : 115)}px;
 	height: 200px;
   margin-right: ${(props) => (props.isSearchResult ? 20 : 0)}px;
-  margin-bottom: ${(props) => (props.isSearchResult ? 0 : 50)}px;
+  margin-bottom: ${(props) => (props.isSearchResult ? 30 : 70)}px;
+  padding: 5px;
 `;
 
 const BookImage = styled.Image`
@@ -31,9 +32,9 @@ const BookImage = styled.Image`
 const BookRating = styled.View`
   position: absolute;
   right: ${(props) =>
-    props.isSearchResult ? (props.isDetail ? 200 : 10) : 20}px;
-  top: ${(props) =>
-    props.isSearchResult ? (props.isDetail ? 100 : 0) : 130}px;
+    props.isSearchResult ? (props.isDetail ? 150 : 10) : 10}px;
+
+  bottom: ${(props) => (props.isSearchResult ? 0 : 40)}px;
   background-color: ${colors.lightgreen};
   width: 40px;
   height: 23px;
@@ -46,6 +47,7 @@ const BookRating = styled.View`
 const BookTitle = styled.Text`
   font-size: 14px;
   font-family: Poppins_Medium;
+  margin-top: 5px;
   color: ${colors.black};
 `;
 
@@ -63,7 +65,7 @@ const AddToWishlistButton = styled.TouchableOpacity`
   width: 67px;
   height: 27px;
   right: 0px;
-  bottom: 50px;
+  bottom: 0px;
   background-color: ${(props) =>
     props.isWishlist ? colors.gray3 : colors.green};
   border-radius: 8px;
@@ -78,6 +80,7 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
       onPress={() => {
         navigation.navigate("SearchBookDetail", {
           bookIsbn: props.book_isbn,
+          isFromBookResult: props.isFromBookResult,
         });
       }}
       isSearchResult={props.isSearchResult}
@@ -86,8 +89,9 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
       {/* <BookImage source={{ uri: props.book_image_url }} /> */}
       <View
         style={{
-          width: 90,
-          height: 150,
+          width: props.isSearchResult ? 120 : 90,
+          height: props.isSearchResult ? 200 : 150,
+          marginRight: props.isSearchResult ? 10 : 0,
         }}
       >
         <BookImage
@@ -111,6 +115,11 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
         <View
           style={{
             flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+            backgroundColor: colors.bgGray,
+            width: "65%",
+            height: 100,
           }}
         >
           <BookTitle>{props.book_name}</BookTitle>
@@ -141,7 +150,6 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
             style={{
               color: props.is_wishlist ? colors.semiblack : colors.white,
               fontSize: 12,
-              fontFamily: "NotoSansKR_Medium",
             }}
           >
             {props.is_wishlist ? "찜완료" : "찜하기"}

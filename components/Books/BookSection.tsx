@@ -14,11 +14,10 @@ import BookItem from "./BookItem";
 
 const BookListContainer = styled.View`
   width: ${layout.window.width}px;
-  height: ${layout.window.height - 100}px;
   background-color: ${colors.bgGray};
   margin-top: 20px;
   flex: 1;
-  padding-left: 20px;
+  padding-left: 15px;
 `;
 const BookList = styled.FlatList``;
 
@@ -39,6 +38,7 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
         keyExtractor={({ book_isbn }: any) => book_isbn.toString()}
         renderItem={({ item }: any) => (
           <BookItem
+            isFromBookResult={props.isFromBookResult}
             isSearchResult={props.isSearchResult}
             onPressWishlist={props.onPressWishlist}
             {...item}

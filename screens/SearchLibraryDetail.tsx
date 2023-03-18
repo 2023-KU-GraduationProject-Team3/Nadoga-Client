@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { StyleSheet, Text, View, ScrollView, FlatList } from "react-native";
 
 // types
 import {
@@ -32,7 +32,12 @@ export default function SearchLibraryDetail({
 }: SearchLibraryDetailScreenProps) {
   const [libCode, setLibCode] = useState(route.params.libCode);
   const [libInfo, setLibInfo] = useState();
-  const [popularBooks, setPopularBooks] = useState();
+  const [popularBooks, setPopularBooks] = useState({
+    age6Books: [],
+    age8Books: [],
+    age14Books: [],
+    age20Books: [],
+  });
 
   // API function - 도서관 상세정보 조회
   const fetchLibraryDetail = async () => {
@@ -45,7 +50,7 @@ export default function SearchLibraryDetail({
   // API function - 도서관 인기대출 도서 조회
   const fetchPopularBook = async () => {
     const response = await axios.get(
-      `http://data4library.kr/api/loanItemSrchByLib?authKey=${AUTHKEY}&libCode=${libCode}&format=json`
+      `http://data4library.kr/api/extends/loanItemSrchByLib?authKey=${AUTHKEY}&libCode=${libCode}&format=json`
     );
     return response.data;
   };
@@ -61,14 +66,23 @@ export default function SearchLibraryDetail({
   // react-query - GET_POPULAR_BOOK
   const getPopularBook = useQuery("GET_POPULAR_BOOK", fetchPopularBook, {
     onSuccess: (data) => {
-      const docs = data.response.docs;
-      let popularBooks = [];
-      docs.map((item) => {
-        console.log("popular book item", item);
+      const age6Books = data.response.age6Books;
+      const age8Books = data.response.age8Books;
+      const age14Books = data.response.age14Books;
+      const age20Books = data.response.age20Books;
 
-        const bookInfo = item.doc;
-        if (popularBooks.length < 12) {
-          popularBooks.push({
+      let age6Popular = [];
+      let age8Popular = [];
+      let age14Popular = [];
+      let age20Popular = [];
+
+      // 유아 인기 대출 목록
+      age6Books.map((item) => {
+        console.log("age 6", item);
+
+        const bookInfo = item.book;
+        if (age6Popular.length < 6) {
+          age6Popular.push({
             book_isbn: bookInfo.isbn13,
             book_name: bookInfo.bookname,
             book_author: bookInfo.authors,
@@ -77,23 +91,84 @@ export default function SearchLibraryDetail({
             book_image_url: bookInfo.bookImageURL,
             is_wishlist: false,
           });
+        } else {
+          return;
         }
       });
-      setPopularBooks([...popularBooks]);
+
+      // 초등 인기 대출 목록
+      age8Books.map((item) => {
+        console.log("age 8", item);
+
+        const bookInfo = item.book;
+        if (age8Popular.length < 6) {
+          age8Popular.push({
+            book_isbn: bookInfo.isbn13,
+            book_name: bookInfo.bookname,
+            book_author: bookInfo.authors,
+            book_publisher: bookInfo.publisher,
+            book_rating: 4.5,
+            book_image_url: bookInfo.bookImageURL,
+            is_wishlist: false,
+          });
+        } else {
+          return;
+        }
+      });
+
+      // 청소년 인기 대출 목록
+      age14Books.map((item) => {
+        console.log("age 14", item);
+
+        const bookInfo = item.book;
+        if (age14Popular.length < 6) {
+          age14Popular.push({
+            book_isbn: bookInfo.isbn13,
+            book_name: bookInfo.bookname,
+            book_author: bookInfo.authors,
+            book_publisher: bookInfo.publisher,
+            book_rating: 4.5,
+            book_image_url: bookInfo.bookImageURL,
+            is_wishlist: false,
+          });
+        } else {
+          return;
+        }
+      });
+
+      // 성인 인기 대출 목록
+      age20Books.map((item) => {
+        console.log("age 20", item);
+
+        const bookInfo = item.book;
+        if (age20Popular.length < 6) {
+          age20Popular.push({
+            book_isbn: bookInfo.isbn13,
+            book_name: bookInfo.bookname,
+            book_author: bookInfo.authors,
+            book_publisher: bookInfo.publisher,
+            book_rating: 4.5,
+            book_image_url: bookInfo.bookImageURL,
+            is_wishlist: false,
+          });
+        } else {
+          return;
+        }
+      });
+
+      setPopularBooks({
+        age6Books: age6Popular,
+        age8Books: age8Popular,
+        age14Books: age14Popular,
+        age20Books: age20Popular,
+      });
     },
   });
   return (
     <View style={styles.container}>
-      <Text>{`도서관코드:${libCode}`}</Text>
-      <Text>{`도서관명:${libInfo?.libName}`}</Text>
-      <Text>{`주소:${libInfo?.address}`}</Text>
-      <Text>{`전화번호:${libInfo?.tel}`}</Text>
-      <Text>{`fax:${libInfo?.fax}`}</Text>
-      <Text>{`홈페이지:${libInfo?.homepage}`}</Text>
-      <View style={styles.separator}></View>
       <PopularBooksHeader
-        title={"인기 대출 도서"}
-        description={"해당 도서관의 인기 대출 도서입니다."}
+        title={"도서관 상세정보"}
+        description={"해당 도서관의 상세정보입니다."}
         titleTextStyle={{
           fontSize: 26,
           fontWeight: "900",
@@ -107,11 +182,178 @@ export default function SearchLibraryDetail({
           fontFamily: "NotoSansKR_Regular",
         }}
       />
-      <BookSection
-        books={popularBooks}
-        isSearchResult={false}
-        isDetail={false}
-      />
+      <Text>{`도서관코드:${libCode}`}</Text>
+      <Text>{`도서관명:${libInfo?.libName}`}</Text>
+      <Text>{`주소:${libInfo?.address}`}</Text>
+      <Text>{`전화번호:${libInfo?.tel}`}</Text>
+      <Text>{`fax:${libInfo?.fax}`}</Text>
+      <Text>{`홈페이지:${libInfo?.homepage}`}</Text>
+      <View style={styles.separator}></View>
+      <ScrollView
+        style={{
+          flex: 1,
+        }}
+      >
+        <PopularBooksHeader
+          title={"인기 대출 도서 - 유아"}
+          description={"해당 도서관의 영유아 인기대출목록입니다."}
+          titleTextStyle={{
+            fontSize: 26,
+            fontWeight: "900",
+            color: colors.black,
+            fontFamily: "NotoSansKR_Bold",
+            paddingLeft: 20,
+          }}
+          descriptionTextStyle={{
+            fontSize: 14,
+            fontWeight: "normal",
+            color: colors.black,
+            fontFamily: "NotoSansKR_Regular",
+            paddingLeft: 20,
+          }}
+        />
+        {getPopularBook.isLoading ? (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              width: Layout.window.width,
+              height: Layout.window.height - 50,
+              backgroundColor: colors.green,
+            }}
+          >
+            <Text>불러오는 중...</Text>
+          </View>
+        ) : (
+          <BookSection
+            books={[...popularBooks.age6Books]}
+            isSearchResult={false}
+            isDetail={false}
+            isFromBookResult={false}
+          />
+        )}
+
+        <PopularBooksHeader
+          title={"인기 대출 도서 - 초등"}
+          description={"해당 도서관의 초등 인기대출목록입니다."}
+          titleTextStyle={{
+            fontSize: 26,
+            fontWeight: "900",
+            color: colors.black,
+            fontFamily: "NotoSansKR_Bold",
+            paddingLeft: 20,
+          }}
+          descriptionTextStyle={{
+            fontSize: 14,
+            fontWeight: "normal",
+            color: colors.black,
+            fontFamily: "NotoSansKR_Regular",
+            paddingLeft: 20,
+          }}
+        />
+        {getPopularBook.isLoading ? (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              width: Layout.window.width,
+              height: Layout.window.height - 50,
+              backgroundColor: colors.green,
+            }}
+          >
+            <Text>불러오는 중...</Text>
+          </View>
+        ) : (
+          <BookSection
+            books={[...popularBooks.age6Books]}
+            isSearchResult={false}
+            isDetail={false}
+            isFromBookResult={false}
+          />
+        )}
+
+        <PopularBooksHeader
+          title={"인기 대출 도서 - 청소년"}
+          description={"해당 도서관의 청소년 인기대출목록입니다."}
+          titleTextStyle={{
+            fontSize: 26,
+            fontWeight: "900",
+            color: colors.black,
+            fontFamily: "NotoSansKR_Bold",
+            paddingLeft: 20,
+          }}
+          descriptionTextStyle={{
+            fontSize: 14,
+            fontWeight: "normal",
+            color: colors.black,
+            fontFamily: "NotoSansKR_Regular",
+            paddingLeft: 20,
+          }}
+        />
+        {getPopularBook.isLoading ? (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              width: Layout.window.width,
+              height: Layout.window.height - 50,
+              backgroundColor: colors.green,
+            }}
+          >
+            <Text>불러오는 중...</Text>
+          </View>
+        ) : (
+          <BookSection
+            books={[...popularBooks.age6Books]}
+            isSearchResult={false}
+            isDetail={false}
+            isFromBookResult={false}
+          />
+        )}
+
+        <PopularBooksHeader
+          title={"인기 대출 도서 - 성인"}
+          description={"해당 도서관의 성인 인기대출목록입니다."}
+          titleTextStyle={{
+            fontSize: 26,
+            fontWeight: "900",
+            color: colors.black,
+            fontFamily: "NotoSansKR_Bold",
+            paddingLeft: 20,
+          }}
+          descriptionTextStyle={{
+            fontSize: 14,
+            fontWeight: "normal",
+            color: colors.black,
+            fontFamily: "NotoSansKR_Regular",
+            paddingLeft: 20,
+          }}
+        />
+        {getPopularBook.isLoading ? (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              width: Layout.window.width,
+              height: Layout.window.height - 50,
+              backgroundColor: colors.green,
+            }}
+          >
+            <Text>불러오는 중...</Text>
+          </View>
+        ) : (
+          <BookSection
+            books={[...popularBooks.age6Books]}
+            isSearchResult={false}
+            isDetail={false}
+            isFromBookResult={false}
+          />
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -120,7 +362,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    paddingTop: 50,
+    paddingTop: 30,
     backgroundColor: colors.bgGray,
   },
   title: {

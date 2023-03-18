@@ -18,7 +18,7 @@ export default function SearchBook({
   // recommend Result
   const recommendResult = [
     {
-      book_isbn: 1,
+      book_isbn: 9791133469727,
       book_name: "노인과 바다1",
       book_publisher: "출판사아",
       book_author: "헤밍웨이",
@@ -30,7 +30,7 @@ export default function SearchBook({
       is_wishlist: false,
     },
     {
-      book_isbn: 2,
+      book_isbn: 9791130635712,
       book_publisher: "출판사아",
       book_name: "노인과 바다2",
       book_author: "헤밍웨이",
@@ -42,7 +42,7 @@ export default function SearchBook({
       is_wishlist: false,
     },
     {
-      book_isbn: 3,
+      book_isbn: 9791164137176,
       book_publisher: "출판사아",
       book_name: "노인과 바다3",
       book_author: "헤밍웨이",
@@ -54,7 +54,7 @@ export default function SearchBook({
       is_wishlist: false,
     },
     {
-      book_isbn: 4,
+      book_isbn: 9791133469727,
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
@@ -66,7 +66,7 @@ export default function SearchBook({
       is_wishlist: false,
     },
     {
-      book_isbn: 5,
+      book_isbn: 9791164137879,
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
@@ -78,7 +78,7 @@ export default function SearchBook({
       is_wishlist: false,
     },
     {
-      book_isbn: 6,
+      book_isbn: 9791130637594,
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
@@ -90,7 +90,7 @@ export default function SearchBook({
       is_wishlist: false,
     },
     {
-      book_isbn: 7,
+      book_isbn: 9791161722344,
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
@@ -102,7 +102,7 @@ export default function SearchBook({
       is_wishlist: false,
     },
     {
-      book_isbn: 8,
+      book_isbn: 9791188862290,
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",
@@ -114,7 +114,7 @@ export default function SearchBook({
       is_wishlist: false,
     },
     {
-      book_isbn: 9,
+      book_isbn: 8809264181522,
       book_publisher: "출판사아",
       book_name: "노인과 바다",
       book_author: "헤밍웨이",

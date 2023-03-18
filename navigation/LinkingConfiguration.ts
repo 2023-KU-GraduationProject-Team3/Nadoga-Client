@@ -26,6 +26,7 @@ const linking: LinkingOptions<RootStackParamList> = {
             screens: {
               SearchLibraryScreen: "SearchLibrary",
               SearchLibraryDetailScreen: "SearchLibraryDetail",
+              SearchBookDetailScreen: "SearchBookDetail",
             },
           },
 

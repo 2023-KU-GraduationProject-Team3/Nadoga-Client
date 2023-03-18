@@ -37,6 +37,7 @@ import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/SignUp";
 import SearchBookResult from "../screens/SearchBookResult";
 import SearchBookDetail from "../screens/SearchBookDetail";
+import PopularBookDetail from "../screens/PopularBookDetail";
 
 // import SearchLibraryIcon from '../assets/icons/searchLibrary';
 
@@ -147,6 +148,11 @@ function SearchLibraryNavigator() {
       <SearchLibraryStack.Screen
         name="SearchLibraryDetail"
         component={SearchLibraryDetail}
+        options={{ headerShown: false }}
+      />
+      <SearchLibraryStack.Screen
+        name="SearchBookDetail"
+        component={SearchBookDetail}
         options={{ headerShown: false }}
       />
     </SearchLibraryStack.Navigator>
