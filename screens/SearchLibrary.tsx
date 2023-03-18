@@ -41,6 +41,8 @@ const AUTHKEY =
 
 // xml to json
 const parseString = require("react-native-xml2js").parseString;
+const SPACING_FOR_CARD_INSET = Layout.window.width * 0.05 - 10;
+const CARD_WIDTH = Layout.window.width - 40;
 
 export default function SearchLibraryScreen({
   navigation,
@@ -55,8 +57,9 @@ export default function SearchLibraryScreen({
   const [isPositionReady, setIsPositionReady] = useState(false);
 
   const [markers, setMarkers] = useState([]);
-  const SPACING_FOR_CARD_INSET = Layout.window.width * 0.05 - 10;
-  const CARD_WIDTH = Layout.window.width - 40;
+  const [libraryList, setLibraryList] = useState([]);
+  const [searchValue, setSearchValue] = useState<string>("");
+  // const [isSearch, setIsSearch] = useState<boolean>(false);
 
   let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
@@ -122,69 +125,6 @@ export default function SearchLibraryScreen({
     return dist;
   };
 
-  // API function
-  const fetchLibraryData = async () => {
-    // const response = await fetch(
-    //   `http://data4library.kr/api/libSrch?authKey=${process.env.REACT_APP_LIBRARY_AUTHKEY}&pageSize=10&pageNo=1`
-    // );
-    // return response.text();
-    const response = await axios.get(
-      `http://data4library.kr/api/libSrch?authKey=${AUTHKEY}&region=11&pageSize=325`
-    );
-    return response.data;
-  };
-  const { data, isLoading, refetch } = useQuery(
-    "GET_LIBRARY",
-    fetchLibraryData,
-    {
-      enabled: false,
-      onSuccess: (data) => {
-        parseString(data, function (err: Error, result: any) {
-          const res = JSON.parse(JSON.stringify(result));
-          const libArray = res.response.libs[0].lib;
-
-          let sortedMarkers: Array<Object> = [];
-
-          libArray.map((lib, index) => {
-            const distance = getDistance(
-              Number(lib.latitude[0]),
-              Number(lib.longitude[0]),
-              position.latitude,
-              position.longitude
-            );
-            // console.log(distance);
-
-            if (distance <= 3000) {
-              let libObj = {
-                id: index,
-                coordinate: {
-                  latitude: Number(lib.latitude[0]),
-                  longitude: Number(lib.longitude[0]),
-                },
-                title: lib.libName[0],
-                distance: distance / 1000,
-                image: require("../assets/images/map/library_1.png"),
-              };
-              //setMarkers((markers) => [...markers, libObj]);
-              sortedMarkers.push(libObj);
-            }
-            if (sortedMarkers.length === 5) {
-              console.log("markers length", markers.length);
-              console.log("reached max");
-              // markers - distance 기준으로 정렬
-              sortedMarkers.sort((a, b) => {
-                return a.distance - b.distance;
-              });
-
-              setMarkers([...sortedMarkers]);
-              return;
-            }
-          });
-        });
-      },
-    }
-  );
-
   useEffect(() => {
     // Get user current location
     if (!isPositionReady) {
@@ -204,6 +144,112 @@ export default function SearchLibraryScreen({
       });
     }
   }, []);
+
+  // API function
+  const fetchLibraryData = async () => {
+    const response = await axios.get(
+      `http://data4library.kr/api/libSrch?authKey=${AUTHKEY}&pageSize=1480`
+    );
+    return response.data;
+  };
+
+  // GET_LIBRARY
+  const { data, isLoading, refetch } = useQuery(
+    "GET_LIBRARY",
+    fetchLibraryData,
+    {
+      enabled: false,
+      refetchOnWindowFocus: true,
+
+      onSuccess: (data) => {
+        parseString(data, function (err: Error, result: any) {
+          const res = JSON.parse(JSON.stringify(result));
+          const libArray = res.response.libs[0].lib;
+
+          let sortedMarkers: Array<Object> = [];
+          let libraryList = [];
+
+          libArray.map((lib, index) => {
+            const distance = getDistance(
+              Number(lib.latitude[0]),
+              Number(lib.longitude[0]),
+              position.latitude,
+              position.longitude
+            );
+            // console.log(distance);
+            let libObj = {
+              id: index,
+              libCode: lib.libCode[0],
+              coordinate: {
+                latitude: Number(lib.latitude[0]),
+                longitude: Number(lib.longitude[0]),
+              },
+              title: lib.libName[0],
+              distance: distance / 1000,
+              image: require("../assets/images/map/library_1.png"),
+            };
+
+            if (distance <= 3000 && sortedMarkers.length <= 5) {
+              //setMarkers((markers) => [...markers, libObj]);
+              sortedMarkers.push(libObj);
+
+              if (sortedMarkers.length === 5) {
+                sortedMarkers.sort((a, b) => {
+                  return a.distance - b.distance;
+                });
+
+                setMarkers([...sortedMarkers]);
+                _map.current.animateToRegion(
+                  {
+                    latitude: sortedMarkers[0].coordinate.latitude,
+                    longitude: sortedMarkers[0].coordinate.longitude,
+                    latitudeDelta: 0.0421,
+                    longitudeDelta: 0.0421,
+                  },
+                  350
+                );
+              }
+            }
+            libraryList.push(libObj);
+          });
+          setLibraryList([...libraryList]);
+        });
+      },
+    }
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      // 도서관 찾기 화면 올떄마다 데이터 다시 불러오기
+      refetch();
+    }, [])
+  );
+
+  const handleSearchLibrary = () => {
+    let searchLibraryList = libraryList.filter((lib) => {
+      return lib.title.includes(searchValue);
+    });
+
+    if (searchLibraryList.length > 0) {
+      searchLibraryList.sort((a, b) => {
+        return a.distance - b.distance;
+      });
+
+      _map.current.animateToRegion(
+        {
+          latitude: searchLibraryList[0].coordinate.latitude,
+          longitude: searchLibraryList[0].coordinate.longitude,
+          latitudeDelta: position.latitudeDelta,
+          longitudeDelta: position.longitudeDelta,
+        },
+        350
+      );
+
+      setMarkers([...searchLibraryList.slice(0, 5)]);
+    } else {
+      alert("검색 결과가 없습니다.");
+    }
+  };
 
   useEffect(() => {
     mapAnimation.addListener(({ value }) => {
@@ -286,17 +332,32 @@ export default function SearchLibraryScreen({
           position: "absolute",
           top: 50,
         }}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        handleSearch={handleSearchLibrary}
       />
       <MyLocationButton
         onPress={() => {
-          _map.current.animateToRegion(
-            {
-              ...position,
-              latitudeDelta: position.latitudeDelta,
-              longitudeDelta: position.longitudeDelta,
-            },
-            350
-          );
+          // _map.current.animateToRegion(
+          //   {
+          //     ...position,
+          //     latitudeDelta: position.latitudeDelta,
+          //     longitudeDelta: position.longitudeDelta,
+          //   },
+          //   350
+          // );
+          Geolocation.getCurrentPosition((pos) => {
+            const { latitude, longitude } = pos.coords;
+            _map.current.animateToRegion(
+              {
+                latitude,
+                longitude,
+                latitudeDelta: position.latitudeDelta,
+                longitudeDelta: position.longitudeDelta,
+              },
+              350
+            );
+          });
         }}
       >
         <Image
@@ -351,7 +412,7 @@ export default function SearchLibraryScreen({
                       style={{
                         height: "100%",
                         marginBottom: 20,
-                        fontSize: 22,
+                        fontSize: 18,
                         fontFamily: "NotoSansKR_Medium",
                         color: colors.black,
                         overflow: "visible",
@@ -408,7 +469,7 @@ export default function SearchLibraryScreen({
                 color: colors.gray3,
               }}
             >
-              5km 이내에 도서관이 없습니다.
+              {isLoading ? "불러오는 중..." : "3km 이내에 도서관이 없습니다."}
             </Text>
           </View>
         )}

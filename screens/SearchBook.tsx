@@ -124,9 +124,21 @@ export default function SearchBook({
     setMenuNum(num);
   };
 
+  const [searchValue, setSearchValue] = useState<string>("");
+  const handleSearchBookResult = () => {
+    navigation.navigate("SearchBookResult", {
+      bookName: searchValue,
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <SearchBar placeholder="노인과 바다" />
+      <SearchBar
+        placeholder="노인과 바다"
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        handleSearch={handleSearchBookResult}
+      />
       <RecommendHeader
         title={"추천 도서"}
         description={

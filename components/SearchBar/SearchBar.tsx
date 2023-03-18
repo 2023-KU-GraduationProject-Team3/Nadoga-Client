@@ -15,6 +15,9 @@ import { SearchBookResultScreenProps } from "../../types";
 import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 interface SearchBarProps {
   placeholder: string;
+  searchValue: string;
+  setSearchValue: (value: string) => void;
+  handleSearch: () => void;
   searchBarStyles?: StyleProp<ViewProps>;
   searchBarTextStyles?: StyleProp<TextStyle>;
 }
@@ -27,28 +30,29 @@ const SearchBarContainer = styled.View`
   border-radius: 10px;
   padding: 10px;
   width: ${layout.window.width - 40}px;
+  height: 50px;
   background-color: ${colors.white};
 `;
 
 const SearchBarInput = styled.TextInput`
-  font-size: 14px;
   color: #000;
+  font-size: 14px;
   text-align: left;
-  font-family: NotoSansKR_Bold;
   width: 80%;
   line-height: 14px;
-  padding: 0;
+  flex-direction: row;
 `;
 
 const SearchBar: FunctionComponent<SearchBarProps> = ({
   placeholder,
+  searchValue,
   searchBarStyles,
+  setSearchValue,
+  handleSearch,
 }) => {
   // navigation hooks
   const route = useRoute<SearchBookResultScreenProps["route"]>();
   const navigation = useNavigation<SearchBookResultScreenProps["navigation"]>();
-
-  const [searchValue, setSearchValue] = useState<string>("");
 
   return (
     <SearchBarContainer style={{ ...searchBarStyles }}>
@@ -61,9 +65,7 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
       />
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("SearchBookResult", {
-            bookName: searchValue,
-          });
+          handleSearch();
           setSearchValue("");
         }}
         disabled={searchValue.length === 0}
