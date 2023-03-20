@@ -66,11 +66,13 @@ export default function SearchBookDetail({
 
   const [foundBook, setFoundBook] = useState<BookProps>();
   const [bookIsbn, setBookIsbn] = useState(route.params.bookIsbn);
+  const [libCode, setLibCode] = useState(route.params.libCode);
+
   const [isFromBookResult, setIsFromBookResult] = useState(
     route.params.isFromBookResult
   );
 
-  // API function - getBookDetailWithISBN
+  // API function - 6. 도서 상세 조회
   const getBookDetail = async () => {
     const response = await axios.get(
       `http://data4library.kr/api/srchDtlList?authKey=${AUTHKEY}&isbn13=${bookIsbn}&loaninfoYN=Y&displayInfo=gender&format=json`
@@ -98,6 +100,35 @@ export default function SearchBookDetail({
           book_rating: 4.5,
           is_wishlist: false,
         });
+      },
+    }
+  );
+
+  // 대출 가능여부
+  const [loanAvailable, setLoanAvailable] = useState<String>("Y");
+
+  // API function - 11. 도서관별 도서 소장 여부 및 대출 가능여부 조회
+  const getBookStatus = async (libCode: number, isbn13: number) => {
+    const response = await axios.get(
+      `http://data4library.kr/api/bookExist?authKey=${AUTHKEY}&libCode=${libCode}&isbn13=${isbn13}&format=json`
+    );
+    return response.data;
+  };
+
+  // react-query : GET_BOOK_STATUS
+  const { data: bookStatus, isLoading: bookStatusLoading } = useQuery(
+    "GET_BOOK_STATUS",
+    () => getBookStatus(libCode!, bookIsbn),
+    {
+      enabled: !isFromBookResult,
+      onSuccess: (data) => {
+        console.log("data", data);
+
+        if (data.response.result.loanAvailable == "Y") {
+          setLoanAvailable("Y");
+        } else {
+          setLoanAvailable("N");
+        }
       },
     }
   );
@@ -144,6 +175,7 @@ export default function SearchBookDetail({
         {...foundBook}
         isSearchResult={true}
         isDetail={true}
+        is_loanAvailable={loanAvailable}
         // onPressWishlist={onPressWishlist}
       />
       <SearchLibraryContainer

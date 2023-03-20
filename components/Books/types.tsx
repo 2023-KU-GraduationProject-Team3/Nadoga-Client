@@ -7,6 +7,7 @@ export interface BookProps {
   book_rating: number;
   book_description?: string;
   is_wishlist: boolean;
+  is_loanAvailable?: string;
 }
 
 export interface BookSectionProps {
@@ -17,6 +18,7 @@ export interface BookSectionProps {
 export interface BookScreenProps {
   isSearchResult: boolean;
   isFromBookResult: boolean;
+  libCode?: number;
   isDetail: boolean;
   onPressWishlist?: (bookIsbn: number) => void;
 }

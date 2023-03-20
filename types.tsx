@@ -57,6 +57,7 @@ export type SearchLibraryParamsList = {
   };
   SearchBookDetail: {
     bookIsbn: number;
+    libCode: number;
     isFromBookResult: boolean;
   };
 };

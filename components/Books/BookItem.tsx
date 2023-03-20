@@ -1,7 +1,16 @@
-import React, { FunctionComponent, useState } from "react";
+import React, {
+  FunctionComponent,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import styled from "styled-components/native";
 import { StyleProp, TextStyle, Text, Image, View } from "react-native";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import {
+  useRoute,
+  useNavigation,
+  useFocusEffect,
+} from "@react-navigation/native";
 
 // constants
 import { colors } from "../../constants/Colors";
@@ -10,6 +19,16 @@ import layout from "../../constants/Layout";
 // types
 import { BookProps, BookScreenProps } from "./types";
 import { SerachBookDetailScreenProps } from "../../types";
+
+// react-query
+import { useQueries, useQuery } from "react-query";
+
+// axios
+import axios from "axios";
+
+// api authkey
+const AUTHKEY =
+  "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
 
 // components
 const BookContainer = styled.TouchableOpacity`
@@ -71,6 +90,20 @@ const AddToWishlistButton = styled.TouchableOpacity`
   border-radius: 8px;
 `;
 
+const LoanStatusButton = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 67px;
+  height: 27px;
+  right: 0px;
+  bottom: 35px;
+  background-color: ${(props) =>
+    props.is_loanAvailable === "Y" ? colors.lightgreen : colors.red};
+  border-radius: 8px;
+`;
+
 const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
   const route = useRoute<SerachBookDetailScreenProps["route"]>();
   const navigation = useNavigation<SerachBookDetailScreenProps["navigation"]>();
@@ -80,6 +113,7 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
       onPress={() => {
         navigation.navigate("SearchBookDetail", {
           bookIsbn: props.book_isbn,
+          libCode: props.libCode,
           isFromBookResult: props.isFromBookResult,
         });
       }}
@@ -140,21 +174,33 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
         </>
       )}
       {props.isSearchResult ? (
-        <AddToWishlistButton
-          isWishlist={props.is_wishlist}
-          onPress={() => {
-            props.onPressWishlist(props.book_isbn);
-          }}
-        >
-          <Text
-            style={{
-              color: props.is_wishlist ? colors.semiblack : colors.white,
-              fontSize: 12,
+        <>
+          <AddToWishlistButton
+            isWishlist={props.is_wishlist}
+            onPress={() => {
+              props.onPressWishlist(props.book_isbn);
             }}
           >
-            {props.is_wishlist ? "찜완료" : "찜하기"}
-          </Text>
-        </AddToWishlistButton>
+            <Text
+              style={{
+                color: props.is_wishlist ? colors.semiblack : colors.white,
+                fontSize: 12,
+              }}
+            >
+              {props.is_wishlist ? "찜완료" : "찜하기"}
+            </Text>
+          </AddToWishlistButton>
+          <LoanStatusButton is_loanAvailable={props.is_loanAvailable}>
+            <Text
+              style={{
+                color: props.is_wishlist ? colors.semiblack : colors.white,
+                fontSize: 12,
+              }}
+            >
+              {props.is_loanAvailable === "Y" ? "대출 가능" : "대출중"}
+            </Text>
+          </LoanStatusButton>
+        </>
       ) : null}
     </BookContainer>
   );

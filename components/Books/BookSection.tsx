@@ -35,9 +35,10 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
         numColumns={props.isSearchResult ? 1 : 3}
         horizontal={false}
         showsVerticalScrollIndicator={false}
-        keyExtractor={({ book_isbn }: any) => book_isbn.toString()}
+        keyExtractor={({ book_isbn }: any) => book_isbn}
         renderItem={({ item }: any) => (
           <BookItem
+            libCode={props.libCode}
             isFromBookResult={props.isFromBookResult}
             isSearchResult={props.isSearchResult}
             onPressWishlist={props.onPressWishlist}
