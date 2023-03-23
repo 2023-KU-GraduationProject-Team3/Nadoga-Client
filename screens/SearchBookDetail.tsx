@@ -65,7 +65,7 @@ export default function SearchBookDetail({
   // data : books
 
   const [foundBook, setFoundBook] = useState<BookProps>();
-  const [bookIsbn, setBookIsbn] = useState(route.params.bookIsbn);
+  const bookIsbn = route.params.bookIsbn;
   const [libCode, setLibCode] = useState(route.params.libCode);
 
   const [isFromBookResult, setIsFromBookResult] = useState(
@@ -85,7 +85,7 @@ export default function SearchBookDetail({
     "GET_BOOK_DETAIL",
     getBookDetail,
     {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
       onSuccess: (data) => {
         console.log(data);
 
@@ -104,6 +104,10 @@ export default function SearchBookDetail({
     }
   );
 
+  useEffect(() => {
+    alert(bookIsbn);
+  }, []);
+
   // 대출 가능여부
   const [loanAvailable, setLoanAvailable] = useState<String>("Y");
 
@@ -121,6 +125,7 @@ export default function SearchBookDetail({
     () => getBookStatus(libCode!, bookIsbn),
     {
       enabled: !isFromBookResult,
+      refetchOnWindowFocus: true,
       onSuccess: (data) => {
         console.log("data", data);
 
@@ -180,7 +185,9 @@ export default function SearchBookDetail({
       />
       <SearchLibraryContainer
         onPress={() => {
-          navigation.navigate("SearchLibrary");
+          navigation.navigate("SearchLibrary", {
+            bookIsbn: bookIsbn,
+          });
         }}
       >
         <Feather name="search" size={24} color="#000" />

@@ -66,11 +66,28 @@ export default function SearchLibrary({
   const [searchValue, setSearchValue] = useState<string>("");
   // const [isSearch, setIsSearch] = useState<boolean>(false);
 
+  let bookIsbn = route.params.bookIsbn;
+
   let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
 
   const _map = useRef<MapView>(null);
   const _scrollview = useRef<View>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      // 도서관 찾기 화면 올떄마다 데이터 다시 불러오기
+      setMarkers([]);
+      // setLibraryList([]);
+      if (route.params.bookIsbn !== 0) {
+        console.log("bookIsbn: ", bookIsbn);
+        refetchWithBook();
+      } else {
+        console.log("bookIsbn: ", bookIsbn);
+        refetch();
+      }
+    }, [bookIsbn])
+  );
 
   const interpolations = markers.map((marker, index) => {
     const inputRange = [
@@ -137,6 +154,7 @@ export default function SearchLibrary({
 
   useEffect(() => {
     // Get user current location
+
     if (!isPositionReady) {
       Geolocation.getCurrentPosition((pos) => {
         const { latitude, longitude } = pos.coords;
@@ -150,15 +168,23 @@ export default function SearchLibrary({
         setIsPositionReady(true);
 
         // user position 구했으니, marker 데이터 불러오기 가능
-        refetch();
+        //refetch();
       });
     }
   }, []);
 
-  // API function
+  // API function - 1. 정보공개 도서관 조회
   const fetchLibraryData = async () => {
     const response = await axios.get(
       `http://data4library.kr/api/libSrch?authKey=${AUTHKEY}&pageSize=1480&format=json`
+    );
+    return response.data;
+  };
+
+  // API function - 13. 도서 소장 도서관 조회
+  const fetchLibraryByBook = async () => {
+    const response = await axios.get(
+      `http://data4library.kr/api/libSrchByBook?authKey=${AUTHKEY}&isbn=${route.params.bookIsbn}&region=11&pageSize=100&format=json`
     );
     return response.data;
   };
@@ -168,9 +194,8 @@ export default function SearchLibrary({
     "GET_LIBRARY",
     fetchLibraryData,
     {
-      enabled: false,
-      refetchOnWindowFocus: true,
-
+      enabled: route.params.bookIsbn === 0,
+      refetchOnMount: false,
       onSuccess: (data) => {
         const libArray = data.response.libs;
 
@@ -225,14 +250,62 @@ export default function SearchLibrary({
     }
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      // 도서관 찾기 화면 올떄마다 데이터 다시 불러오기
-      setMarkers([]);
-      setLibraryList([]);
-      refetch();
-    }, [])
-  );
+  const {
+    data: bookData,
+    isLoading: bookLoading,
+    refetch: refetchWithBook,
+  } = useQuery("GET_LIBRARY_BY_BOOK", fetchLibraryByBook, {
+    refetchOnMount: false,
+    onSuccess: (data) => {
+      const libArray = data.response.libs;
+      console.log("libArray", libArray);
+
+      let sortedMarkers: Array<Object> = [];
+
+      libArray.map((item, index) => {
+        const distance = getDistance(
+          Number(item.lib.latitude),
+          Number(item.lib.longitude),
+          position.latitude,
+          position.longitude
+        );
+        // console.log(distance);
+        let libObj = {
+          id: index,
+          libCode: item.lib.libCode,
+          coordinate: {
+            latitude: Number(item.lib.latitude),
+            longitude: Number(item.lib.longitude),
+          },
+          title: item.lib.libName,
+          distance: distance / 1000,
+          image: require("../assets/images/map/library_1.png"),
+        };
+
+        if (distance <= 3000 && markers.length <= 5) {
+          // setMarkers((markers) => [...markers, libObj]);
+          sortedMarkers.push(libObj);
+        }
+      });
+
+      console.log("sortedMarkers", sortedMarkers);
+
+      sortedMarkers.sort((a, b) => {
+        return a.distance - b.distance;
+      });
+
+      setMarkers([...sortedMarkers]);
+      _map.current.animateToRegion(
+        {
+          latitude: sortedMarkers[0].coordinate.latitude,
+          longitude: sortedMarkers[0].coordinate.longitude,
+          latitudeDelta: 0.0421,
+          longitudeDelta: 0.0421,
+        },
+        350
+      );
+    },
+  });
 
   const handleSearchLibrary = () => {
     let searchLibraryList = libraryList.filter((lib) => {
@@ -295,7 +368,7 @@ export default function SearchLibrary({
         provider={PROVIDER_GOOGLE}
         ref={_map}
         style={styles.map}
-        initialRegion={isPositionReady && position}
+        initialRegion={position}
         showsUserLocation={true}
         followsUserLocation={true}
         showsMyLocationButton={false}
@@ -406,38 +479,7 @@ export default function SearchLibrary({
           { useNativeDriver: true }
         )}
       >
-        {isLoading ? (
-          <View
-            style={{
-              padding: 15,
-              elevation: 2,
-              backgroundColor: "#FFF",
-              borderRadius: 10,
-              marginHorizontal: 10,
-              shadowColor: "#000",
-              shadowRadius: 5,
-              shadowOpacity: 0.3,
-              width: Layout.window.width - 20,
-              height: Layout.window.height / 5,
-              overflow: "hidden",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              flex: 1,
-              marginBottom: 10,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                fontFamily: "NotoSansKR_Medium",
-                color: colors.gray3,
-              }}
-            >
-              불러오는 중...
-            </Text>
-          </View>
-        ) : markers.length > 0 ? (
+        {markers.length > 0 ? (
           markers.map((marker, index) => {
             return (
               <View key={marker.libCode} style={styles.card}>

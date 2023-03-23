@@ -47,11 +47,15 @@ export type SearchBookParamsList = {
     bookIsbn: number;
     isFromBookResult: boolean;
   };
-  SearchLibrary: undefined;
+  SearchLibrary: {
+    bookIsbn: number;
+  };
 };
 
 export type SearchLibraryParamsList = {
-  SearchLibrary: undefined;
+  SearchLibrary: {
+    bookIsbn: number;
+  };
   SearchLibraryDetail: {
     libCode: number;
   };

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { StyleSheet, Text, View, ScrollView, FlatList } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 // types
 import {
@@ -32,12 +33,19 @@ export default function SearchLibraryDetail({
   navigation,
   route,
 }: SearchLibraryDetailScreenProps) {
-  const [libCode, setLibCode] = useState(route.params.libCode);
+  const libCode = route.params.libCode;
   const [libInfo, setLibInfo] = useState();
-  const [popularBooks, setPopularBooks] = useState([{}]);
+  const [popularBooks, setPopularBooks] = useState([]);
 
   const [user_age, setUserAge] = useState(25);
   const [user_gender, setUserGender] = useState(0); // 0 : 남성, 1 : 여성
+
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
+      setPopularBooks([]);
+    }, [])
+  );
 
   // API function - 14. 도서관별 통합정보
   const fetchLibraryDetail = async () => {
@@ -182,7 +190,7 @@ export default function SearchLibraryDetail({
           }}
         />
 
-        {getPopularBook.isLoading ? (
+        {getPopularBook.isLoading || popularBooks.length === 0 ? (
           <View
             style={{
               flexDirection: "row",

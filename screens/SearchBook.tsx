@@ -143,7 +143,7 @@ export default function SearchBook({
   return (
     <View style={styles.container}>
       <SearchBar
-        placeholder="노인과 바다"
+        placeholder="도서명을 입력해주세요."
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         handleSearch={handleSearchBookResult}

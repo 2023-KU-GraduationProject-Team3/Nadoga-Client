@@ -143,6 +143,9 @@ function SearchLibraryNavigator() {
       <SearchLibraryStack.Screen
         name="SearchLibrary"
         component={SearchLibrary}
+        initialParams={{
+          bookIsbn: 0,
+        }}
         options={{ headerShown: false }}
       />
       <SearchLibraryStack.Screen
