@@ -173,7 +173,7 @@ export default function SearchBookDetail({
             color: colors.semiblack,
           }}
         >
-          {isFromBookResult ? "도서 정보" : "도서관 상세정보"}
+          {isFromBookResult ? "도서 검색" : "도서관 상세정보"}
         </Text>
       </DetailHeader>
       <BookItem

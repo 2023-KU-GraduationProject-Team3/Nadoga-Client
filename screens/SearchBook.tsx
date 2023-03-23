@@ -9,6 +9,16 @@ import RecommendHeader from "../components/Header/Recommend";
 import BookItem from "../components/Books/BookItem";
 import BookSection from "../components/Books/BookSection";
 
+// react-query
+import { useQuery } from "react-query";
+
+// axios
+import axios from "axios";
+
+// api authkey
+const AUTHKEY =
+  "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
+
 import { SearchBookScreenProps } from "../types";
 
 export default function SearchBook({
@@ -134,6 +144,7 @@ export default function SearchBook({
   };
 
   const [searchValue, setSearchValue] = useState<string>("");
+
   const handleSearchBookResult = () => {
     navigation.navigate("SearchBookResult", {
       bookName: searchValue,

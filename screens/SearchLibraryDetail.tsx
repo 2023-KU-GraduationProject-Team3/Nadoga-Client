@@ -118,8 +118,8 @@ export default function SearchLibraryDetail({
       const books = data.response.docs;
       const updatedPopularBooks: Array<BookProps> = [];
 
-      // 유아 인기 대출 목록
-      books.map((item) => {
+      // 인기 대출 목록 - 사용자의 나이와 성별에 맞게
+      books.map((item: any) => {
         const bookInfo = item.doc;
         if (updatedPopularBooks.length < 12) {
           updatedPopularBooks.push({

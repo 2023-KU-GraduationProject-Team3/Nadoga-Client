@@ -51,7 +51,7 @@ const BookImage = styled.Image`
 const BookRating = styled.View`
   position: absolute;
   right: ${(props) =>
-    props.isSearchResult ? (props.isDetail ? 150 : 10) : 10}px;
+    props.isSearchResult ? (props.isDetail ? 150 : 140) : 10}px;
 
   bottom: ${(props) => (props.isSearchResult ? 0 : 40)}px;
   background-color: ${colors.lightgreen};
@@ -190,16 +190,18 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
               {props.is_wishlist ? "찜완료" : "찜하기"}
             </Text>
           </AddToWishlistButton>
-          <LoanStatusButton is_loanAvailable={props.is_loanAvailable}>
-            <Text
-              style={{
-                color: props.is_wishlist ? colors.semiblack : colors.white,
-                fontSize: 12,
-              }}
-            >
-              {props.is_loanAvailable === "Y" ? "대출 가능" : "대출중"}
-            </Text>
-          </LoanStatusButton>
+          {props.isFromBookResult ? null : (
+            <LoanStatusButton is_loanAvailable={props.is_loanAvailable}>
+              <Text
+                style={{
+                  color: props.is_wishlist ? colors.semiblack : colors.white,
+                  fontSize: 12,
+                }}
+              >
+                {props.is_loanAvailable === "Y" ? "대출 가능" : "대출중"}
+              </Text>
+            </LoanStatusButton>
+          )}
         </>
       ) : null}
     </BookContainer>
