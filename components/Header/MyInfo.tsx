@@ -151,7 +151,7 @@ const RecommendHeader: FunctionComponent<HeaderProps> = (props) => {
                   fontFamily: "NotoSans_Regular",
                 }}
               >
-                도서 검색기록
+                평가 목록
               </Text>
             </View>
           </TouchableOpacity>

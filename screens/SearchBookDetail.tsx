@@ -65,7 +65,7 @@ export default function SearchBookDetail({
   // data : books
 
   const [foundBook, setFoundBook] = useState<BookProps>();
-  const bookIsbn = route.params.bookIsbn;
+  const [bookIsbn, setBookIsbn] = useState(route.params.bookIsbn);
   const [libCode, setLibCode] = useState(route.params.libCode);
 
   const [isFromBookResult, setIsFromBookResult] = useState(
@@ -125,7 +125,6 @@ export default function SearchBookDetail({
     () => getBookStatus(libCode!, bookIsbn),
     {
       enabled: !isFromBookResult,
-      refetchOnWindowFocus: true,
       onSuccess: (data) => {
         console.log("data", data);
 
@@ -181,12 +180,17 @@ export default function SearchBookDetail({
         isSearchResult={true}
         isDetail={true}
         is_loanAvailable={loanAvailable}
+        isFromBookResult={isFromBookResult}
         // onPressWishlist={onPressWishlist}
       />
       <SearchLibraryContainer
         onPress={() => {
-          navigation.navigate("SearchLibrary", {
-            bookIsbn: bookIsbn,
+          navigation.navigate("SearchLibraryRoot", {
+            screen: "SearchLibrary",
+            params: {
+              bookIsbn: bookIsbn,
+              bookName: foundBook?.book_name,
+            },
           });
         }}
       >

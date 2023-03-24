@@ -51,11 +51,15 @@ export type SearchBookParamsList = {
   SearchLibrary: {
     bookIsbn: number;
   };
+  SearchLibraryDetail: {
+    libCode: number;
+  };
 };
 
 export type SearchLibraryParamsList = {
   SearchLibrary: {
     bookIsbn: number;
+    bookName?: string;
   };
   SearchLibraryDetail: {
     libCode: number;

@@ -184,6 +184,7 @@ export default function SearchBook({
       <BookSection
         books={recommendResult}
         isSearchResult={false}
+        isFromBookResult={true}
         isDetail={false}
       />
     </View>

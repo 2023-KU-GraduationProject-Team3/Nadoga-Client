@@ -39,7 +39,7 @@ export default function SearchBookResult({
   navigation,
   route,
 }: SearchBookResultScreenProps) {
-  const { bookName } = route.params;
+  const [bookName, setBookName] = useState<string>(route.params.bookName);
 
   // // data
   // const books = [
@@ -122,7 +122,7 @@ export default function SearchBookResult({
   };
 
   // react-query - GET_BOOKS_WITH_KEYWORD
-  const { data, isLoading, isError } = useQuery(
+  const { data, isLoading, isError, refetch } = useQuery(
     "GET_BOOKS_WITH_KEYWORD",
     () => fetchBookWithKeyword(bookName),
     {
@@ -167,10 +167,19 @@ export default function SearchBookResult({
     alert(bookName);
   }, []);
 
+  const handleSearchBookResult = () => {
+    refetch();
+  };
+
   return (
     <View style={styles.container}>
-      {/* <SearchBar placeholder="도서명을 입력해주세요" searchValue={} /> */}
-      <DetailHeader
+      <SearchBar
+        placeholder="도서명을 입력해주세요"
+        searchValue={bookName}
+        setSearchValue={setBookName}
+        handleSearch={handleSearchBookResult}
+      />
+      {/* <DetailHeader
         onPress={() => {
           navigation.goBack();
         }}
@@ -186,7 +195,7 @@ export default function SearchBookResult({
         >
           도서 검색
         </Text>
-      </DetailHeader>
+      </DetailHeader> */}
       {keywordBooks?.length === 0 ? (
         <View
           style={{
@@ -216,7 +225,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: colors.bgGray,
-    paddingTop: 30,
+    paddingTop: 70,
   },
   title: {
     fontSize: 20,

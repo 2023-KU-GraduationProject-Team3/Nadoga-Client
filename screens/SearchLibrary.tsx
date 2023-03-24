@@ -38,6 +38,27 @@ const MyLocationButton = styled.TouchableOpacity`
   right: 20px;
 `;
 
+const ShowClosestLibraryButton = styled.TouchableOpacity`
+  position: absolute;
+  top: 160px;
+  right: 20px;
+  background-color: ${colors.white};
+`;
+
+const CurrentBookSection = styled.View`
+  position: absolute;
+  bottom: 180px;
+  left: 20px;
+  width: ${Layout.window.width - 40}px;
+  height: 50px;
+  background-color: ${colors.white};
+  border-radius: 10px;
+  padding: 10px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
+
 // api authkey
 const AUTHKEY =
   "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
@@ -62,9 +83,15 @@ export default function SearchLibrary({
   const [isPositionReady, setIsPositionReady] = useState(false);
 
   const [markers, setMarkers] = useState([]);
-  const [libraryList, setLibraryList] = useState([]);
+  let libraryList: {
+    id: any;
+    libCode: any;
+    coordinate: { latitude: number; longitude: number };
+    title: any;
+    distance: number;
+    image: any;
+  }[] = [];
   const [searchValue, setSearchValue] = useState<string>("");
-  // const [isSearch, setIsSearch] = useState<boolean>(false);
 
   let bookIsbn = route.params.bookIsbn;
 
@@ -79,6 +106,7 @@ export default function SearchLibrary({
       // 도서관 찾기 화면 올떄마다 데이터 다시 불러오기
       setMarkers([]);
       // setLibraryList([]);
+
       if (route.params.bookIsbn !== 0) {
         console.log("bookIsbn: ", bookIsbn);
         refetchWithBook();
@@ -86,7 +114,7 @@ export default function SearchLibrary({
         console.log("bookIsbn: ", bookIsbn);
         refetch();
       }
-    }, [bookIsbn])
+    }, [route.params.bookIsbn])
   );
 
   const interpolations = markers.map((marker, index) => {
@@ -171,7 +199,7 @@ export default function SearchLibrary({
         //refetch();
       });
     }
-  }, []);
+  }, [route.params.bookIsbn]);
 
   // API function - 1. 정보공개 도서관 조회
   const fetchLibraryData = async () => {
@@ -190,18 +218,81 @@ export default function SearchLibrary({
   };
 
   // GET_LIBRARY
-  const { data, isLoading, refetch } = useQuery(
+  const { data, isLoading, refetch, isFetched } = useQuery(
     "GET_LIBRARY",
     fetchLibraryData,
     {
-      enabled: route.params.bookIsbn === 0,
-      refetchOnMount: false,
+      enabled: route.params.bookIsbn == 0,
       onSuccess: (data) => {
+        alert("GET_LIBRARY");
         const libArray = data.response.libs;
 
         let sortedMarkers: Array<Object> = [];
-        let libraryList = [];
 
+        isFetched &&
+          libArray.forEach((item: any) => {
+            const distance = getDistance(
+              Number(item.lib.latitude),
+              Number(item.lib.longitude),
+              position.latitude,
+              position.longitude
+            );
+            // console.log(distance);
+            let libObj = {
+              id: item.lib.isbn13,
+              libCode: item.lib.libCode,
+              coordinate: {
+                latitude: Number(item.lib.latitude),
+                longitude: Number(item.lib.longitude),
+              },
+              title: item.lib.libName,
+              distance: distance / 1000,
+              image: require("../assets/images/map/library_1.png"),
+            };
+
+            if (distance <= 3000 && sortedMarkers.length < 5) {
+              //setMarkers((markers) => [...markers, libObj]);
+              sortedMarkers.push(libObj);
+
+              if (sortedMarkers.length === 5) {
+                sortedMarkers.sort((a, b) => {
+                  return a.distance - b.distance;
+                });
+
+                setMarkers([...sortedMarkers]);
+                _map.current.animateToRegion(
+                  {
+                    latitude: sortedMarkers[0].coordinate.latitude,
+                    longitude: sortedMarkers[0].coordinate.longitude,
+                    latitudeDelta: 0.0421,
+                    longitudeDelta: 0.0421,
+                  },
+                  350
+                );
+              }
+            }
+            libraryList.push(libObj);
+          });
+        // setLibraryList([...libraryList]);
+      },
+    }
+  );
+
+  const {
+    data: bookData,
+    isLoading: bookLoading,
+    refetch: refetchWithBook,
+    isFetched: isFetchedWithBook,
+  } = useQuery("GET_LIBRARY_BY_BOOK", fetchLibraryByBook, {
+    enabled: route.params.bookIsbn != 0,
+    onSuccess: (data) => {
+      const libArray = data.response.libs;
+      // console.log("libArray", libArray);
+      alert("GET_LIBRARY_BY_BOOK");
+
+      let sortedMarkers: Array<Object> = [];
+
+      isFetchedWithBook &&
         libArray.map((item, index) => {
           const distance = getDistance(
             Number(item.lib.latitude),
@@ -222,71 +313,11 @@ export default function SearchLibrary({
             image: require("../assets/images/map/library_1.png"),
           };
 
-          if (distance <= 3000 && sortedMarkers.length <= 5) {
-            //setMarkers((markers) => [...markers, libObj]);
+          if (distance <= 3000 && markers.length < 5) {
+            // setMarkers((markers) => [...markers, libObj]);
             sortedMarkers.push(libObj);
-
-            if (sortedMarkers.length === 5) {
-              sortedMarkers.sort((a, b) => {
-                return a.distance - b.distance;
-              });
-
-              setMarkers([...sortedMarkers]);
-              _map.current.animateToRegion(
-                {
-                  latitude: sortedMarkers[0].coordinate.latitude,
-                  longitude: sortedMarkers[0].coordinate.longitude,
-                  latitudeDelta: 0.0421,
-                  longitudeDelta: 0.0421,
-                },
-                350
-              );
-            }
           }
-          libraryList.push(libObj);
         });
-        setLibraryList([...libraryList]);
-      },
-    }
-  );
-
-  const {
-    data: bookData,
-    isLoading: bookLoading,
-    refetch: refetchWithBook,
-  } = useQuery("GET_LIBRARY_BY_BOOK", fetchLibraryByBook, {
-    refetchOnMount: false,
-    onSuccess: (data) => {
-      const libArray = data.response.libs;
-      console.log("libArray", libArray);
-
-      let sortedMarkers: Array<Object> = [];
-
-      libArray.map((item, index) => {
-        const distance = getDistance(
-          Number(item.lib.latitude),
-          Number(item.lib.longitude),
-          position.latitude,
-          position.longitude
-        );
-        // console.log(distance);
-        let libObj = {
-          id: index,
-          libCode: item.lib.libCode,
-          coordinate: {
-            latitude: Number(item.lib.latitude),
-            longitude: Number(item.lib.longitude),
-          },
-          title: item.lib.libName,
-          distance: distance / 1000,
-          image: require("../assets/images/map/library_1.png"),
-        };
-
-        if (distance <= 3000 && markers.length <= 5) {
-          // setMarkers((markers) => [...markers, libObj]);
-          sortedMarkers.push(libObj);
-        }
-      });
 
       console.log("sortedMarkers", sortedMarkers);
 
@@ -446,7 +477,20 @@ export default function SearchLibrary({
           source={require("../assets/icons/map/my-location-button.png")}
         ></Image>
       </MyLocationButton>
-
+      <ShowClosestLibraryButton
+        onPress={() => {
+          bookIsbn = 0;
+          setMarkers([]);
+          refetch();
+        }}
+      >
+        <Text>가장 가까운 도서관 5곳</Text>
+      </ShowClosestLibraryButton>
+      {bookIsbn !== 0 ? (
+        <CurrentBookSection>
+          <Text>{`현재 찾고있는 책 : ${route.params.bookName}`}</Text>
+        </CurrentBookSection>
+      ) : null}
       <Animated.ScrollView
         ref={_scrollview}
         horizontal

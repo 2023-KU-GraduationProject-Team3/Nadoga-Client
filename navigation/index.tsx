@@ -133,6 +133,19 @@ function SerachBookNavigator() {
         component={SearchBookDetail}
         options={{ headerShown: false }}
       />
+      {/* <SearchBookStack.Screen
+        name="SearchLibrary"
+        component={SearchLibrary}
+        options={{ headerShown: false }}
+        initialParams={{
+          bookIsbn: 0,
+        }}
+      />
+      <SearchLibraryStack.Screen
+        name="SearchLibraryDetail"
+        component={SearchLibraryDetail}
+        options={{ headerShown: false }}
+      /> */}
     </SearchBookStack.Navigator>
   );
 }
