@@ -185,12 +185,16 @@ export default function SearchBookDetail({
       />
       <SearchLibraryContainer
         onPress={() => {
-          navigation.navigate("SearchLibraryRoot", {
-            screen: "SearchLibrary",
-            params: {
-              bookIsbn: bookIsbn,
-              bookName: foundBook?.book_name,
-            },
+          // navigation.navigate("SearchLibraryRoot", {
+          //   screen: "SearchLibrary",
+          //   params: {
+          //     bookIsbn: foundBook?.book_isbn,
+          //     bookName: foundBook?.book_name,
+          //   },
+          // });
+          navigation.navigate("SearchLibrary", {
+            bookIsbn: bookIsbn,
+            bookName: foundBook?.book_name,
           });
         }}
       >

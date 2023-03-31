@@ -81,17 +81,23 @@ export default function SearchLibrary({
   });
 
   const [isPositionReady, setIsPositionReady] = useState(false);
+  const [isGetByLocation, setIsGetByLocation] = useState(false);
 
   const [markers, setMarkers] = useState([]);
-  let libraryList: {
-    id: any;
-    libCode: any;
-    coordinate: { latitude: number; longitude: number };
-    title: any;
-    distance: number;
-    image: any;
-  }[] = [];
+  // let libraryList: {
+  //   id: any;
+  //   libCode: any;
+  //   coordinate: { latitude: number; longitude: number };
+  //   title: any;
+  //   distance: number;
+  //   image: any;
+  // }[] = [];
+  const [libraryList, setLibraryList] = useState<any>([]);
   const [searchValue, setSearchValue] = useState<string>("");
+
+  const [firstRender, setFirstRender] = useState(true);
+
+  const [isFetchedByBook, setIsFetchedByBook] = useState(false);
 
   let bookIsbn = route.params.bookIsbn;
 
@@ -109,12 +115,14 @@ export default function SearchLibrary({
 
       if (route.params.bookIsbn !== 0) {
         console.log("bookIsbn: ", bookIsbn);
-        refetchWithBook();
+        setIsGetByLocation(true);
+        // refetchWithBook();
       } else {
-        console.log("bookIsbn: ", bookIsbn);
+        console.log("bookIsbn: ", route.params.bookIsbn);
+        setIsGetByLocation(false);
         refetch();
       }
-    }, [route.params.bookIsbn])
+    }, [route.params.bookIsbn, route.params.bookName])
   );
 
   const interpolations = markers.map((marker, index) => {
@@ -153,6 +161,26 @@ export default function SearchLibrary({
     });
   };
 
+  useEffect(() => {
+    // Get user current location
+
+    if (!isPositionReady) {
+      Geolocation.getCurrentPosition((pos) => {
+        const { latitude, longitude } = pos.coords;
+        setPosition({
+          latitude,
+          longitude,
+          latitudeDelta: 0.0421,
+          longitudeDelta: 0.0421,
+        });
+
+        setIsPositionReady(true);
+
+        // user position 구했으니, marker 데이터 불러오기 가능
+        //refetch();
+      });
+    }
+  }, [route.params.bookIsbn]);
   // get distance between two points
   const getDistance = (
     lat1: number,
@@ -180,31 +208,10 @@ export default function SearchLibrary({
     return dist;
   };
 
-  useEffect(() => {
-    // Get user current location
-
-    if (!isPositionReady) {
-      Geolocation.getCurrentPosition((pos) => {
-        const { latitude, longitude } = pos.coords;
-        setPosition({
-          latitude,
-          longitude,
-          latitudeDelta: 0.0421,
-          longitudeDelta: 0.0421,
-        });
-
-        setIsPositionReady(true);
-
-        // user position 구했으니, marker 데이터 불러오기 가능
-        //refetch();
-      });
-    }
-  }, [route.params.bookIsbn]);
-
   // API function - 1. 정보공개 도서관 조회
   const fetchLibraryData = async () => {
     const response = await axios.get(
-      `http://data4library.kr/api/libSrch?authKey=${AUTHKEY}&pageSize=1480&format=json`
+      `http://data4library.kr/api/libSrch?authKey=${AUTHKEY}&region=11&pageSize=1480&format=json`
     );
     return response.data;
   };
@@ -214,66 +221,85 @@ export default function SearchLibrary({
     const response = await axios.get(
       `http://data4library.kr/api/libSrchByBook?authKey=${AUTHKEY}&isbn=${route.params.bookIsbn}&region=11&pageSize=100&format=json`
     );
+    setIsFetchedByBook(true);
+    refetchWithBook();
     return response.data;
   };
 
+  useEffect(() => {
+    if (isFetchedByBook) {
+      alert("isFetchedByBook");
+    }
+  }, [isFetchedByBook]);
+
   // GET_LIBRARY
-  const { data, isLoading, refetch, isFetched } = useQuery(
+  const { data, isLoading, refetch, isFetched, isFetching } = useQuery(
     "GET_LIBRARY",
     fetchLibraryData,
     {
       enabled: route.params.bookIsbn == 0,
       onSuccess: (data) => {
+        setIsGetByLocation(false);
         alert("GET_LIBRARY");
         const libArray = data.response.libs;
 
         let sortedMarkers: Array<Object> = [];
 
-        isFetched &&
-          libArray.forEach((item: any) => {
-            const distance = getDistance(
-              Number(item.lib.latitude),
-              Number(item.lib.longitude),
-              position.latitude,
-              position.longitude
-            );
-            // console.log(distance);
-            let libObj = {
-              id: item.lib.isbn13,
-              libCode: item.lib.libCode,
-              coordinate: {
-                latitude: Number(item.lib.latitude),
-                longitude: Number(item.lib.longitude),
-              },
-              title: item.lib.libName,
-              distance: distance / 1000,
-              image: require("../assets/images/map/library_1.png"),
-            };
+        // isFetched &&
+        libArray.forEach((item: any) => {
+          const distance = getDistance(
+            Number(item.lib.latitude),
+            Number(item.lib.longitude),
+            position.latitude,
+            position.longitude
+          );
+          // console.log(distance);
+          let libObj = {
+            id: item.lib.isbn13,
+            libCode: item.lib.libCode,
+            coordinate: {
+              latitude: Number(item.lib.latitude),
+              longitude: Number(item.lib.longitude),
+            },
+            title: item.lib.libName,
+            distance: distance / 1000,
+            image: require("../assets/images/map/library_1.png"),
+          };
 
-            if (distance <= 3000 && sortedMarkers.length < 5) {
-              //setMarkers((markers) => [...markers, libObj]);
-              sortedMarkers.push(libObj);
+          if (distance <= 3000 && sortedMarkers.length < 5) {
+            //setMarkers((markers) => [...markers, libObj]);
+            sortedMarkers.push(libObj);
 
-              if (sortedMarkers.length === 5) {
-                sortedMarkers.sort((a, b) => {
-                  return a.distance - b.distance;
-                });
+            if (sortedMarkers.length === 5) {
+              sortedMarkers.sort((a, b) => {
+                return a.distance - b.distance;
+              });
 
-                setMarkers([...sortedMarkers]);
-                _map.current.animateToRegion(
-                  {
-                    latitude: sortedMarkers[0].coordinate.latitude,
-                    longitude: sortedMarkers[0].coordinate.longitude,
-                    latitudeDelta: 0.0421,
-                    longitudeDelta: 0.0421,
-                  },
-                  350
-                );
-              }
+              setMarkers([...sortedMarkers]);
             }
-            libraryList.push(libObj);
-          });
-        // setLibraryList([...libraryList]);
+          }
+          libraryList.push(libObj);
+        });
+
+        // 첫 렌더링 때만 libraryList 세팅
+        if (firstRender) {
+          setLibraryList([...libraryList]);
+
+          setFirstRender(false);
+        }
+
+        _map.current.animateToRegion(
+          {
+            latitude: sortedMarkers[0].coordinate.latitude,
+            longitude: sortedMarkers[0].coordinate.longitude,
+            latitudeDelta: 0.0421,
+            longitudeDelta: 0.0421,
+          },
+          350
+        );
+      },
+      onSettled: () => {
+        setIsGetByLocation(false);
       },
     }
   );
@@ -283,17 +309,28 @@ export default function SearchLibrary({
     isLoading: bookLoading,
     refetch: refetchWithBook,
     isFetched: isFetchedWithBook,
+    isFetching: isFetchingWithBook,
   } = useQuery("GET_LIBRARY_BY_BOOK", fetchLibraryByBook, {
     enabled: route.params.bookIsbn != 0,
+    placeholderData: {
+      response: {
+        libs: [],
+      },
+    },
+
+    retry: 3,
     onSuccess: (data) => {
-      const libArray = data.response.libs;
-      // console.log("libArray", libArray);
-      alert("GET_LIBRARY_BY_BOOK");
+      if (isFetchedByBook) {
+        alert(isFetchedByBook);
+        setIsGetByLocation(true);
 
-      let sortedMarkers: Array<Object> = [];
+        // const data = await fetchLibraryByBook();
+        const libArray = data.response.libs;
+        console.log("libArray", libArray);
 
-      isFetchedWithBook &&
-        libArray.map((item, index) => {
+        let sortedMarkers: Array<Object> = [];
+
+        libArray.forEach((item: any) => {
           const distance = getDistance(
             Number(item.lib.latitude),
             Number(item.lib.longitude),
@@ -302,7 +339,7 @@ export default function SearchLibrary({
           );
           // console.log(distance);
           let libObj = {
-            id: index,
+            id: item.lib.libCode,
             libCode: item.lib.libCode,
             coordinate: {
               latitude: Number(item.lib.latitude),
@@ -316,32 +353,39 @@ export default function SearchLibrary({
           if (distance <= 3000 && markers.length < 5) {
             // setMarkers((markers) => [...markers, libObj]);
             sortedMarkers.push(libObj);
+            if (markers.length === 1) {
+              _map.current.animateToRegion(
+                {
+                  latitude: sortedMarkers[0].coordinate.latitude,
+                  longitude: sortedMarkers[0].coordinate.longitude,
+                  latitudeDelta: 0.0421,
+                  longitudeDelta: 0.0421,
+                },
+                350
+              );
+            }
+          }
+          if (markers.length === 5) {
+            return;
           }
         });
 
-      console.log("sortedMarkers", sortedMarkers);
+        console.log("sortedMarkers", sortedMarkers);
 
-      sortedMarkers.sort((a, b) => {
-        return a.distance - b.distance;
-      });
+        sortedMarkers.sort((a, b) => {
+          return a.distance - b.distance;
+        });
 
-      setMarkers([...sortedMarkers]);
-      _map.current.animateToRegion(
-        {
-          latitude: sortedMarkers[0].coordinate.latitude,
-          longitude: sortedMarkers[0].coordinate.longitude,
-          latitudeDelta: 0.0421,
-          longitudeDelta: 0.0421,
-        },
-        350
-      );
+        setMarkers([...sortedMarkers]);
+      }
     },
   });
 
   const handleSearchLibrary = () => {
-    let searchLibraryList = libraryList.filter((lib) => {
+    let result1 = libraryList.filter((lib: { title: string | string[] }) => {
       return lib.title.includes(searchValue);
     });
+    let searchLibraryList = [...new Set(result1)];
 
     if (searchLibraryList.length > 0) {
       searchLibraryList.sort((a, b) => {
@@ -357,8 +401,11 @@ export default function SearchLibrary({
         },
         350
       );
-
-      setMarkers([...searchLibraryList.slice(0, 5)]);
+      if (searchLibraryList.length > 5) {
+        setMarkers([...searchLibraryList.slice(0, 5)]);
+      } else {
+        setMarkers([...searchLibraryList.slice(0, searchLibraryList.length)]);
+      }
     } else {
       Alert.alert("알림", "검색 결과가 없습니다.");
     }
@@ -479,14 +526,15 @@ export default function SearchLibrary({
       </MyLocationButton>
       <ShowClosestLibraryButton
         onPress={() => {
-          bookIsbn = 0;
+          route.params.bookIsbn = 0;
+          setIsGetByLocation(false);
           setMarkers([]);
           refetch();
         }}
       >
         <Text>가장 가까운 도서관 5곳</Text>
       </ShowClosestLibraryButton>
-      {bookIsbn !== 0 ? (
+      {isGetByLocation === true ? (
         <CurrentBookSection>
           <Text>{`현재 찾고있는 책 : ${route.params.bookName}`}</Text>
         </CurrentBookSection>
@@ -523,7 +571,69 @@ export default function SearchLibrary({
           { useNativeDriver: true }
         )}
       >
-        {markers.length > 0 ? (
+        {isFetching || isFetchingWithBook ? (
+          <View
+            style={{
+              padding: 15,
+              elevation: 2,
+              backgroundColor: "#FFF",
+              borderRadius: 10,
+              marginHorizontal: 10,
+              shadowColor: "#000",
+              shadowRadius: 5,
+              shadowOpacity: 0.3,
+              width: Layout.window.width - 20,
+              height: Layout.window.height / 5,
+              overflow: "hidden",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              marginBottom: 10,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "NotoSansKR_Medium",
+                color: colors.gray3,
+              }}
+            >
+              불러오는 중....
+            </Text>
+          </View>
+        ) : markers.length === 0 ? (
+          <View
+            style={{
+              padding: 15,
+              elevation: 2,
+              backgroundColor: "#FFF",
+              borderRadius: 10,
+              marginHorizontal: 10,
+              shadowColor: "#000",
+              shadowRadius: 5,
+              shadowOpacity: 0.3,
+              width: Layout.window.width - 20,
+              height: Layout.window.height / 5,
+              overflow: "hidden",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              marginBottom: 10,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "NotoSansKR_Medium",
+                color: colors.gray3,
+              }}
+            >
+              검색 결과가 없습니다.
+            </Text>
+          </View>
+        ) : (
           markers.map((marker, index) => {
             return (
               <View key={marker.libCode} style={styles.card}>
@@ -589,38 +699,6 @@ export default function SearchLibrary({
               </View>
             );
           })
-        ) : (
-          <View
-            style={{
-              padding: 15,
-              elevation: 2,
-              backgroundColor: "#FFF",
-              borderRadius: 10,
-              marginHorizontal: 10,
-              shadowColor: "#000",
-              shadowRadius: 5,
-              shadowOpacity: 0.3,
-              width: Layout.window.width - 20,
-              height: Layout.window.height / 5,
-              overflow: "hidden",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              flex: 1,
-              marginBottom: 10,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                fontFamily: "NotoSansKR_Medium",
-                color: colors.gray3,
-              }}
-            >
-              {/* {isLoading ? "불러오는 중..." : "검색 결과가 없습니다."} */}
-              불러오는 중...
-            </Text>
-          </View>
         )}
       </Animated.ScrollView>
     </View>

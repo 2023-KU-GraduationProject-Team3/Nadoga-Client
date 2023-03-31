@@ -158,6 +158,7 @@ function SearchLibraryNavigator() {
         component={SearchLibrary}
         initialParams={{
           bookIsbn: 0,
+          bookName: "",
         }}
         options={{ headerShown: false }}
       />

@@ -40,12 +40,12 @@ export default function SearchLibraryDetail({
   const [user_age, setUserAge] = useState(25);
   const [user_gender, setUserGender] = useState(0); // 0 : 남성, 1 : 여성
 
-  useFocusEffect(
-    useCallback(() => {
-      // Do something when the screen is focused
-      setPopularBooks([]);
-    }, [])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     // Do something when the screen is focused
+  //     // setPopularBooks([]);
+  //   }, [])
+  // );
 
   // API function - 14. 도서관별 통합정보
   const fetchLibraryDetail = async () => {
@@ -190,7 +190,7 @@ export default function SearchLibraryDetail({
           }}
         />
 
-        {getPopularBook.isLoading || popularBooks.length === 0 ? (
+        {getPopularBook.isFetching ? (
           <View
             style={{
               flexDirection: "row",
@@ -205,7 +205,7 @@ export default function SearchLibraryDetail({
           </View>
         ) : (
           <BookSection
-            books={[...popularBooks]}
+            books={popularBooks}
             isSearchResult={false}
             isDetail={false}
             isFromBookResult={false}

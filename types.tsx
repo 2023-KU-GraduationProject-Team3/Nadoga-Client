@@ -50,6 +50,7 @@ export type SearchBookParamsList = {
   };
   SearchLibrary: {
     bookIsbn: number;
+    bookName?: string;
   };
   SearchLibraryDetail: {
     libCode: number;
