@@ -19,6 +19,7 @@ declare global {
 export type AuthStackParamList = {
   Login: undefined;
   SignUp: undefined;
+  AfterScreen: undefined;
 };
 
 export type RootStackParamList = {

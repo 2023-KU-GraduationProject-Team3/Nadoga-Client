@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
@@ -12,13 +12,15 @@ import { useFonts } from "expo-font";
 
 // react query
 import { QueryClient, QueryClientProvider } from "react-query";
+import UserContext from "./context/userContext";
 const queryClient = new QueryClient();
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
-  const [isLogin, setIsLogin] = useState(true);
+  const { isLogin } = useContext(UserContext);
+  console.log("isLogin", isLogin);
 
   const [fontsLoaded] = useFonts({
     NotoSansKR_Black: require("./assets/fonts/NotoSansKR-Black.otf"),
@@ -45,6 +47,7 @@ export default function App() {
           ) : (
             <Auth colorScheme={colorScheme} />
           )}
+
           <StatusBar />
         </QueryClientProvider>
       </SafeAreaProvider>

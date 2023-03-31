@@ -35,6 +35,7 @@ import {
 import LinkingConfiguration from "./LinkingConfiguration";
 import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/SignUp";
+import AfterScreen from "../screens/AfterScreen";
 import SearchBookResult from "../screens/SearchBookResult";
 import SearchBookDetail from "../screens/SearchBookDetail";
 import PopularBookDetail from "../screens/PopularBookDetail";
@@ -89,7 +90,12 @@ function AuthNavigator() {
       <AuthStack.Screen
         name="SignUp"
         component={SignupScreen}
-        options={{ title: "Oops!" }}
+        options={{ headerShown: false }}
+      />
+      <AuthStack.Screen
+        name="After"
+        component={AfterScreen}
+        options={{ headerShown: false }}
       />
     </AuthStack.Navigator>
   );

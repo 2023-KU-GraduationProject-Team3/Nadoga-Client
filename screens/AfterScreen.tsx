@@ -1,10 +1,10 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
-export default function SignUp() {
+export default function AfterScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>SignUp</Text>
+      <Text style={styles.title}>AfterScreen</Text>
       <View style={styles.separator} />
     </View>
   );

@@ -120,9 +120,9 @@ export default function SearchLibrary({
       } else {
         console.log("bookIsbn: ", route.params.bookIsbn);
         setIsGetByLocation(false);
-        refetch();
+        // refetch();
       }
-    }, [route.params.bookIsbn, route.params.bookName])
+    }, [])
   );
 
   const interpolations = markers.map((marker, index) => {
@@ -238,6 +238,7 @@ export default function SearchLibrary({
     fetchLibraryData,
     {
       enabled: route.params.bookIsbn == 0,
+      refetchOnWindowFocus: true,
       onSuccess: (data) => {
         setIsGetByLocation(false);
         alert("GET_LIBRARY");
@@ -312,13 +313,12 @@ export default function SearchLibrary({
     isFetching: isFetchingWithBook,
   } = useQuery("GET_LIBRARY_BY_BOOK", fetchLibraryByBook, {
     enabled: route.params.bookIsbn != 0,
+    refetchOnWindowFocus: true,
     placeholderData: {
       response: {
         libs: [],
       },
     },
-
-    retry: 3,
     onSuccess: (data) => {
       if (isFetchedByBook) {
         alert(isFetchedByBook);
