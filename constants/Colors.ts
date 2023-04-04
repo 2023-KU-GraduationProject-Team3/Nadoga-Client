@@ -10,6 +10,7 @@ export const colors = {
   green: "#507612",
   red: "#a60028",
   bgGray: "#F8F8F8",
+  yellow: "#FFC403",
 };
 
 // export default {

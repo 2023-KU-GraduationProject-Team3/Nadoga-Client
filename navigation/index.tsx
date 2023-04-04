@@ -38,7 +38,9 @@ import SignupScreen from "../screens/SignUp";
 import AfterScreen from "../screens/AfterScreen";
 import SearchBookResult from "../screens/SearchBookResult";
 import SearchBookDetail from "../screens/SearchBookDetail";
+import Rating from "../screens/Rating";
 import PopularBookDetail from "../screens/PopularBookDetail";
+import MyLibrary from "../screens/MyLibrary";
 
 // import SearchLibraryIcon from '../assets/icons/searchLibrary';
 
@@ -139,19 +141,11 @@ function SerachBookNavigator() {
         component={SearchBookDetail}
         options={{ headerShown: false }}
       />
-      {/* <SearchBookStack.Screen
-        name="SearchLibrary"
-        component={SearchLibrary}
+      <SearchBookStack.Screen
+        name="Rating"
+        component={Rating}
         options={{ headerShown: false }}
-        initialParams={{
-          bookIsbn: 0,
-        }}
       />
-      <SearchLibraryStack.Screen
-        name="SearchLibraryDetail"
-        component={SearchLibraryDetail}
-        options={{ headerShown: false }}
-      /> */}
     </SearchBookStack.Navigator>
   );
 }
@@ -176,6 +170,34 @@ function SearchLibraryNavigator() {
       <SearchLibraryStack.Screen
         name="SearchBookDetail"
         component={SearchBookDetail}
+        options={{ headerShown: false }}
+      />
+      <SearchBookStack.Screen
+        name="Rating"
+        component={Rating}
+        options={{ headerShown: false }}
+      />
+    </SearchLibraryStack.Navigator>
+  );
+}
+
+function MyLibraryNavigator() {
+  return (
+    <SearchLibraryStack.Navigator initialRouteName="MyLibrary">
+      <SearchLibraryStack.Screen
+        name="MyLibrary"
+        component={MyLibrary}
+        options={{ headerShown: false }}
+      />
+
+      <SearchLibraryStack.Screen
+        name="SearchBookDetail"
+        component={SearchBookDetail}
+        options={{ headerShown: false }}
+      />
+      <SearchLibraryStack.Screen
+        name="Rating"
+        component={Rating}
         options={{ headerShown: false }}
       />
     </SearchLibraryStack.Navigator>
@@ -244,8 +266,8 @@ function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="MyLibrary"
-        component={MyLibraryScreen}
+        name="MyLibraryRoot"
+        component={MyLibraryNavigator}
         options={{
           title: "나의 서재",
           tabBarIcon: ({ focused }) => (

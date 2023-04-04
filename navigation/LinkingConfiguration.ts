@@ -30,9 +30,11 @@ const linking: LinkingOptions<RootStackParamList> = {
             },
           },
 
-          MyLibrary: {
+          MyLibraryRoot: {
             screens: {
               MyLibraryScreen: "MyLibrary",
+              SearchBookDetailScreen: "SearchBookDetail",
+              RatingScreen: "Rating",
             },
           },
           Settings: {

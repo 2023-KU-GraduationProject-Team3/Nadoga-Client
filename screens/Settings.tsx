@@ -1,3 +1,4 @@
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { RootTabScreenProps } from "../types";
@@ -8,9 +9,7 @@ export default function Settings({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Settings</Text>
-      <View
-        style={styles.separator}
-      />
+      <View style={styles.separator} />
     </View>
   );
 }

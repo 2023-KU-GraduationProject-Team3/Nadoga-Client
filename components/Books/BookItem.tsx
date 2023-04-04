@@ -48,7 +48,7 @@ const BookImage = styled.Image`
   height: 100%;
 `;
 
-const BookRating = styled.View`
+const BookRating = styled.TouchableOpacity`
   position: absolute;
   right: ${(props) =>
     props.isSearchResult ? (props.isDetail ? 150 : 140) : 10}px;
@@ -140,6 +140,12 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
       <BookRating
         isSearchResult={props.isSearchResult}
         isDetail={props.isDetail}
+        onPress={() => {
+          navigation.navigate("Rating", {
+            bookIsbn: props.book_isbn,
+            bookName: props.book_name,
+          });
+        }}
       >
         <Text style={{ fontWeight: "700", fontSize: 12 }}>
           ★{props.book_rating}

@@ -35,7 +35,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
 export type MainTabParamsList = {
   SearchBookRoot: undefined;
   SearchLibraryRoot: undefined;
-  MyLibrary: undefined;
+  MyLibraryRoot: undefined;
   Settings: undefined;
 };
 
@@ -56,6 +56,10 @@ export type SearchBookParamsList = {
   SearchLibraryDetail: {
     libCode: number;
   };
+  Rating: {
+    bookIsbn: number;
+    bookName: string;
+  };
 };
 
 export type SearchLibraryParamsList = {
@@ -70,6 +74,23 @@ export type SearchLibraryParamsList = {
     bookIsbn: number;
     libCode?: number;
     isFromBookResult: boolean;
+  };
+  Rating: {
+    bookIsbn: number;
+    bookName: string;
+  };
+};
+
+export type MyLibraryParamsList = {
+  MyLibrary: undefined;
+  SearchBookDetail: {
+    bookIsbn: number;
+    libCode?: number;
+    isFromBookResult: boolean;
+  };
+  Rating: {
+    bookIsbn: number;
+    bookName: string;
   };
 };
 
@@ -94,7 +115,7 @@ export type SearchBookResultScreenProps = NativeStackScreenProps<
 >;
 
 export type SerachBookDetailScreenProps = NativeStackScreenProps<
-  SearchBookParamsList,
+  SearchBookParamsList | MyLibraryParamsList,
   "SearchBookDetail"
 >;
 
@@ -106,6 +127,16 @@ export type SearchLibraryScreenProps = NativeStackScreenProps<
 export type SearchLibraryDetailScreenProps = NativeStackScreenProps<
   SearchLibraryParamsList,
   "SearchLibraryDetail"
+>;
+
+export type MyLibraryScreenProps = NativeStackScreenProps<
+  MyLibraryParamsList,
+  "MyLibrary"
+>;
+
+export type RatingScreenProps = NativeStackScreenProps<
+  MyLibraryParamsList,
+  "Rating"
 >;
 
 export type RootTabScreenProps<Screen extends keyof MainTabParamsList> =

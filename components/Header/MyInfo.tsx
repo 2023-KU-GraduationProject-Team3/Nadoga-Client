@@ -59,7 +59,7 @@ interface HeaderProps {
   emailTextStyle?: StyleProp<TextStyle>;
 }
 
-const RecommendHeader: FunctionComponent<HeaderProps> = (props) => {
+const MyInfo: FunctionComponent<HeaderProps> = (props) => {
   return (
     <HeaderContainer>
       <ProfileImage source={require("../../assets/images/icon.png")} />
@@ -155,10 +155,42 @@ const RecommendHeader: FunctionComponent<HeaderProps> = (props) => {
               </Text>
             </View>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              props.handleMenuNum(2);
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  color: props.menuNum === 2 ? colors.red : colors.black,
+                  fontSize: 24,
+                  fontWeight: "700",
+                  fontFamily: "NotoSans_Medium",
+                }}
+              >
+                {props.wishlist_num}
+              </Text>
+              <Text
+                style={{
+                  color: props.menuNum === 2 ? colors.red : colors.black,
+                  fontSize: 12,
+                  fontFamily: "NotoSans_Regular",
+                }}
+              >
+                검색 목록
+              </Text>
+            </View>
+          </TouchableOpacity>
         </InfoBottomContainer>
       </InfoContainer>
     </HeaderContainer>
   );
 };
 
-export default RecommendHeader;
+export default MyInfo;
