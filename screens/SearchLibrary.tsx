@@ -120,7 +120,7 @@ export default function SearchLibrary({
       } else {
         console.log("bookIsbn: ", route.params.bookIsbn);
         setIsGetByLocation(false);
-        // refetch();
+        refetch();
       }
     }, [])
   );
@@ -236,9 +236,9 @@ export default function SearchLibrary({
   const { data, isLoading, refetch, isFetched, isFetching } = useQuery(
     "GET_LIBRARY",
     fetchLibraryData,
+
     {
       enabled: route.params.bookIsbn == 0,
-      refetchOnWindowFocus: true,
       onSuccess: (data) => {
         setIsGetByLocation(false);
         alert("GET_LIBRARY");

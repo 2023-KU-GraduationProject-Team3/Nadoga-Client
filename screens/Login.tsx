@@ -13,12 +13,15 @@ import { colors } from "../constants/Colors";
 // components
 import AuthHeader from "../components/Header/AuthHeader";
 
-export default function Login() {
+// types
+import { LoginScreenProps } from "../types";
+
+export default function Login({ navigation, route }: LoginScreenProps) {
   return (
     <View style={styles.container}>
       <AuthHeader englishTitle="Account Login" koreanTitle="로그인하기" />
       <View style={styles.inputSection}>
-        <View style={styles.idInputSection}>
+        <View>
           <Text
             style={{
               fontSize: 18,
@@ -27,10 +30,10 @@ export default function Login() {
               fontWeight: "bold",
             }}
           >
-            ID
+            Email
           </Text>
           <TextInput
-            placeholder="Enter the ID"
+            placeholder="Enter your email"
             placeholderTextColor="#909090"
             style={{
               width: 300,
@@ -42,7 +45,7 @@ export default function Login() {
             }}
           />
         </View>
-        <View style={styles.pwInputSection}>
+        <View>
           <Text
             style={{
               fontSize: 18,
@@ -54,7 +57,7 @@ export default function Login() {
             Password
           </Text>
           <TextInput
-            placeholder="Enter the Password"
+            placeholder="Enter your password"
             placeholderTextColor="#909090"
             style={{
               width: 300,
@@ -67,7 +70,11 @@ export default function Login() {
           />
         </View>
       </View>
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("SignUp");
+        }}
+      >
         <Text
           style={{
             fontSize: 16,
@@ -101,25 +108,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgGray,
     paddingTop: 150,
   },
-  title: {
-    fontSize: 28,
-    fontFamily: "NotoSansKR-Medium",
-    color: colors.semiblack,
-    fontWeight: "bold",
-  },
-  koreanTitle: {
-    fontSize: 36,
-    fontFamily: "NotoSansKR-Black",
-    color: colors.semiblack,
-    fontWeight: "bold",
-    marginBottom: 80,
-  },
+
   inputSection: {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-between",
     height: 170,
     marginBottom: 20,
+    marginTop: 50,
   },
   loginBtn: {
     width: 240,

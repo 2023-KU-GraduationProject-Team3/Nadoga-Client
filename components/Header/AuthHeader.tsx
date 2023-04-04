@@ -45,6 +45,5 @@ const styles = StyleSheet.create({
     fontFamily: "NotoSansKR-Black",
     color: colors.semiblack,
     fontWeight: "bold",
-    marginBottom: 80,
   },
 });

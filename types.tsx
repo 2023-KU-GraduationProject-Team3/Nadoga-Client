@@ -73,6 +73,16 @@ export type SearchLibraryParamsList = {
   };
 };
 
+export type LoginScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  "Login"
+>;
+
+export type SignUpScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  "SignUp"
+>;
+
 export type SearchBookScreenProps = NativeStackScreenProps<
   SearchBookParamsList,
   "SearchBook"
