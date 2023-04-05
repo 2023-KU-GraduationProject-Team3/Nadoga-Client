@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import styled from "styled-components/native";
+import StarRating from "react-native-star-rating-widget";
 
 // types
 import { RootTabScreenProps, RatingScreenProps } from "../types";
@@ -14,6 +21,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 
 // components
+import ReviewSection from "../components/Review/ReviewSection";
+
 const DetailHeader = styled.TouchableOpacity`
   flex-direction: row;
   background-color: ${colors.bgGray};
@@ -37,6 +46,71 @@ const BookRatingInfoContainer = styled.View`
 export default function Rating({ navigation, route }: RatingScreenProps) {
   const [bookIsbn, setBookIsbn] = useState<number>(route.params.bookIsbn);
   const [bookName, setBookName] = useState<string>(route.params.bookName);
+
+  const [hasRated, setHasRated] = useState<boolean>(false);
+  const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(true);
+
+  // 유저가 이미 리뷰를 작성한 상태일 때, 가져온 리뷰 데이터
+  const [reviewInfo, setReviewInfo] = useState<any>({
+    rating: 4.5,
+    content: "책이 너무 좋아요!",
+  });
+
+  // 아직 리뷰 작성하지 않은 상태일 때, 평점 및 한줄평 상태
+  const [rating, setRating] = useState<number>(0);
+  const [content, setContent] = useState<string>("");
+
+  const [reviewList, setReviewList] = useState<any>([
+    {
+      review_id: 1,
+      user_name: "홍길동",
+      rating: 4.5,
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
+      profile_url: "https://i.pravatar.cc/150?img=4",
+    },
+    {
+      review_id: 2,
+
+      user_name: "홍길동",
+      rating: 4.5,
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
+      profile_url: "https://i.pravatar.cc/150?img=4",
+    },
+    {
+      review_id: 3,
+      user_name: "홍길동",
+      rating: 4.5,
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
+      profile_url: "https://i.pravatar.cc/150?img=4",
+    },
+    {
+      review_id: 4,
+      user_name: "홍길동",
+      rating: 4.5,
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
+      profile_url: "https://i.pravatar.cc/150?img=4",
+    },
+    {
+      review_id: 5,
+      user_name: "홍길동",
+      rating: 4.5,
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
+      profile_url: "https://i.pravatar.cc/150?img=4",
+    },
+    {
+      review_id: 6,
+      user_name: "홍길동",
+      rating: 4.5,
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
+      profile_url: "https://i.pravatar.cc/150?img=4",
+    },
+  ]);
 
   return (
     <View style={styles.container}>
@@ -133,6 +207,138 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
         </View>
       </BookRatingInfoContainer>
       <View style={styles.seperator}></View>
+      <View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            width: Layout.window.width - 20,
+
+            marginBottom: 10,
+            paddingHorizontal: 15,
+            justifyContent: "space-between",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              fontFamily: "NotoSansKR_Bold",
+              color: colors.gray4,
+            }}
+          >
+            {reviewModalVisible
+              ? null
+              : hasRated
+              ? "내가 작성한 리뷰"
+              : "내가 작성한 한줄평이 없습니다."}
+          </Text>
+          {hasRated || reviewModalVisible ? null : (
+            <TouchableOpacity
+              onPress={() => {
+                setReviewModalVisible(true);
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontFamily: "NotoSansKR_Bold",
+                  color: colors.green,
+                  textDecorationLine: "underline",
+                }}
+              >
+                + 한줄평 남기기
+              </Text>
+            </TouchableOpacity>
+          )}
+          {reviewModalVisible ? (
+            <View
+              style={{
+                width: "100%",
+                height: 120,
+                backgroundColor: colors.white,
+                borderRadius: 10,
+                padding: 10,
+                position: "relative",
+              }}
+            >
+              <StarRating
+                rating={rating}
+                onChange={setRating}
+                starSize={30}
+                starStyle={{
+                  marginBottom: 10,
+                  width: 20,
+                }}
+              />
+              <TextInput
+                placeholder="한줄평을 적어주세요."
+                placeholderTextColor={colors.gray4}
+                value={content}
+                onChangeText={setContent}
+                style={{
+                  width: "100%",
+                  backgroundColor: colors.white,
+                  fontSize: 12,
+                  fontFamily: "NotoSansKR_Regular",
+                  color: colors.semiblack,
+                  paddingLeft: 5,
+                }}
+              ></TextInput>
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  bottom: 40,
+                  right: 70,
+                }}
+                onPress={() => {
+                  setReviewModalVisible(false);
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: "NotoSansKR_Bold",
+                    color: colors.gray3,
+                    textDecorationLine: "underline",
+                    position: "absolute",
+                  }}
+                >
+                  취소
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  bottom: 5,
+                  right: 15,
+                }}
+                onPress={() => {
+                  if (content === "") {
+                    alert("한줄평을 작성해주세요.");
+                    return;
+                  } else {
+                    setHasRated(true);
+                    setReviewModalVisible(false);
+                  }
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: "NotoSansKR_Bold",
+                    color: colors.green,
+                    textDecorationLine: "underline",
+                  }}
+                >
+                  등록
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+        </View>
+      </View>
+      {hasRated ? <View style={styles.seperator}></View> : null}
+      <ReviewSection reviews={reviewList} />
     </View>
   );
 }
@@ -148,6 +354,6 @@ const styles = StyleSheet.create({
     width: "90%",
     height: 1,
     backgroundColor: colors.gray2,
-    marginBottom: 30,
+    marginBottom: 10,
   },
 });
