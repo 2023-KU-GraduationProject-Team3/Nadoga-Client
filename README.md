@@ -1,2 +1,2 @@
 # Nadoga-Client
-## Using React Native, TypeScript, Redux, TDD
+## Using React Native, TypeScript, React Query, TDD
