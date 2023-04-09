@@ -3,40 +3,69 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as React from 'react';
-import { ColorSchemeName, Pressable } from 'react-native';
+import { FontAwesome } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+  useNavigationContainerRef,
+} from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as React from "react";
+import { ColorSchemeName, Pressable, Image, View, Text } from "react-native";
 
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
-import ModalScreen from '../screens/ModalScreen';
-import SearchLibraryScreen from '../screens/SearchLibraryScreen';
-import NotFoundScreen from '../screens/NotFoundScreen';
-import TabTwoScreen from '../screens/SearchBookScreen';
-import TabThreeScreen from '../screens/MyPageScreen'
-import { RootStackParamList, MainTabParamsList, RootTabScreenProps, AuthStackParamList } from '../types';
-import LinkingConfiguration from './LinkingConfiguration';
-import LoginScreen from '../screens/LoginScreen';
-import SignupScreen from '../screens/SignupScreen';
+import { colors } from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
+import ModalScreen from "../screens/Modal";
+import SearchLibrary from "../screens/SearchLibrary";
+import SearchLibraryDetail from "../screens/SearchLibraryDetail";
+import NotFoundScreen from "../screens/NotFound";
+import SearchBookScreen from "../screens/SearchBook";
+import MyLibraryScreen from "../screens/MyLibrary";
+import SettingScreen from "../screens/Settings";
+import {
+  RootStackParamList,
+  MainTabParamsList,
+  RootTabScreenProps,
+  AuthStackParamList,
+  SearchBookParamsList,
+  SearchLibraryParamsList,
+} from "../types";
+import LinkingConfiguration from "./LinkingConfiguration";
+import LoginScreen from "../screens/Login";
+import SignupScreen from "../screens/SignUp";
+import AfterScreen from "../screens/AfterScreen";
+import SearchBookResult from "../screens/SearchBookResult";
+import SearchBookDetail from "../screens/SearchBookDetail";
+import Rating from "../screens/Rating";
+import PopularBookDetail from "../screens/PopularBookDetail";
+import MyLibrary from "../screens/MyLibrary";
 
+// import SearchLibraryIcon from '../assets/icons/searchLibrary';
 
 export function Auth({ colorScheme }: { colorScheme: ColorSchemeName }) {
+  const navigationRef = useNavigationContainerRef();
+
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      ref={navigationRef}
+    >
       <AuthNavigator />
     </NavigationContainer>
   );
 }
 export function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+  const navigationRef = useNavigationContainerRef();
+
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      ref={navigationRef}
+    >
       <MainTabNavigator />
     </NavigationContainer>
   );
@@ -48,25 +77,130 @@ export function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
  */
 const MainStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const SearchBookStack = createNativeStackNavigator<SearchBookParamsList>();
+const SearchLibraryStack =
+  createNativeStackNavigator<SearchLibraryParamsList>();
 
-function AuthNavigator() { 
+function AuthNavigator() {
   return (
     <AuthStack.Navigator>
-      <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-      <AuthStack.Screen name="SignUp" component={SignupScreen} options={{ title: 'Oops!' }} />
+      <AuthStack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+      <AuthStack.Screen
+        name="SignUp"
+        component={SignupScreen}
+        options={{ headerShown: false }}
+      />
+      <AuthStack.Screen
+        name="After"
+        component={AfterScreen}
+        options={{ headerShown: false }}
+      />
     </AuthStack.Navigator>
-  )
+  );
 }
 
 function MainTabNavigator() {
   return (
     <MainStack.Navigator>
-      <MainStack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <MainStack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-      <MainStack.Group screenOptions={{ presentation: 'modal' }}>
+      <MainStack.Screen
+        name="Root"
+        component={BottomTabNavigator}
+        options={{ headerShown: false }}
+      />
+      <MainStack.Screen
+        name="NotFound"
+        component={NotFoundScreen}
+        options={{ title: "Oops!" }}
+      />
+      <MainStack.Group screenOptions={{ presentation: "modal" }}>
         <MainStack.Screen name="Modal" component={ModalScreen} />
       </MainStack.Group>
     </MainStack.Navigator>
+  );
+}
+
+function SerachBookNavigator() {
+  return (
+    <SearchBookStack.Navigator initialRouteName="SearchBook">
+      <SearchBookStack.Screen
+        name="SearchBook"
+        component={SearchBookScreen}
+        options={{ headerShown: false }}
+      />
+      <SearchBookStack.Screen
+        name="SearchBookResult"
+        component={SearchBookResult}
+        options={{ headerShown: false }}
+      />
+      <SearchBookStack.Screen
+        name="SearchBookDetail"
+        component={SearchBookDetail}
+        options={{ headerShown: false }}
+      />
+      <SearchBookStack.Screen
+        name="Rating"
+        component={Rating}
+        options={{ headerShown: false }}
+      />
+    </SearchBookStack.Navigator>
+  );
+}
+
+function SearchLibraryNavigator() {
+  return (
+    <SearchLibraryStack.Navigator initialRouteName="SearchLibrary">
+      <SearchLibraryStack.Screen
+        name="SearchLibrary"
+        component={SearchLibrary}
+        initialParams={{
+          bookIsbn: 0,
+          bookName: "",
+        }}
+        options={{ headerShown: false }}
+      />
+      <SearchLibraryStack.Screen
+        name="SearchLibraryDetail"
+        component={SearchLibraryDetail}
+        options={{ headerShown: false }}
+      />
+      <SearchLibraryStack.Screen
+        name="SearchBookDetail"
+        component={SearchBookDetail}
+        options={{ headerShown: false }}
+      />
+      <SearchBookStack.Screen
+        name="Rating"
+        component={Rating}
+        options={{ headerShown: false }}
+      />
+    </SearchLibraryStack.Navigator>
+  );
+}
+
+function MyLibraryNavigator() {
+  return (
+    <SearchLibraryStack.Navigator initialRouteName="MyLibrary">
+      <SearchLibraryStack.Screen
+        name="MyLibrary"
+        component={MyLibrary}
+        options={{ headerShown: false }}
+      />
+
+      <SearchLibraryStack.Screen
+        name="SearchBookDetail"
+        component={SearchBookDetail}
+        options={{ headerShown: false }}
+      />
+      <SearchLibraryStack.Screen
+        name="Rating"
+        component={Rating}
+        options={{ headerShown: false }}
+      />
+    </SearchLibraryStack.Navigator>
   );
 }
 
@@ -76,51 +210,93 @@ function MainTabNavigator() {
  */
 const BottomTab = createBottomTabNavigator<MainTabParamsList>();
 
-function BottomTabNavigator() { 
-  const colorScheme = useColorScheme();
+function BottomTabNavigator() {
+  // const colorScheme = useColorScheme();
 
   return (
     <BottomTab.Navigator
-      initialRouteName="SearchLibrary"
+      initialRouteName="SearchBookRoot"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-      }}>
+        tabBarActiveTintColor: colors.white,
+        tabBarInactiveTintColor: colors.black,
+        tabBarActiveBackgroundColor: colors.green,
+        tabBarInactiveBackgroundColor: colors.white,
+        tabBarStyle: {
+          height: 80,
+          paddingLeft: 20,
+          paddingRight: 20,
+        },
+        headerShown: false,
+      }}
+    >
       <BottomTab.Screen
-        name="SearchLibrary"
-        component={SearchLibraryScreen}
-        options={({ navigation }: RootTabScreenProps<'SearchLibrary'>) => ({
-          title: '도서관 찾기',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Modal')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}>
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
-        })}
-      />
-      <BottomTab.Screen
-        name="SearchBook"
-        component={TabTwoScreen}
+        name="SearchBookRoot"
+        component={SerachBookNavigator}
         options={{
-          title: '도서 검색',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "도서 검색",
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={require("../assets/icons/searchbook-icon.png")}
+              style={{
+                width: 36,
+                height: 36,
+                tintColor: focused ? colors.white : colors.black,
+                paddingBottom: 0,
+              }}
+            />
+          ),
         }}
       />
       <BottomTab.Screen
-        name="MyPage"
-        component={TabThreeScreen}
+        name="SearchLibraryRoot"
+        component={SearchLibraryNavigator}
         options={{
-          title: '마이페이지',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "도서관 찾기",
+
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={require("../assets/icons/searchlibrary-icon.png")}
+              style={{
+                width: 36,
+                height: 36,
+                tintColor: focused ? colors.white : colors.black,
+              }}
+            />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="MyLibraryRoot"
+        component={MyLibraryNavigator}
+        options={{
+          title: "나의 서재",
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={require("../assets/icons/mylibrary-icon.png")}
+              style={{
+                width: 36,
+                height: 36,
+                tintColor: focused ? colors.white : colors.black,
+              }}
+            />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="Settings"
+        component={SettingScreen}
+        options={{
+          title: "설정",
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={require("../assets/icons/settings-icon.png")}
+              style={{
+                width: 36,
+                height: 36,
+                tintColor: focused ? colors.white : colors.black,
+              }}
+            />
+          ),
         }}
       />
     </BottomTab.Navigator>
@@ -130,9 +306,9 @@ function BottomTabNavigator() {
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
-}
+// function TabBarIcon(props: {
+//   name: React.ComponentProps<typeof FontAwesome>["name"];
+//   color: string;
+// }) {
+//   return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
+// }

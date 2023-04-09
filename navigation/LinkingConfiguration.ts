@@ -4,38 +4,48 @@
  * https://reactnavigation.org/docs/configuring-links
  */
 
-import { LinkingOptions } from '@react-navigation/native';
-import * as Linking from 'expo-linking';
+import { LinkingOptions } from "@react-navigation/native";
+import * as Linking from "expo-linking";
 
-import { RootStackParamList } from '../types';
+import { RootStackParamList } from "../types";
 
 const linking: LinkingOptions<RootStackParamList> = {
-  prefixes: [Linking.createURL('/')],
+  prefixes: [Linking.createURL("/")],
   config: {
     screens: {
-
       Root: {
         screens: {
-          SearchLibrary: {
+          SearchBookRoot: {
             screens: {
-              SearchLibraryScreen: 'SearchLibrary',
+              SearchBookScreen: "SearchBook",
+              SearchBookResultScreen: "SearchBookResult",
+              SearchBookDetailScreen: "SearchBookDetail",
             },
           },
-          SearchBook: {
+          SearchLibraryRoot: {
             screens: {
-              SearchBookScreen: 'SearchBook',
+              SearchLibraryScreen: "SearchLibrary",
+              SearchLibraryDetailScreen: "SearchLibraryDetail",
+              SearchBookDetailScreen: "SearchBookDetail",
             },
-            
           },
-          MyPage : {
+
+          MyLibraryRoot: {
             screens: {
-              MyPageScreen: 'MyPage',
+              MyLibraryScreen: "MyLibrary",
+              SearchBookDetailScreen: "SearchBookDetail",
+              RatingScreen: "Rating",
+            },
+          },
+          Settings: {
+            screens: {
+              SettingScreen: "Settings",
             },
           },
         },
       },
-      Modal: 'modal',
-      NotFound: '*',
+      Modal: "modal",
+      NotFound: "*",
     },
   },
 };
