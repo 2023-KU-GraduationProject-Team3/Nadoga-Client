@@ -71,6 +71,8 @@ export default function SearchBookDetail({
 }: SerachBookDetailScreenProps) {
   const { user, logoutUser } = useContext(UserContext);
 
+  const [bookInfo, setBookInfo] = useState(route.params.bookInfo);
+
   // data : books
   const navigationState = useNavigationState((state) => state);
   const [foundBook, setFoundBook] = useState<BookProps>();
@@ -184,12 +186,16 @@ export default function SearchBookDetail({
         </Text>
       </DetailHeader>
       <BookItem
-        {...foundBook}
+        // {...route.params.bookInfo}
+        // isSearchResult={true}
+        // isDetail={true}
+        // is_loanAvailable={loanAvailable}
+        // isFromBookResult={isFromBookResult}
+        // // onPressWishlist={onPressWishlist}
+        {...bookInfo}
+        isFromBookResult={isFromBookResult}
         isSearchResult={true}
         isDetail={true}
-        is_loanAvailable={loanAvailable}
-        isFromBookResult={isFromBookResult}
-        // onPressWishlist={onPressWishlist}
       />
       <SearchLibraryContainer
         onPress={() => {

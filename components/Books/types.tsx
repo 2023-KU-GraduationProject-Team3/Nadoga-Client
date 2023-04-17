@@ -14,6 +14,8 @@ export interface BookProps {
 export interface BookSectionProps {
   books: Array<BookProps>;
   bookName?: string;
+  addWishlist?: (userId: string, bookIsbn: number) => void;
+  deleteWishlist?: (userId: string, bookIsbn: number) => void;
 }
 
 export interface BookScreenProps {
@@ -22,4 +24,6 @@ export interface BookScreenProps {
   libCode?: number;
   isDetail: boolean;
   onPressWishlist?: (bookIsbn: number) => void;
+  addWishlist?: (userId: string, bookIsbn: number) => void;
+  deleteWishlist?: (userId: string, bookIsbn: number) => void;
 }

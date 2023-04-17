@@ -3,6 +3,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  useContext,
 } from "react";
 import styled from "styled-components/native";
 import { StyleProp, TextStyle, Text, Image, View } from "react-native";
@@ -11,6 +12,9 @@ import {
   useNavigation,
   useFocusEffect,
 } from "@react-navigation/native";
+
+// useContext
+import UserContext from "../../context/userContext";
 
 // constants
 import { colors } from "../../constants/Colors";
@@ -108,6 +112,12 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
   const route = useRoute<SerachBookDetailScreenProps["route"]>();
   const navigation = useNavigation<SerachBookDetailScreenProps["navigation"]>();
 
+  const { user, logoutUser } = useContext(UserContext);
+
+  useEffect(() => {
+    // console.log("BookItem props", props);
+  }, [props]);
+
   return (
     <BookContainer
       onPress={() => {
@@ -115,6 +125,7 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
           bookIsbn: props.book_isbn,
           libCode: props.libCode,
           isFromBookResult: props.isFromBookResult,
+          bookInfo: props,
         });
       }}
       isSearchResult={props.isSearchResult}
@@ -148,7 +159,7 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
         }}
       >
         <Text style={{ fontWeight: "700", fontSize: 12 }}>
-          ★{props.book_rating}
+          ★ {props.book_rating}
         </Text>
       </BookRating>
       {props.isSearchResult ? (
@@ -184,7 +195,9 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
           <AddToWishlistButton
             isWishlist={props.is_wishlist}
             onPress={() => {
-              props.onPressWishlist(props.book_isbn);
+              props.is_wishlist
+                ? props.deleteWishlist(user.user_id, props.book_isbn)
+                : props.addWishlist(user.user_id, props.book_isbn);
             }}
           >
             <Text

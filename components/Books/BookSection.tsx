@@ -15,9 +15,11 @@ import BookItem from "./BookItem";
 const BookListContainer = styled.View`
   width: ${layout.window.width}px;
   background-color: ${colors.bgGray};
-  padding-top: 20px;
   flex: 1;
   padding-left: 15px;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
 `;
 const BookList = styled.FlatList``;
 
@@ -26,7 +28,14 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
 ) => {
   useEffect(() => {
     // order by createdAt
-  }, [props.books]);
+    // console.log("BookSection props", props.books);
+    console.log("isWishlistLoaded", props.isWishlistLoaded);
+
+    setTimeout(() => {
+      props.setIsWishlistLoaded(true);
+      console.log("isWishlistLoaded", props.isWishlistLoaded);
+    }, 2000);
+  }, [props]);
 
   const sortedBooks = () => {
     return props.books.sort((a: any, b: any) => {
@@ -36,15 +45,17 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
 
   return (
     <BookListContainer>
-      {props.books.length === 0 ? (
+      {!props.isWishlistLoaded ? (
         <View>
           <Text>불러오는 중...</Text>
+        </View>
+      ) : props.isWishlistLoaded && props.books.length === 0 ? (
+        <View>
+          <Text>찜을 한 도서가 존재하지 않습니다.</Text>
         </View>
       ) : (
         <BookList
           contentContainerStyle={{
-            alignItems: "center",
-            justifyContent: "center",
             backgroundColor: colors.bgGray,
           }}
           data={sortedBooks()}
@@ -59,6 +70,8 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
               isFromBookResult={props.isFromBookResult}
               isSearchResult={props.isSearchResult}
               onPressWishlist={props.onPressWishlist}
+              addWishlist={props.addWishlist}
+              deleteWishlist={props.deleteWishlist}
               {...item}
             />
           )}
