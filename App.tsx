@@ -19,8 +19,53 @@ export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
-  const { isLogin } = useContext(UserContext);
-  console.log("isLogin", isLogin);
+  const [user, setUser] = useState({
+    user_id: "",
+    user_email: "",
+    user_name: "",
+    user_gender: 0,
+    user_age: 0,
+    user_genre: "",
+    is_login: false,
+  });
+
+  const loginUser = (userInfo: {
+    id: any;
+    email: any;
+    name: any;
+    age: any;
+    gender: any;
+    genre: any;
+  }): void => {
+    setUser({
+      user_id: userInfo.id,
+      user_email: userInfo.email,
+      user_name: userInfo.name,
+      user_age: userInfo.age,
+      user_gender: userInfo.gender,
+      user_genre: userInfo.genre,
+      is_login: true,
+    });
+  };
+
+  const logoutUser = (userInfo: {
+    id: any;
+    email: any;
+    name: any;
+    age: any;
+    gender: any;
+    genre: any;
+  }): void => {
+    setUser({
+      user_id: userInfo.id,
+      user_email: userInfo.email,
+      user_name: userInfo.name,
+      user_age: userInfo.age,
+      user_gender: userInfo.gender,
+      user_genre: userInfo.genre,
+      is_login: false,
+    });
+  };
 
   const [fontsLoaded] = useFonts({
     NotoSansKR_Black: require("./assets/fonts/NotoSansKR-Black.otf"),
@@ -42,13 +87,21 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          {isLogin ? (
-            <Navigation colorScheme={colorScheme} />
-          ) : (
-            <Auth colorScheme={colorScheme} />
-          )}
+          <UserContext.Provider value={{ user, loginUser, logoutUser }}>
+            {/* {user.is_login ? (
+              <Navigation colorScheme={colorScheme} />
+            ) : (
+              <Auth colorScheme={colorScheme} />
+            )} */}
 
-          <StatusBar />
+            {user.is_login ? (
+              <Navigation colorScheme={colorScheme} />
+            ) : (
+              <Auth colorScheme={colorScheme} />
+            )}
+
+            <StatusBar />
+          </UserContext.Provider>
         </QueryClientProvider>
       </SafeAreaProvider>
     );

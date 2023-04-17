@@ -1,5 +1,6 @@
 import styled from "styled-components/native";
 import { StyleSheet, View, Text } from "react-native";
+import { useFocusEffect, useNavigationState } from "@react-navigation/native";
 import { colors } from "../constants/Colors";
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -63,9 +64,9 @@ export default function SearchBookDetail({
   navigation,
 }: SerachBookDetailScreenProps) {
   // data : books
-
+  const navigationState = useNavigationState((state) => state);
   const [foundBook, setFoundBook] = useState<BookProps>();
-  const [bookIsbn, setBookIsbn] = useState(route.params.bookIsbn);
+  const bookIsbn = route.params.bookIsbn;
   const [libCode, setLibCode] = useState(route.params.libCode);
 
   const [isFromBookResult, setIsFromBookResult] = useState(
@@ -87,7 +88,7 @@ export default function SearchBookDetail({
     {
       refetchOnWindowFocus: true,
       onSuccess: (data) => {
-        console.log(data);
+        // console.log(data);
 
         const book = data.response.detail[0].book;
         setFoundBook({
@@ -105,7 +106,8 @@ export default function SearchBookDetail({
   );
 
   useEffect(() => {
-    alert(bookIsbn);
+    // alert(bookIsbn);
+    // console.log("navigationState", navigationState);
   }, []);
 
   // 대출 가능여부
@@ -126,7 +128,7 @@ export default function SearchBookDetail({
     {
       enabled: !isFromBookResult,
       onSuccess: (data) => {
-        console.log("data", data);
+        // console.log("data", data);
 
         if (data.response.result.loanAvailable == "Y") {
           setLoanAvailable("Y");
@@ -172,7 +174,7 @@ export default function SearchBookDetail({
             color: colors.semiblack,
           }}
         >
-          {isFromBookResult ? "도서 검색" : "도서관 상세정보"}
+          {isFromBookResult ? "도서 검색" : "도서 상세정보"}
         </Text>
       </DetailHeader>
       <BookItem
@@ -185,17 +187,20 @@ export default function SearchBookDetail({
       />
       <SearchLibraryContainer
         onPress={() => {
-          // navigation.navigate("SearchLibraryRoot", {
-          //   screen: "SearchLibrary",
-          //   params: {
-          //     bookIsbn: foundBook?.book_isbn,
-          //     bookName: foundBook?.book_name,
-          //   },
-          // });
-          navigation.navigate("SearchLibrary", {
-            bookIsbn: bookIsbn,
-            bookName: foundBook?.book_name,
+          navigation.navigate("SearchLibraryRoot", {
+            screen: "SearchLibrary",
+            params: {
+              bookIsbn: foundBook?.book_isbn,
+              bookName: foundBook?.book_name,
+              // previousScreen:
+              //   navigationState.routes[navigationState.routes.length - 1].name,
+            },
           });
+          // navigation.navigate("SearchLibrary", {
+          //   bookIsbn: foundBook?.book_isbn,
+          //   bookName: foundBook?.book_name,
+          //   // isFromDetail: true,
+          // });
         }}
       >
         <Feather name="search" size={24} color="#000" />
@@ -208,7 +213,7 @@ export default function SearchBookDetail({
             color: colors.semiblack,
           }}
         >
-          현 도서 소장하고 있는 도서관 찾기
+          현 도서 대출 가능한 도서관 보기
         </Text>
       </SearchLibraryContainer>
       <BookDescrptionContainer>

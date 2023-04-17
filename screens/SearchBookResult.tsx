@@ -164,7 +164,7 @@ export default function SearchBookResult({
   };
 
   useEffect(() => {
-    alert(bookName);
+    // alert(bookName);
   }, []);
 
   const handleSearchBookResult = () => {

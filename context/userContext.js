@@ -1,5 +1,5 @@
 import React, { createContext } from "react";
 
-const UserContext = createContext({ isLogin: true });
+const UserContext = createContext();
 
 export default UserContext;

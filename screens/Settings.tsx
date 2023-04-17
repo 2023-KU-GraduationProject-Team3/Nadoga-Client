@@ -1,14 +1,41 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useContext, useEffect } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
 import { RootTabScreenProps } from "../types";
+
+// useContext
+import UserContext from "../context/userContext";
 
 export default function Settings({
   navigation,
 }: RootTabScreenProps<"Settings">) {
+  const { user, logoutUser } = useContext(UserContext);
+
+  useEffect(() => {
+    console.log("user", user);
+  }, []);
+
+  const logout = () => {
+    logoutUser({
+      id: "",
+      email: "",
+      name: "",
+      age: 0,
+      gender: 0,
+      genre: "",
+    });
+    console.log("logout");
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
+      <TouchableOpacity
+        onPress={() => {
+          logout();
+        }}
+      >
+        <Text style={styles.title}>Logout</Text>
+      </TouchableOpacity>
       <View style={styles.separator} />
     </View>
   );

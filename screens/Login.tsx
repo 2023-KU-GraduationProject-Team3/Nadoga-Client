@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -16,7 +16,16 @@ import AuthHeader from "../components/Header/AuthHeader";
 // types
 import { LoginScreenProps } from "../types";
 
+// apis
+import { login } from "../apis/user";
+import UserContext from "../context/userContext";
+
 export default function Login({ navigation, route }: LoginScreenProps) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { user, loginUser } = useContext(UserContext);
+
   return (
     <View style={styles.container}>
       <AuthHeader englishTitle="Account Login" koreanTitle="로그인하기" />
@@ -43,6 +52,8 @@ export default function Login({ navigation, route }: LoginScreenProps) {
               fontSize: 16,
               fontFamily: "NotoSansKR-Thin",
             }}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
           />
         </View>
         <View>
@@ -67,6 +78,9 @@ export default function Login({ navigation, route }: LoginScreenProps) {
               fontSize: 16,
               fontFamily: "NotoSansKR-Thin",
             }}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            secureTextEntry={true}
           />
         </View>
       </View>
@@ -80,14 +94,29 @@ export default function Login({ navigation, route }: LoginScreenProps) {
             fontSize: 16,
             fontFamily: "NotoSansKR_Thin",
             color: colors.black,
-            marginBottom: 150,
           }}
         >
           계정이 없으신가요?
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.loginBtn}>
+      <TouchableOpacity
+        style={styles.loginBtn}
+        onPress={() => {
+          login(email, password).then((res) => {
+            if (res !== false) {
+              // 성공
+              loginUser({ ...res, is_login: true });
+              // navigation.navigate("Home");
+            } else {
+              // 실패
+              alert(
+                "로그인에 실패했습니다. email 혹은 password를 확인해주세요."
+              );
+            }
+          });
+        }}
+      >
         <Text
           style={{
             color: "#FCFAF2",
@@ -124,5 +153,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 150,
   },
 });

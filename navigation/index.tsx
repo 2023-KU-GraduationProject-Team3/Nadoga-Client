@@ -159,6 +159,7 @@ function SearchLibraryNavigator() {
         initialParams={{
           bookIsbn: 0,
           bookName: "",
+          isFromDetail: false,
         }}
         options={{ headerShown: false }}
       />

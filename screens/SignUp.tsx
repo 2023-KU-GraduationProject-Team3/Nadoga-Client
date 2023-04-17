@@ -5,9 +5,8 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
   ScrollView,
-  Dimensions,
+  Alert,
 } from "react-native";
 import CheckBox from "expo-checkbox";
 import { SelectDropdown, DropdownData } from "expo-select-dropdown";
@@ -24,6 +23,9 @@ import AuthHeader from "../components/Header/AuthHeader";
 
 // types
 import { SignUpScreenProps } from "../types";
+
+// apis
+import { signUp, emailCheck } from "../apis/user";
 
 export default function SignUp({ navigation, route }: SignUpScreenProps) {
   const [check, setCheck] = useState({
@@ -160,8 +162,14 @@ export default function SignUp({ navigation, route }: SignUpScreenProps) {
           <TextInput
             value={text.email}
             onChangeText={(value) => {
-              setCheck({ ...check, email: false });
               setText({ ...text, email: value });
+              setCheck({ ...check, email: false });
+              // const emailRegex =/^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+              // if (emailRegex.test(value)) {
+              //   setCheck({ ...check, email: true });
+              // } else {
+              //   setCheck({ ...check, email: false });
+              // }
             }}
             placeholder="Enter your email"
             placeholderTextColor="#909090"
@@ -182,16 +190,24 @@ export default function SignUp({ navigation, route }: SignUpScreenProps) {
             }}
             onPress={() => {
               // id 중복확인
-              if (text.email === "") {
-                alert("Email를 입력하세요.");
-              } else {
-                let emailSame = false;
+              const emailRegex =
+                /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
-                if (emailSame) {
-                  alert("ID가 중복됩니다.");
+              if (text.email === "") {
+                alert("이메일을 입력하세요.");
+              } else {
+                if (!emailRegex.test(text.email)) {
+                  alert("형식에 맞지 않는 이메일입니다.");
                 } else {
-                  alert("사용가능한 ID 입니다.");
-                  setCheck({ ...check, email: true });
+                  emailCheck(text.email).then((res) => {
+                    console.log(res);
+                    if (res) {
+                      alert("중복되는 이메일입니다");
+                    } else {
+                      alert("사용가능한 이메일입니다.");
+                      setCheck({ ...check, email: true });
+                    }
+                  });
                 }
               }
             }}
@@ -223,7 +239,7 @@ export default function SignUp({ navigation, route }: SignUpScreenProps) {
 
               setText({ ...text, pw: value });
 
-              if (passwordRegExp.test(text.pw)) {
+              if (passwordRegExp.test(value)) {
                 setCheck({ ...check, pw: true });
               } else {
                 setCheck({ ...check, pw: false });
@@ -333,6 +349,11 @@ export default function SignUp({ navigation, route }: SignUpScreenProps) {
             value={text.nickname}
             onChangeText={(value) => {
               setText({ ...text, nickname: value });
+              if (value !== "") {
+                setCheck({ ...check, nickname: true });
+              } else {
+                setCheck({ ...check, nickname: false });
+              }
             }}
             placeholder="Enter your nickname"
             placeholderTextColor="#909090"
@@ -468,7 +489,63 @@ export default function SignUp({ navigation, route }: SignUpScreenProps) {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.signUpBtn}>
+      <TouchableOpacity
+        style={styles.signUpBtn}
+        onPress={() => {
+          if (
+            check.email &&
+            check.pw &&
+            check.pwSame &&
+            check.nickname &&
+            check.age &&
+            genderSelected != null &&
+            genreSelected != null &&
+            toggleCheckBox
+          ) {
+            setText({ email: "", pw: "", pwSame: "", nickname: "", age: "" });
+            setCheck({
+              email: false,
+              pw: false,
+              pwSame: false,
+              nickname: false,
+              age: false,
+            });
+
+            signUp({
+              email: text.email,
+              password: text.pw,
+              name: text.nickname,
+              gender: genderSelected.key,
+              age: parseInt(text.age),
+              genre: genreSelected.value,
+            });
+
+            Alert.alert("회원가입 완료", "로그인 페이지로 이동하시겠습니까?", [
+              { text: "예", onPress: () => navigation.navigate("Login") },
+              {
+                text: "아니오",
+                onPress: () => {
+                  return;
+                },
+              },
+            ]);
+          } else {
+            if (!check.email) {
+              alert("이메일을 확인해주세요");
+            } else if (!check.pw) {
+              alert("비밀번호를 확인해주세요");
+            } else if (!check.pwSame) {
+              alert("비밀번호가 일치하지 않습니다");
+            } else if (!check.nickname) {
+              alert("닉네임을 확인해주세요");
+            } else if (!check.age) {
+              alert("나이를 확인해주세요");
+            } else if (!toggleCheckBox) {
+              alert("개인정보 처리 동의를 해주세요");
+            }
+          }
+        }}
+      >
         <Text
           style={{
             color: "#FCFAF2",
