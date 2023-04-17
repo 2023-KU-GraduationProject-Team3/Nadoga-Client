@@ -47,3 +47,14 @@ export const emailCheck = async (email: string) => {
     return false;
   }
 };
+
+export const deleteUser = async (user_id: string) => {
+  try {
+    const response = await axios.delete(
+      `http://43.200.106.28:4000/user/${user_id}`
+    );
+    return response.data;
+  } catch (error) {
+    return false;
+  }
+};
