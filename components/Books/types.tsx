@@ -8,6 +8,7 @@ export interface BookProps {
   book_description?: string;
   is_wishlist: boolean;
   is_loanAvailable?: string;
+  createdAt?: string;
 }
 
 export interface BookSectionProps {

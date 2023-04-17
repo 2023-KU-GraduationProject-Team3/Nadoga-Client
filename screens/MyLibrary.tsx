@@ -1,5 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import React, { StyleSheet, View, Text } from "react-native";
+import {
+  useFocusEffect,
+  useNavigationState,
+  useRoute,
+} from "@react-navigation/native";
 
 // constants
 import { colors } from "../constants/Colors";
@@ -8,13 +13,28 @@ import { colors } from "../constants/Colors";
 import MyInfo from "../components/Header/MyInfo";
 import MyLibraryHeader from "../components/Header/MyLibraryHeader";
 import BookSection from "../components/Books/BookSection";
+import Test from "../components/test";
 
 // types
 import { MyLibraryScreenProps } from "../types";
 
+// api authkey
+const AUTHKEY =
+  "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
+
+// apis
+import { getWishlistById } from "../apis/wishlist";
+import { getWithURI } from "../apis/data4library";
+
+// useContext
+import UserContext from "../context/userContext";
+
 export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   const [menuNum, setMenuNum] = useState(0);
   const [isModal, setIsModal] = useState(false);
+  const [wishlistData, setWishlistData] = useState([]);
+
+  const { user, logoutUser } = useContext(UserContext);
 
   const handleMenuNum = (num: number) => {
     setMenuNum(num);
@@ -136,6 +156,66 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
     },
   ];
 
+  // API function - 6. 도서 상세 조회
+  const getBookDetail = async (bookIsbn: number) => {
+    return getWithURI(
+      `http://data4library.kr/api/srchDtlList?authKey=${AUTHKEY}&isbn13=${bookIsbn}&loaninfoYN=Y&displayInfo=gender&format=json`
+    );
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      setWishlistData([]);
+      console.log("user_id", user.user_id);
+      let updatedWishlistData: {
+        book_isbn: any;
+        book_name: any;
+        book_author: any;
+        book_publisher: any;
+        book_description: any;
+        book_image_url: any;
+        book_rating: number;
+        is_wishlist: boolean;
+        createdAt: any;
+      }[] = [];
+
+      getWishlistById(user.user_id).then((data) => {
+        data.map((item) => {
+          let bookIsbn = Number(item.isbn);
+
+          getBookDetail(bookIsbn).then((data) => {
+            let book = data.response.detail[0].book;
+            let bookDetail = {
+              book_isbn: book.isbn13,
+              book_name: book.bookname,
+              book_author: book.authors,
+              book_publisher: book.publisher,
+              book_description: book.description,
+              book_image_url: book.bookImageURL,
+              book_rating: 0.0,
+              is_wishlist: true,
+              createdAt: item.createdAt,
+            };
+
+            setWishlistData((prev) => [...prev, bookDetail]);
+            // updatedWishlistData.push(bookDetail);
+          });
+        });
+      });
+
+      // order by created_at
+
+      // updatedWishlistData.sort((a, b) => {
+      //   return a.book_isbn - b.book_isbn;
+      // });
+
+      // setWishlistData([...updatedWishlistData]);
+
+      console.log("wishlistdata", wishlistData);
+      console.log("wishlistdata length", wishlistData.length);
+    }, [])
+  );
+
   return (
     <View style={styles.container}>
       <MyInfo
@@ -175,7 +255,7 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
         }}
       ></MyLibraryHeader>
       <BookSection
-        books={recommendResult}
+        books={menuNum === 0 ? wishlistData : recommendResult}
         isSearchResult={false}
         isFromBookResult={true}
         isDetail={false}

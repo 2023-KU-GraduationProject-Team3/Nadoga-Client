@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 import { StyleSheet, View, Text } from "react-native";
 import { useFocusEffect, useNavigationState } from "@react-navigation/native";
 import { colors } from "../constants/Colors";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 // types
@@ -59,10 +59,18 @@ const BookDescrptionContainer = styled.View`
   background-color: ${colors.bgGray};
 `;
 
+// useContext
+import UserContext from "../context/userContext";
+
+// apis
+import { getWithURI } from "../apis/data4library";
+
 export default function SearchBookDetail({
   route,
   navigation,
 }: SerachBookDetailScreenProps) {
+  const { user, logoutUser } = useContext(UserContext);
+
   // data : books
   const navigationState = useNavigationState((state) => state);
   const [foundBook, setFoundBook] = useState<BookProps>();
@@ -75,10 +83,9 @@ export default function SearchBookDetail({
 
   // API function - 6. 도서 상세 조회
   const getBookDetail = async () => {
-    const response = await axios.get(
+    return getWithURI(
       `http://data4library.kr/api/srchDtlList?authKey=${AUTHKEY}&isbn13=${bookIsbn}&loaninfoYN=Y&displayInfo=gender&format=json`
     );
-    return response.data;
   };
 
   // react-query - GET_BOOK_DETAIL
@@ -115,10 +122,9 @@ export default function SearchBookDetail({
 
   // API function - 11. 도서관별 도서 소장 여부 및 대출 가능여부 조회
   const getBookStatus = async (libCode: number, isbn13: number) => {
-    const response = await axios.get(
+    return getWithURI(
       `http://data4library.kr/api/bookExist?authKey=${AUTHKEY}&libCode=${libCode}&isbn13=${isbn13}&format=json`
     );
-    return response.data;
   };
 
   // react-query : GET_BOOK_STATUS
