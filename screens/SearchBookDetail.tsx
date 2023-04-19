@@ -107,7 +107,7 @@ export default function SearchBookDetail({
     getBookDetail,
     {
       refetchOnWindowFocus: true,
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         // console.log(data);
 
         const book = data.response.detail[0].book;
@@ -134,17 +134,20 @@ export default function SearchBookDetail({
           book_rating: 4.5,
           is_wishlist: false,
         });
+        let updatedLoanList = [];
+        closestLibraryList.map(async (library) => {
+          const data = await getBookStatus(library.libCode, book.isbn13);
+          console.log("libCode", libCode);
+          console.log("library.libCode", library.libCode);
 
-        closestLibraryList.map((library) => {
-          getBookStatus(library.libCode, book.isbn13).then((data) => {
-            console.log(
-              "librarylist + loanAvailable",
-              data.response.result.loanAvailable
-            );
+          const libData = {
+            libCode: library.libCode,
+            loanAvailable: data.response.result.loanAvailable,
+          };
 
-            setIsLoanList([...isLoanList, data.response.result.loanAvailable]);
-          });
+          updatedLoanList.push(libData);
         });
+        setIsLoanList(updatedLoanList);
       },
     }
   );

@@ -52,8 +52,7 @@ const MyLocationButton = styled.TouchableOpacity`
 const ShowClosestLibraryButton = styled.TouchableOpacity`
   position: absolute;
   top: 160px;
-  right: 20px;
-  background-color: ${colors.white};
+  right: 25px;
 `;
 
 const CurrentBookSection = styled.View`
@@ -484,7 +483,9 @@ const MapViewComponent: FunctionComponent = ({
           refetch();
         }}
       >
-        <Text>가장 가까운 도서관 5곳</Text>
+        <Image
+          source={require("../../assets/icons/map/current-library.png")}
+        ></Image>
       </ShowClosestLibraryButton>
       {isLookingForBook ? (
         <CurrentBookSection>
@@ -645,20 +646,26 @@ const MapViewComponent: FunctionComponent = ({
                           }}
                         >
                           {marker.distance}km{" "}
-                          <Text
-                            style={{
-                              color:
-                                isLoanList[index] === "Y"
-                                  ? colors.lightgreen
-                                  : colors.red,
-                            }}
-                          >
-                            {" "}
-                            {isLookingForBook &&
-                              (isLoanList[index] === "Y"
-                                ? "대출가능"
-                                : "대출중")}
-                          </Text>
+                          {isLookingForBook && (
+                            <Text
+                              style={{
+                                color:
+                                  isLoanList?.find((lib) => {
+                                    return lib.libCode === marker.libCode;
+                                  })?.loanAvailable === "Y"
+                                    ? colors.lightgreen
+                                    : colors.red,
+                              }}
+                            >
+                              {" "}
+                              {isLookingForBook &&
+                                (isLoanList?.find((lib) => {
+                                  return lib.libCode === marker.libCode;
+                                })?.loanAvailable === "Y"
+                                  ? "대출가능"
+                                  : "대출중")}
+                            </Text>
+                          )}
                         </Text>
                       </View>
                     </View>
