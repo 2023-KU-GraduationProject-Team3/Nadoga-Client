@@ -61,6 +61,7 @@ const BookDescrptionContainer = styled.View`
 
 // useContext
 import UserContext from "../context/userContext";
+import BookContext from "../context/bookContext";
 
 // apis
 import { getWithURI } from "../apis/data4library";
@@ -69,7 +70,17 @@ export default function SearchBookDetail({
   route,
   navigation,
 }: SerachBookDetailScreenProps) {
-  const { user, logoutUser } = useContext(UserContext);
+  const {
+    user,
+    logoutUser,
+    setIsLookingForBook,
+    lookingBookInfo,
+    setLookingBookInfo,
+    closestLibraryList,
+    setClosestLibraryList,
+    isLoanList,
+    setIsLoanList,
+  } = useContext(UserContext);
 
   const [bookInfo, setBookInfo] = useState(route.params.bookInfo);
 
@@ -100,6 +111,8 @@ export default function SearchBookDetail({
         // console.log(data);
 
         const book = data.response.detail[0].book;
+        console.log("bookInfo", book);
+
         setFoundBook({
           book_isbn: book.isbn13,
           book_name: book.bookname,
@@ -109,6 +122,28 @@ export default function SearchBookDetail({
           book_image_url: book.bookImageURL,
           book_rating: 4.5,
           is_wishlist: false,
+        });
+
+        setLookingBookInfo({
+          book_isbn: book.isbn13,
+          book_name: book.bookname,
+          book_author: book.authors,
+          book_publisher: book.publisher,
+          book_description: book.description,
+          book_image_url: book.bookImageURL,
+          book_rating: 4.5,
+          is_wishlist: false,
+        });
+
+        closestLibraryList.map((library) => {
+          getBookStatus(library.libCode, book.isbn13).then((data) => {
+            console.log(
+              "librarylist + loanAvailable",
+              data.response.result.loanAvailable
+            );
+
+            setIsLoanList([...isLoanList, data.response.result.loanAvailable]);
+          });
         });
       },
     }
@@ -196,14 +231,15 @@ export default function SearchBookDetail({
         isFromBookResult={isFromBookResult}
         isSearchResult={true}
         isDetail={true}
+        is_loanAvailable={loanAvailable}
       />
       <SearchLibraryContainer
         onPress={() => {
+          setIsLookingForBook(true);
           navigation.navigate("SearchLibraryRoot", {
             screen: "SearchLibrary",
             params: {
-              bookIsbn: foundBook?.book_isbn,
-              bookName: foundBook?.book_name,
+              bookInfo: foundBook,
               // previousScreen:
               //   navigationState.routes[navigationState.routes.length - 1].name,
             },

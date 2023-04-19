@@ -29,12 +29,6 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
   useEffect(() => {
     // order by createdAt
     // console.log("BookSection props", props.books);
-    console.log("isWishlistLoaded", props.isWishlistLoaded);
-
-    setTimeout(() => {
-      props.setIsWishlistLoaded(true);
-      console.log("isWishlistLoaded", props.isWishlistLoaded);
-    }, 2000);
   }, [props]);
 
   const sortedBooks = () => {
@@ -45,38 +39,28 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
 
   return (
     <BookListContainer>
-      {!props.isWishlistLoaded ? (
-        <View>
-          <Text>불러오는 중...</Text>
-        </View>
-      ) : props.isWishlistLoaded && props.books.length === 0 ? (
-        <View>
-          <Text>찜을 한 도서가 존재하지 않습니다.</Text>
-        </View>
-      ) : (
-        <BookList
-          contentContainerStyle={{
-            backgroundColor: colors.bgGray,
-          }}
-          data={sortedBooks()}
-          numColumns={props.isSearchResult ? 1 : 3}
-          horizontal={false}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={({ book_isbn }: any) => book_isbn}
-          renderItem={({ item }: any) => (
-            <BookItem
-              key={item.book_isbn}
-              libCode={props.libCode}
-              isFromBookResult={props.isFromBookResult}
-              isSearchResult={props.isSearchResult}
-              onPressWishlist={props.onPressWishlist}
-              addWishlist={props.addWishlist}
-              deleteWishlist={props.deleteWishlist}
-              {...item}
-            />
-          )}
-        />
-      )}
+      <BookList
+        contentContainerStyle={{
+          backgroundColor: colors.bgGray,
+        }}
+        data={sortedBooks()}
+        numColumns={props.isSearchResult ? 1 : 3}
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={({ book_isbn }: any) => book_isbn}
+        renderItem={({ item }: any) => (
+          <BookItem
+            key={item.book_isbn}
+            libCode={props.libCode}
+            isFromBookResult={props.isFromBookResult}
+            isSearchResult={props.isSearchResult}
+            onPressWishlist={props.onPressWishlist}
+            addWishlist={props.addWishlist}
+            deleteWishlist={props.deleteWishlist}
+            {...item}
+          />
+        )}
+      />
     </BookListContainer>
   );
 };

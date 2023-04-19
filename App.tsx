@@ -13,6 +13,7 @@ import { useFonts } from "expo-font";
 // react query
 import { QueryClient, QueryClientProvider } from "react-query";
 import UserContext from "./context/userContext";
+import BookContext from "./context/bookContext";
 const queryClient = new QueryClient();
 
 export default function App() {
@@ -28,6 +29,21 @@ export default function App() {
     user_genre: "",
     is_login: false,
   });
+
+  const [isLookingForBook, setIsLookingForBook] = useState(false);
+  const [lookingBookInfo, setLookingBookInfo] = useState({
+    book_isbn: "",
+    book_name: "",
+    book_author: "",
+    book_publisher: "",
+    book_description: "",
+    book_image_url: "",
+    book_rating: 0,
+    is_wishlist: false,
+  });
+
+  const [closestLibraryList, setClosestLibraryList] = useState([]);
+  const [isLoanList, setIsLoanList] = useState(false);
 
   const loginUser = (userInfo: {
     id: any;
@@ -87,7 +103,21 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <UserContext.Provider value={{ user, loginUser, logoutUser }}>
+          <UserContext.Provider
+            value={{
+              user,
+              loginUser,
+              logoutUser,
+              isLookingForBook,
+              setIsLookingForBook,
+              lookingBookInfo,
+              setLookingBookInfo,
+              closestLibraryList,
+              setClosestLibraryList,
+              isLoanList,
+              setIsLoanList,
+            }}
+          >
             {/* {user.is_login ? (
               <Navigation colorScheme={colorScheme} />
             ) : (

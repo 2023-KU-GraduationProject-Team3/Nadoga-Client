@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 import { colors } from "../constants/Colors";
 import { useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -18,6 +18,10 @@ import axios from "axios";
 // api authkey
 const AUTHKEY =
   "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
+
+// apis
+import { getWishlistById, addWishlist, deleteWishlist } from "../apis/wishlist";
+import { getWithURI } from "../apis/data4library";
 
 import { SearchBookScreenProps } from "../types";
 
@@ -151,6 +155,14 @@ export default function SearchBook({
     });
   };
 
+  const handleAddWishlist = (userId: string, book_isbn: number) => {
+    addWishlist(userId, book_isbn);
+  };
+
+  const handleDeleteWishlist = (userId: string, book_isbn: number) => {
+    deleteWishlist(userId, book_isbn);
+  };
+
   return (
     <View style={styles.container}>
       <SearchBar
@@ -186,6 +198,8 @@ export default function SearchBook({
         isSearchResult={false}
         isFromBookResult={true}
         isDetail={false}
+        addWishlist={handleAddWishlist}
+        deleteWishlist={handleDeleteWishlist}
       />
     </View>
   );

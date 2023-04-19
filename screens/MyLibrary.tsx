@@ -192,17 +192,6 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
       setWishlistData([]);
       setIsWishlistLoaded(false);
       console.log("user_id", user.user_id);
-      let updatedWishlistData: {
-        book_isbn: any;
-        book_name: any;
-        book_author: any;
-        book_publisher: any;
-        book_description: any;
-        book_image_url: any;
-        book_rating: number;
-        is_wishlist: boolean;
-        createdAt: any;
-      }[] = [];
 
       getWishlistById(user.user_id).then((data) => {
         data.map((item) => {
@@ -238,6 +227,11 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
 
       // console.log("wishlistdata", wishlistData);
       // console.log("wishlistdata length", wishlistData.length);
+
+      setTimeout(() => {
+        setIsWishlistLoaded(true);
+        console.log("isWishlistLoaded", isWishlistLoaded);
+      }, 2000);
     }, [])
   );
 
@@ -279,16 +273,36 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
           fontFamily: "NotoSansKR_Regular",
         }}
       ></MyLibraryHeader>
-      <BookSection
-        books={menuNum === 0 ? wishlistData : recommendResult}
-        isSearchResult={false}
-        isFromBookResult={true}
-        isDetail={false}
-        addWishlist={handleAddWishlist}
-        deleteWishlist={handleDeleteWishlist}
-        isWishlistLoaded={isWishlistLoaded}
-        setIsWishlistLoaded={setIsWishlistLoaded}
-      />
+      {!isWishlistLoaded ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text>불러오는 중...</Text>
+        </View>
+      ) : isWishlistLoaded && wishlistData.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text>찜을 한 도서가 존재하지 않습니다.</Text>
+        </View>
+      ) : (
+        <BookSection
+          books={menuNum === 0 ? wishlistData : recommendResult}
+          isSearchResult={false}
+          isFromBookResult={true}
+          isDetail={false}
+          addWishlist={handleAddWishlist}
+          deleteWishlist={handleDeleteWishlist}
+        />
+      )}
     </View>
   );
 }

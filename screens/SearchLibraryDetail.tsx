@@ -21,6 +21,9 @@ import { useQueries, useQuery } from "react-query";
 // axios
 import axios from "axios";
 
+// apis
+import { getWithURI } from "../apis/data4library";
+
 // api authkey
 const AUTHKEY =
   "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
@@ -49,10 +52,9 @@ export default function SearchLibraryDetail({
 
   // API function - 14. 도서관별 통합정보
   const fetchLibraryDetail = async () => {
-    const response = await axios.get(
+    return getWithURI(
       `http://data4library.kr/api/extends/libSrch?authKey=${AUTHKEY}&format=json&libCode=${libCode}`
     );
-    return response.data;
   };
 
   // API function - 9. 도서관/지역별 인기대출 도서 조회
@@ -90,10 +92,9 @@ export default function SearchLibraryDetail({
       age = 60;
     }
 
-    const response = await axios.get(
+    return getWithURI(
       `http://data4library.kr/api/loanItemSrchByLib?authKey=${AUTHKEY}&libCode=${libCode}&age=${age}&gender=${user_gender}&pageSize=12&pageNo=1&format=json`
     );
-    return response.data;
   };
 
   // react-query - GET_LIBRARY_DETAIL
@@ -106,10 +107,9 @@ export default function SearchLibraryDetail({
 
   // API function - 11. 도서관별 도서 소장 여부 및 대출 가능여부 조회
   const getBookStatus = async (libCode: number, isbn13: number) => {
-    const response = await axios.get(
+    return getWithURI(
       `http://data4library.kr/api/bookExist?authKey=${AUTHKEY}&libCode=${libCode}&isbn13=${isbn13}&format=json`
     );
-    return response.data;
   };
 
   // react-query - GET_POPULAR_BOOK

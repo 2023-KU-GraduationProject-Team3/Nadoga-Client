@@ -68,7 +68,7 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
           handleSearch();
           setSearchValue("");
         }}
-        disabled={searchValue.length === 0}
+        disabled={searchValue?.length === 0}
       >
         <Feather name="search" size={24} color="#000" />
       </TouchableOpacity>
