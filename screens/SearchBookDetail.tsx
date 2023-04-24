@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 import { StyleSheet, View, Text } from "react-native";
 import { useFocusEffect, useNavigationState } from "@react-navigation/native";
 import { colors } from "../constants/Colors";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 // types
@@ -61,10 +61,10 @@ const BookDescrptionContainer = styled.View`
 
 // useContext
 import UserContext from "../context/userContext";
-import BookContext from "../context/bookContext";
 
 // apis
 import { getWithURI } from "../apis/data4library";
+import { getWishlistById } from "../apis/wishlist";
 
 export default function SearchBookDetail({
   route,
@@ -82,7 +82,8 @@ export default function SearchBookDetail({
     setIsLoanList,
   } = useContext(UserContext);
 
-  const [bookInfo, setBookInfo] = useState(route.params.bookInfo);
+  // const [bookInfo, setBookInfo] = useState(route.params.bookInfo);
+  const [bookInfo, setBookInfo] = useState();
 
   // data : books
   const navigationState = useNavigationState((state) => state);
@@ -93,6 +94,31 @@ export default function SearchBookDetail({
   const [isFromBookResult, setIsFromBookResult] = useState(
     route.params.isFromBookResult
   );
+
+  const [isWishlist, setIsWishlist] = useState(route.params.isWishlist);
+  const [isWishlistLoaded, setIsWishlistLoaded] = useState(false);
+
+  const updateWishlist = () => {
+    // check if bookIsbn is in wishlist
+    setIsWishlistLoaded(false);
+    getWishlistById(user.user_id).then((res) => {
+      setIsWishlistLoaded(true);
+
+      console.log("searchbookdetail wishlist", res);
+      const wishlist = res;
+      const isWishlist = wishlist.some(
+        (book) => Number(book.isbn) === Number(bookIsbn)
+      );
+      setIsWishlist(isWishlist);
+    });
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      updateWishlist();
+    }, [])
+  );
+  useEffect(() => {}, [isWishlistLoaded]);
 
   // API function - 6. 도서 상세 조회
   const getBookDetail = async () => {
@@ -114,25 +140,25 @@ export default function SearchBookDetail({
         console.log("bookInfo", book);
 
         setFoundBook({
-          book_isbn: book.isbn13,
-          book_name: book.bookname,
-          book_author: book.authors,
-          book_publisher: book.publisher,
-          book_description: book.description,
-          book_image_url: book.bookImageURL,
-          book_rating: 4.5,
-          is_wishlist: false,
+          isbn13: bookIsbn,
+          bookname: book.bookname,
+          authors: book.authors,
+          publisher: book.publisher,
+          bookDescription: book.description,
+          bookImageURL: book.bookImageURL,
+          bookRating: 4.5,
+          isWishlist: book.isWishlist,
         });
 
         setLookingBookInfo({
-          book_isbn: book.isbn13,
-          book_name: book.bookname,
-          book_author: book.authors,
-          book_publisher: book.publisher,
-          book_description: book.description,
-          book_image_url: book.bookImageURL,
-          book_rating: 4.5,
-          is_wishlist: false,
+          isbn13: bookIsbn,
+          bookname: book.bookname,
+          authors: book.authors,
+          publisher: book.publisher,
+          bookDescription: book.description,
+          bookImageURL: book.bookImageURL,
+          bookRating: 4.5,
+          isWishlist: book.isWishlist,
         });
         let updatedLoanList = [];
         closestLibraryList.map(async (library) => {
@@ -185,12 +211,12 @@ export default function SearchBookDetail({
     }
   );
 
-  // const onPressWishlist = (book_isbn: number) => {
+  // const onPressWishlist = (isbn: number) => {
   //   setFoundBook((prev) => {
   //     if (prev) {
   //       return {
   //         ...prev,
-  //         is_wishlist: !prev.is_wishlist,
+  //         isWishlist: !prev.isWishlist,
   //       };
   //     }
   //   });
@@ -198,7 +224,7 @@ export default function SearchBookDetail({
 
   // useEffect(() => {
   //   // 검색어로 books 필터링
-  //   const foundBook = books.find((book) => book.book_isbn === bookIsbn);
+  //   const foundBook = books.find((book) => book.isbn === bookIsbn);
   //   setFoundBook(foundBook);
   //   console.log(foundBook);
   // }, []);
@@ -230,11 +256,15 @@ export default function SearchBookDetail({
         // is_loanAvailable={loanAvailable}
         // isFromBookResult={isFromBookResult}
         // // onPressWishlist={onPressWishlist}
-        {...bookInfo}
+        {...foundBook}
         isFromBookResult={isFromBookResult}
         isSearchResult={true}
         isDetail={true}
-        is_loanAvailable={loanAvailable}
+        isLoanAvailable={loanAvailable}
+        isWishlist={isWishlist}
+        addWishlist={route.params.addWishlist}
+        deleteWishlist={route.params.deleteWishlist}
+        updateWishlist={updateWishlist}
       />
       <SearchLibraryContainer
         onPress={() => {
@@ -248,8 +278,8 @@ export default function SearchBookDetail({
             },
           });
           // navigation.navigate("SearchLibrary", {
-          //   bookIsbn: foundBook?.book_isbn,
-          //   bookName: foundBook?.book_name,
+          //   bookIsbn: foundBook?.isbn,
+          //   bookName: foundBook?.bookname,
           //   // isFromDetail: true,
           // });
         }}
@@ -286,7 +316,7 @@ export default function SearchBookDetail({
             color: colors.gray4,
           }}
         >
-          {foundBook?.book_description}
+          {foundBook?.bookDescription}
         </Text>
       </BookDescrptionContainer>
     </View>

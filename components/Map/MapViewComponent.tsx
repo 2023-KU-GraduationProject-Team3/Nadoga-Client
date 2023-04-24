@@ -99,9 +99,7 @@ type MapViewComponentProps = {
   markers: Array<object>;
 };
 
-const MapViewComponent: FunctionComponent = ({
-  props,
-}: MapViewComponentProps) => {
+const MapViewComponent: FunctionComponent = () => {
   const {
     user,
     setUser,

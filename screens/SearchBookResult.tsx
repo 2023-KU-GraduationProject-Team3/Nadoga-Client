@@ -1,7 +1,9 @@
 import { StyleSheet, View, Text } from "react-native";
 import styled from "styled-components/native";
 import { colors } from "../constants/Colors";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
+import { useFocusEffect, useNavigationState } from "@react-navigation/native";
+
 import { Ionicons } from "@expo/vector-icons";
 
 // components
@@ -20,6 +22,9 @@ const DetailHeader = styled.TouchableOpacity`
   padding-left: 30px;
 `;
 
+// useContext
+import UserContext from "../context/userContext";
+
 // types
 import { SearchBookResultScreenProps } from "../types";
 import { BookProps } from "../components/Books/types";
@@ -35,116 +40,137 @@ import React from "react";
 const AUTHKEY =
   "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
 
+// apis
+import { getWithURI } from "../apis/data4library";
+import {
+  getWishlistById,
+  getIsWishlist,
+  addWishlist,
+  deleteWishlist,
+} from "../apis/wishlist";
+
 export default function SearchBookResult({
   navigation,
   route,
 }: SearchBookResultScreenProps) {
   const [bookName, setBookName] = useState<string>(route.params.bookName);
 
-  // // data
-  // const books = [
-  //   {
-  //     book_isbn: 1,
-  //     book_name: "노인과 바다",
-  //     book_publisher: "출판사아",
-  //     book_author: "헤밍웨이",
-  //     book_image_url: "../assets/images/book-sample-img.png",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 2,
-  //     book_name: "책책책",
-  //     book_publisher: "출판사아",
-  //     book_author: "헤밍웨이",
-  //     book_image_url: "../assets/images/book-sample-img.png",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 3,
-  //     book_name: "마법천자문",
-  //     book_publisher: "출판사아",
-  //     book_author: "헤밍웨이",
-  //     book_image_url: "../assets/images/book-sample-img.png",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 4,
-  //     book_name: "이것이 자바다",
-  //     book_publisher: "출판사아",
-  //     book_author: "헤밍웨이",
-  //     book_image_url: "../assets/images/book-sample-img.png",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 5,
-  //     book_name: "파이썬 코딩 인터뷰",
-  //     book_publisher: "출판사아",
-  //     book_author: "헤밍웨이",
-  //     book_image_url: "../assets/images/book-sample-img.png",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 6,
-  //     book_name: "book",
-  //     book_publisher: "출판사아",
-  //     book_author: "헤밍웨이",
-  //     book_image_url: "../assets/images/book-sample-img.png",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  // ];
+  const [isKeywordBooksLoaded, setIsKeywordBooksLoaded] =
+    useState<boolean>(false);
+
+  const [isWishlistLoaded, setIsWishlistLoaded] = useState<boolean>(false);
+
+  const { user } = useContext(UserContext);
+  const [wishlist, setWishlist] = useState(route.params.wishlist);
+
+  const handleAddWishlist = (userId: string, book_isbn: number) => {
+    addWishlist(userId, book_isbn);
+    //updateWishlist();
+    // setWishlist([...wishlist, { isbn: book_isbn }]);
+  };
+
+  const handleDeleteWishlist = (userId: string, book_isbn: number) => {
+    // updateWishlist();
+    deleteWishlist(userId, book_isbn);
+  };
+
+  const updateWishlist = () => {
+    setIsWishlistLoaded(false);
+
+    getWishlistById(user.user_id)
+      .then((res) => {
+        setWishlist(res);
+        setIsWishlistLoaded(true);
+      })
+      .then(() => {
+        refetch();
+      });
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsKeywordBooksLoaded(false);
+      setKeywordBooks([]);
+      getWishlistById(user.user_id)
+        .then((res) => {
+          setWishlist(res);
+          console.log("wishlist", res);
+        })
+        .then(() => {
+          refetch();
+        });
+
+      setBookName(route.params.bookName);
+
+      setTimeout(() => {
+        setIsKeywordBooksLoaded(true);
+        console.log("isWishlistLoaded", isKeywordBooksLoaded);
+      }, 2000);
+    }, [])
+  );
+
+  useEffect(() => {}, [isWishlistLoaded]);
 
   const [keywordBooks, setKeywordBooks] = useState<Array<BookProps>>();
 
   // API function - 16. 도서 검색
   const fetchBookWithKeyword = async (bookName: string) => {
-    const response = await axios.get(
+    return getWithURI(
       `http://data4library.kr/api/srchBooks?authKey=${AUTHKEY}&keyword=${bookName}&pageNo=1&pageSize=1000&format=json`
     );
-    return response.data;
   };
+
+  // const checkIsWishlist = (book_isbn: number): boolean => {
+  //   console.log("checkiswishlist", book_isbn);
+
+  //   wishlist.map((item) => {
+  //     if (Number(item.isbn) === Number(book_isbn)) {
+  //       return true;
+  //     }
+  //   });
+  //   return false;
+  // };
 
   // react-query - GET_BOOKS_WITH_KEYWORD
   const { data, isLoading, isError, refetch } = useQuery(
     "GET_BOOKS_WITH_KEYWORD",
     () => fetchBookWithKeyword(bookName),
     {
+      enabled: isKeywordBooksLoaded,
       onSuccess: (data) => {
         const books = data.response.docs;
         const keywordBooks: Array<BookProps> = [];
 
-        books.forEach((item: any) => {
-          if (keywordBooks.length >= 20) {
+        books.map((item: any) => {
+          if (keywordBooks.length >= 10) {
             // 최대 20개 까지만
             return;
           }
 
           const bookInfo = item.doc;
+          // let bookItem = {
+          //   isbn13: bookInfo.isbn13,
+          //   bookname: bookInfo.bookname,
+          //   authors: bookInfo.authors,
+          //   publisher: bookInfo.publisher,
+          //   bookImageURL: bookInfo.bookImageURL,
+          //   bookRating: 4.5,
+          //   isWishlist: checkIsWishlist(bookInfo.isbn13),
+          // };
+          // if (index < 10) {
+          //   setKeywordBooks((prev) => [...prev, bookItem]);
+          // }
+
           keywordBooks.push({
-            book_isbn: bookInfo.isbn13,
-            book_name: bookInfo.bookname,
-            book_author: bookInfo.authors,
-            book_publisher: bookInfo.publisher,
-            book_image_url: bookInfo.bookImageURL,
-            book_rating: 4.5,
-            is_wishlist: false,
+            isbn13: bookInfo.isbn13,
+            bookname: bookInfo.bookname,
+            authors: bookInfo.authors,
+            publisher: bookInfo.publisher,
+            bookImageURL: bookInfo.bookImageURL,
+            bookRating: 4.5,
+            isWishlist: wishlist.some((wishlistItem) => {
+              return Number(wishlistItem.isbn) === Number(bookInfo.isbn13);
+            }),
           });
         });
 
@@ -153,50 +179,25 @@ export default function SearchBookResult({
     }
   );
 
-  const onPressWishlist = (book_isbn: number) => {
-    setKeywordBooks(
-      keywordBooks?.map((book) =>
-        book.book_isbn === book_isbn
-          ? { ...book, is_wishlist: !book.is_wishlist }
-          : book
-      )
-    );
-  };
-
   useEffect(() => {
     // alert(bookName);
   }, []);
 
-  const handleSearchBookResult = () => {
-    refetch();
-  };
+  // const handleSearchBookResult = () => {
+  //   // setBookName(bookName);
+  //   refetch();
+  // };
 
   return (
     <View style={styles.container}>
-      <SearchBar
+      {/* <SearchBar
         placeholder="도서명을 입력해주세요"
         searchValue={bookName}
         setSearchValue={setBookName}
         handleSearch={handleSearchBookResult}
-      />
-      {/* <DetailHeader
-        onPress={() => {
-          navigation.goBack();
-        }}
-      >
-        <Ionicons name="chevron-back-outline" size={24} color="black" />
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "bold",
-            fontFamily: "NotoSansKR_Bold",
-            color: colors.semiblack,
-          }}
-        >
-          도서 검색
-        </Text>
-      </DetailHeader> */}
-      {keywordBooks?.length === 0 ? (
+      /> */}
+
+      {isKeywordBooksLoaded && keywordBooks?.length === 0 ? (
         <View
           style={{
             flex: 1,
@@ -206,15 +207,27 @@ export default function SearchBookResult({
         >
           <Text>검색 결과가 없습니다.</Text>
         </View>
-      ) : (
+      ) : isKeywordBooksLoaded ? (
         <BookSection
           books={keywordBooks}
           isSearchResult={true}
           isFromBookResult={true}
           isDetail={false}
           bookName={bookName}
-          onPressWishlist={onPressWishlist}
+          addWishlist={handleAddWishlist}
+          deleteWishlist={handleDeleteWishlist}
+          updateWishlist={updateWishlist}
         />
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text>도서 검색 결과 불러오는 중...</Text>
+        </View>
       )}
     </View>
   );

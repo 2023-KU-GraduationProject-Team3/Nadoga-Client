@@ -16,6 +16,9 @@ import UserContext from "./context/userContext";
 import BookContext from "./context/bookContext";
 const queryClient = new QueryClient();
 
+// apis
+import { getWishlistById } from "./apis/wishlist";
+
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
@@ -42,7 +45,10 @@ export default function App() {
     is_wishlist: false,
   });
 
+  // 유저에서 가장 가까운 도서관 리스트
   const [closestLibraryList, setClosestLibraryList] = useState([]);
+
+  // 가장 가까운 도서관에서 유저가 원하는 도서를 대출할 수 있는 여부에 대한 리스트
   const [isLoanList, setIsLoanList] = useState(false);
 
   const loginUser = (userInfo: {

@@ -6,6 +6,8 @@ import {
   useRoute,
 } from "@react-navigation/native";
 
+import Geolocation from "@react-native-community/geolocation";
+
 // constants
 import { colors } from "../constants/Colors";
 
@@ -29,6 +31,9 @@ import { getWithURI } from "../apis/data4library";
 // useContext
 import UserContext from "../context/userContext";
 
+// react-query
+import { useQuery } from "react-query";
+
 export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   const [menuNum, setMenuNum] = useState(0);
   const [isModal, setIsModal] = useState(false);
@@ -36,7 +41,18 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
 
   const [isWishlistLoaded, setIsWishlistLoaded] = useState(false);
 
-  const { user, logoutUser } = useContext(UserContext);
+  const {
+    user,
+    setUser,
+    lookingBookInfo,
+    isLookingForBook,
+    setIsLookingForBook,
+    closestLibraryList,
+    setClosestLibraryList,
+    isLoanList,
+    setIsLoanList,
+    logoutUser,
+  } = useContext(UserContext);
 
   const handleMenuNum = (num: number) => {
     setMenuNum(num);
@@ -51,21 +67,8 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   };
 
   const handleDeleteWishlist = (userId: string, book_isbn: number) => {
-    Alert.alert("주의", "정말로 찜 취소를 하시겠습니까?", [
-      {
-        text: "취소",
-        onPress: () => {
-          return;
-        },
-      },
-      {
-        text: "확인",
-        onPress: () => {
-          deleteWishlist(userId, book_isbn);
-          navigation.navigate("MyLibrary");
-        },
-      },
-    ]);
+    deleteWishlist(userId, book_isbn);
+    navigation.navigate("MyLibrary");
   };
 
   // recommend Result
@@ -179,6 +182,31 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   //     is_wishlist: false,
   //   },
   // ];
+  const getDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ) => {
+    if (lat1 == lat2 && lon1 == lon2) return 0;
+
+    var radLat1 = (Math.PI * lat1) / 180;
+    var radLat2 = (Math.PI * lat2) / 180;
+    var theta = lon1 - lon2;
+    var radTheta = (Math.PI * theta) / 180;
+    var dist =
+      Math.sin(radLat1) * Math.sin(radLat2) +
+      Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
+    if (dist > 1) dist = 1;
+
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515 * 1.609344 * 1000;
+    if (dist < 100) dist = Math.round(dist / 10) * 10;
+    else dist = Math.round(dist / 100) * 100;
+
+    return dist;
+  };
 
   // API function - 6. 도서 상세 조회
   const getBookDetail = async (bookIsbn: number) => {
@@ -187,10 +215,69 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
     );
   };
 
+  // API function - 1. 정보공개 도서관 조회
+  const fetchLibraryData = () => {
+    return getWithURI(
+      `http://data4library.kr/api/libSrch?authKey=${AUTHKEY}&pageSize=1480&region=11&format=json`
+    );
+  };
+
+  // GET_LIBRARY
+  const { data, isLoading, refetch, isFetched, isFetching } = useQuery(
+    "GET_LIBRARY",
+    fetchLibraryData,
+    {
+      onSuccess: (data) => {
+        // alert("GET_LIBRARY");
+        const libArray = data.response.libs;
+        // console.log("libArray: ", libArray[0]);
+
+        let sortedMarkers: Array<Object> = [];
+
+        // isFetched &&
+        libArray.map((item: any, index: number) => {
+          const distance = getDistance(
+            Number(item.lib.latitude),
+            Number(item.lib.longitude),
+            position.latitude,
+            position.longitude
+          );
+          // console.log(distance);
+          let libObj = {
+            id: item.lib.isbn13,
+            libCode: item.lib.libCode,
+            coordinate: {
+              latitude: Number(item.lib.latitude),
+              longitude: Number(item.lib.longitude),
+            },
+            title: item.lib.libName,
+            distance: distance / 1000,
+            image: require("../assets/images/map/library_1.png"),
+          };
+
+          if (distance <= 3000 && sortedMarkers.length < 5) {
+            //setMarkers((markers) => [...markers, libObj]);
+            sortedMarkers.push(libObj);
+
+            if (sortedMarkers.length === 5) {
+              sortedMarkers.sort((a, b) => {
+                return a.distance - b.distance;
+              });
+
+              setClosestLibraryList(sortedMarkers);
+            }
+          }
+        });
+      },
+    }
+  );
+
   useFocusEffect(
     useCallback(() => {
       setWishlistData([]);
       setIsWishlistLoaded(false);
+      getCurrentPos();
+      refetch();
       console.log("user_id", user.user_id);
 
       getWishlistById(user.user_id).then((data) => {
@@ -200,14 +287,14 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
           getBookDetail(bookIsbn).then((data) => {
             let book = data.response.detail[0].book;
             let bookDetail = {
-              book_isbn: book.isbn13,
-              book_name: book.bookname,
-              book_author: book.authors,
-              book_publisher: book.publisher,
-              book_description: book.description,
-              book_image_url: book.bookImageURL,
-              book_rating: 0.0,
-              is_wishlist: true,
+              isbn13: book.isbn13,
+              bookname: book.bookname,
+              authors: book.authors,
+              publisher: book.publisher,
+              description: book.description,
+              bookImageURL: book.bookImageURL,
+              bookRating: 0.0,
+              isWishlist: true,
               createdAt: item.createdAt,
             };
 
@@ -234,6 +321,29 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
       }, 2000);
     }, [])
   );
+  const [position, setPosition] = useState({
+    latitude: 10,
+    longitude: 10,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
+  });
+
+  const getCurrentPos = () => {
+    Geolocation.getCurrentPosition((pos) => {
+      const { latitude, longitude } = pos.coords;
+      setPosition((pos) => ({
+        ...pos,
+        latitude,
+        longitude,
+        latitudeDelta: position.latitudeDelta,
+        longitudeDelta: position.longitudeDelta,
+      }));
+
+      // user position 구했으니, marker 데이터 불러오기 가능
+      //refetch();
+      console.log("position", position);
+    });
+  };
 
   return (
     <View style={styles.container}>

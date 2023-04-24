@@ -1,13 +1,13 @@
 export interface BookProps {
-  book_isbn: number;
-  book_name: string;
-  book_author: string;
-  book_publisher: string;
-  book_image_url: string;
-  book_rating: number;
-  book_description?: string;
-  is_wishlist: boolean;
-  is_loanAvailable?: string;
+  isbn13: number;
+  bookname: string;
+  authors: string;
+  publisher: string;
+  bookImageURL: string;
+  bookRating: number;
+  bookDescription?: string;
+  isWishlist: boolean;
+  isLoanAvailable?: string;
   createdAt?: string;
 }
 

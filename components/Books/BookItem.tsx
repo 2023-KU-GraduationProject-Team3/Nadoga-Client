@@ -35,7 +35,7 @@ const AUTHKEY =
   "32bb82a55e2ccb6dd8baec16309bed7ecc2985e9a07e83dc18b5037179636d55";
 
 // apis
-import { getWishlistById } from "../../apis/wishlist";
+import { getWishlistById, getIsWishlist } from "../../apis/wishlist";
 
 // components
 const BookContainer = styled.TouchableOpacity`
@@ -107,7 +107,7 @@ const LoanStatusButton = styled.View`
   right: 0px;
   bottom: 35px;
   background-color: ${(props) =>
-    props.is_loanAvailable === "Y" ? colors.lightgreen : colors.red};
+    props.isLoanAvailable === "Y" ? colors.lightgreen : colors.red};
   border-radius: 8px;
 `;
 
@@ -116,39 +116,34 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
   const navigation = useNavigation<SerachBookDetailScreenProps["navigation"]>();
 
   const { user, logoutUser } = useContext(UserContext);
-  const [isWishlist, setIsWishlist] = useState(props.is_wishlist);
+  const [isWishlist, setIsWishlist] = useState(
+    props.isDetail === true ? route.params.isWishlist : props.isWishlist
+  );
+
+  // const [newIsWishlist, setNewIsWishlist] = useState(false);
+  // const [newIsWishlistLoaded, setNewIsWishlistLoaded] = useState(false);
 
   useEffect(() => {
-    getWishlistById(user.user_id).then((res) => {
-      const data = res;
-      // console.log("data", data);
-      const foundData = data.find(
-        (item) => Number(item.isbn) === Number(props.book_isbn)
-      );
-      // console.log("foundData", foundData);
-
-      if (foundData !== undefined) {
-        setIsWishlist(true);
-      } else {
-        setIsWishlist(false);
-      }
-    });
-  }, []);
+    // setIsWishlist(props.isWishlist);
+  }, [isWishlist]);
 
   return (
     <BookContainer
       onPress={() => {
         navigation.navigate("SearchBookDetail", {
-          bookIsbn: props.book_isbn,
+          bookIsbn: props.isbn13,
           libCode: props.libCode,
           isFromBookResult: props.isFromBookResult,
-          bookInfo: props,
+          addWishlist: props.addWishlist,
+          deleteWishlist: props.deleteWishlist,
+          updateWishlist: props.updateWishlist,
+          isWishlist: props.isWishlist,
         });
       }}
       isSearchResult={props.isSearchResult}
       disabled={props.isDetail}
     >
-      {/* <BookImage source={{ uri: props.book_image_url }} /> */}
+      {/* <BookImage source={{ uri: props.bookImageURL }} /> */}
       <View
         style={{
           width: props.isSearchResult ? 120 : 90,
@@ -159,7 +154,7 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
         <BookImage
           source={{
             uri:
-              props.book_image_url ||
+              props.bookImageURL ||
               "http://image.aladin.co.kr/product/4086/97/cover/8936434128_2.jpg",
           }}
         />
@@ -170,13 +165,13 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
         isDetail={props.isDetail}
         onPress={() => {
           navigation.navigate("Rating", {
-            bookIsbn: props.book_isbn,
-            bookName: props.book_name,
+            bookIsbn: props.isbn,
+            bookName: props.bookname,
           });
         }}
       >
         <Text style={{ fontWeight: "700", fontSize: 12 }}>
-          ★ {props.book_rating}
+          ★ {props.bookRating}
         </Text>
       </BookRating>
       {props.isSearchResult ? (
@@ -190,29 +185,29 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
             height: 100,
           }}
         >
-          <BookTitle>{props.book_name}</BookTitle>
+          <BookTitle>{props.bookname}</BookTitle>
           <BookAuthor>
             {props.isSearchResult
-              ? `저자: ${props.book_author}\n 출판사: ${props.book_publisher}`
-              : `- ${props.book_author}`}
+              ? `저자: ${props.authors}\n 출판사: ${props.publisher}`
+              : `- ${props.authors}`}
           </BookAuthor>
         </View>
       ) : (
         <>
-          <BookTitle>{props.book_name}</BookTitle>
+          <BookTitle>{props.bookname}</BookTitle>
           <BookAuthor>
             {props.isSearchResult
-              ? `저자: ${props.book_author}\n 출판사: ${props.book_publisher}`
-              : `- ${props.book_author}`}
+              ? `저자: ${props.authors}\n 출판사: ${props.publisher}`
+              : `- ${props.authors}`}
           </BookAuthor>
         </>
       )}
       {props.isSearchResult ? (
         <>
           <AddToWishlistButton
-            isWishlist={isWishlist}
+            isWishlist={props.isWishlist}
             onPress={
-              isWishlist
+              props.isWishlist
                 ? () => {
                     Alert.alert("주의", "정말로 찜 취소를 하시겠습니까?", [
                       {
@@ -224,37 +219,53 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
                       {
                         text: "확인",
                         onPress: () => {
-                          props.deleteWishlist(user.user_id, props.book_isbn);
-                          setIsWishlist(false);
+                          props.deleteWishlist(user.user_id, props.isbn13);
+                          // setIsWishlist(false);
                           // navigation.navigate("MyLibrary");
+                          props.updateWishlist();
                         },
                       },
                     ]);
                   }
                 : () => {
-                    setIsWishlist(true);
-                    props.addWishlist(user.user_id, props.book_isbn);
+                    Alert.alert("알림", "이 책을 찜하시겠습니까?", [
+                      {
+                        text: "취소",
+                        onPress: () => {
+                          return;
+                        },
+                      },
+                      {
+                        text: "확인",
+                        onPress: () => {
+                          props.addWishlist(user.user_id, props.isbn13);
+                          // setIsWishlist(false);
+                          // navigation.navigate("MyLibrary");
+                          props.updateWishlist();
+                        },
+                      },
+                    ]);
                   }
             }
           >
             <Text
               style={{
-                color: isWishlist ? colors.semiblack : colors.white,
+                color: props.isWishlist ? colors.semiblack : colors.white,
                 fontSize: 12,
               }}
             >
-              {isWishlist ? "찜완료" : "찜하기"}
+              {props.isWishlist ? "찜완료" : "찜하기"}
             </Text>
           </AddToWishlistButton>
           {props.isFromBookResult ? null : (
-            <LoanStatusButton is_loanAvailable={props.is_loanAvailable}>
+            <LoanStatusButton isLoanAvailable={props.isLoanAvailable}>
               <Text
                 style={{
                   color: isWishlist ? colors.semiblack : colors.white,
                   fontSize: 12,
                 }}
               >
-                {props.is_loanAvailable === "Y" ? "대출 가능" : "대출중"}
+                {props.isLoanAvailable === "Y" ? "대출 가능" : "대출중"}
               </Text>
             </LoanStatusButton>
           )}

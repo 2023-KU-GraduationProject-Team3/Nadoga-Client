@@ -11,6 +11,17 @@ export const getWishlistById = async (userId: string) => {
   }
 };
 
+export const getIsWishlist = async (userId: string, book_isbn: number) => {
+  try {
+    const response = await axios.get(
+      `http://43.200.106.28:4000/wishlist/${userId}/${book_isbn}`
+    );
+    return response.data;
+  } catch (error) {
+    return false;
+  }
+};
+
 export const addWishlist = async (userId: string, book_isbn: number) => {
   try {
     const response = await axios.post(`http:///43.200.106.28:4000/wishlist`, {

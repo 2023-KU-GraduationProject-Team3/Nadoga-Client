@@ -29,13 +29,20 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
   useEffect(() => {
     // order by createdAt
     // console.log("BookSection props", props.books);
-  }, [props]);
+    // console.log("Booksection wishlist", props.wishlist);
+  }, []);
 
   const sortedBooks = () => {
-    return props.books.sort((a: any, b: any) => {
+    return props?.books.sort((a: any, b: any) => {
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
   };
+
+  // const checkIsWishlist = (isbn13: number) => {
+  //   console.log("checkIsWishlist", props?.wishlist);
+
+  //   return props?.wishlist.some((item: any) => Number(item.isbn) === isbn13);
+  // };
 
   return (
     <BookListContainer>
@@ -43,20 +50,23 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
         contentContainerStyle={{
           backgroundColor: colors.bgGray,
         }}
-        data={sortedBooks()}
+        data={props.isFromBookResult ? props.books : sortedBooks()}
         numColumns={props.isSearchResult ? 1 : 3}
         horizontal={false}
         showsVerticalScrollIndicator={false}
-        keyExtractor={({ book_isbn }: any) => book_isbn}
+        keyExtractor={({ isbn13 }: any) => isbn13}
         renderItem={({ item }: any) => (
           <BookItem
-            key={item.book_isbn}
+            key={item.isbn13}
             libCode={props.libCode}
             isFromBookResult={props.isFromBookResult}
             isSearchResult={props.isSearchResult}
             onPressWishlist={props.onPressWishlist}
             addWishlist={props.addWishlist}
             deleteWishlist={props.deleteWishlist}
+            updateWishlist={props.updateWishlist}
+            // isWishlist={item.isWishlist}
+            isWishlist={item.isWishlist}
             {...item}
           />
         )}
