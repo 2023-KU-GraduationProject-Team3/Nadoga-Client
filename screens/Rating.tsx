@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import styled from "styled-components/native";
 import StarRating from "react-native-star-rating-widget";
@@ -22,6 +23,7 @@ import { FontAwesome } from "@expo/vector-icons";
 
 // components
 import ReviewSection from "../components/Review/ReviewSection";
+import ReviewItem from "../components/Review/ReviewItem";
 
 const DetailHeader = styled.TouchableOpacity`
   flex-direction: row;
@@ -46,17 +48,31 @@ const BookRatingInfoContainer = styled.View`
 import { useQuery } from "react-query";
 
 // apis
-import { getReviewByBook, getReviewStarByBook } from "../apis/review";
+import {
+  getReviewByBook,
+  getReviewStarByBook,
+  addReview,
+  deleteReview,
+} from "../apis/review";
+
+// useContext
+import UserContext from "../context/userContext";
 
 export default function Rating({ navigation, route }: RatingScreenProps) {
   const [bookIsbn, setBookIsbn] = useState<number>(route.params.bookIsbn);
   const [bookName, setBookName] = useState<string>(route.params.bookName);
 
   const [hasRated, setHasRated] = useState<boolean>(false);
-  const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(true);
+  const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(false);
+
+  const { user, logoutUser } = useContext(UserContext);
 
   // 유저가 이미 리뷰를 작성한 상태일 때, 가져온 리뷰 데이터
   const [reviewInfo, setReviewInfo] = useState<any>({
+    user: {
+      name: "홍길동",
+    },
+    review_id: 1,
     rating: 4.5,
     content: "책이 너무 좋아요!",
   });
@@ -128,11 +144,32 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
     if (!isReviewLoaded) {
       getReviewByBook(bookIsbn).then((res) => {
         console.log(res);
-        setReviewList(res);
+
+        const userReview = res.filter(
+          (item) => item.user.id === user.user_id
+        )[0];
+
+        if (userReview !== undefined) {
+          console.log("has rated");
+          setHasRated(true);
+          setReviewList(res.filter((item) => item.user.id !== user.user_id));
+          setReviewInfo({
+            user: {
+              name: userReview.user.name,
+            },
+            review_id: userReview.id,
+            rating: userReview.rating,
+            content: userReview.content,
+          });
+        } else {
+          console.log("has not rated");
+          setReviewList(res);
+          setHasRated(false);
+        }
         setIsReviewLoaded(true);
       });
     }
-  }, []);
+  }, [isReviewLoaded]);
 
   return (
     <View style={styles.container}>
@@ -232,12 +269,11 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
       <View>
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
+            flexDirection: hasRated ? "column" : "row",
             width: Layout.window.width - 20,
-
+            alignItems: "flex-start",
             marginBottom: 10,
-            paddingHorizontal: 15,
+            paddingHorizontal: 10,
             justifyContent: "space-between",
           }}
         >
@@ -254,7 +290,9 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
               ? "내가 작성한 리뷰"
               : "내가 작성한 한줄평이 없습니다."}
           </Text>
-          {hasRated || reviewModalVisible ? null : (
+          {hasRated ? (
+            <ReviewItem {...reviewInfo} />
+          ) : reviewModalVisible ? null : (
             <TouchableOpacity
               onPress={() => {
                 setReviewModalVisible(true);
@@ -353,6 +391,70 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
                   }}
                 >
                   등록
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : hasRated ? (
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  bottom: 40,
+                  right: 70,
+                }}
+                onPress={() => {}}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: "NotoSansKR_Bold",
+                    color: colors.gray3,
+                    textDecorationLine: "underline",
+                    position: "absolute",
+                  }}
+                >
+                  수정
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  bottom: 5,
+                  right: 15,
+                }}
+                onPress={() => {
+                  Alert.alert("주의", "정말로 리뷰를 삭제하시겠습니까?", [
+                    {
+                      text: "취소",
+                      onPress: () => {
+                        return;
+                      },
+                    },
+                    {
+                      text: "확인",
+                      onPress: () => {
+                        deleteReview(reviewInfo.review_id);
+                        setHasRated(false);
+                        setReviewModalVisible(false);
+                      },
+                    },
+                  ]);
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: "NotoSansKR_Bold",
+                    color: colors.red,
+                    textDecorationLine: "underline",
+                  }}
+                >
+                  삭제
                 </Text>
               </TouchableOpacity>
             </View>
