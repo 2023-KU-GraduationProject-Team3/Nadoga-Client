@@ -22,7 +22,6 @@ const ReviewItemContainer = styled.View`
   margin-bottom: 20px;
   height: 100px;
   flex-direction: row;
-  align-items: center;
 `;
 const ProfileImage = styled.Image`
   width: 60px;
@@ -30,6 +29,7 @@ const ProfileImage = styled.Image`
   border-radius: 50px;
   margin-right: 10px;
   background-color: white;
+  margin-top: 5px;
 `;
 
 // types
@@ -64,7 +64,7 @@ const ReviewItem: FunctionComponent<ReviewProps> = (props) => {
               color: colors.green,
             }}
           >
-            {props.user_name}
+            {props.user.name}
           </Text>
           <View
             style={{

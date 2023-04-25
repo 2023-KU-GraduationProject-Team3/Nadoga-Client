@@ -42,6 +42,11 @@ const BookRatingInfoContainer = styled.View`
   align-items: center;
   margin-bottom: 30px;
 `;
+// react-query
+import { useQuery } from "react-query";
+
+// apis
+import { getReviewByBook, getReviewStarByBook } from "../apis/review";
 
 export default function Rating({ navigation, route }: RatingScreenProps) {
   const [bookIsbn, setBookIsbn] = useState<number>(route.params.bookIsbn);
@@ -111,6 +116,23 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
       profile_url: "https://i.pravatar.cc/150?img=4",
     },
   ]);
+  const [isReviewLoaded, setIsReviewLoaded] = useState<boolean>(false);
+
+  // const {
+  //   data: reviewData,
+  //   isLoading: reviewIsLoading,
+  //   isFetched: reviewIsFetched,
+  // } = useQuery("GET_REVIEW", () => getReviewByBook(bookIsbn));
+
+  useEffect(() => {
+    if (!isReviewLoaded) {
+      getReviewByBook(bookIsbn).then((res) => {
+        console.log(res);
+        setReviewList(res);
+        setIsReviewLoaded(true);
+      });
+    }
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -128,7 +150,7 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
             color: colors.semiblack,
           }}
         >
-          도서 평점
+          이전으로
         </Text>
       </DetailHeader>
       <View
@@ -338,7 +360,29 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
         </View>
       </View>
       {hasRated ? <View style={styles.seperator}></View> : null}
-      <ReviewSection reviews={reviewList} />
+      {!isReviewLoaded ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text>리뷰 불러오는 중...</Text>
+        </View>
+      ) : isReviewLoaded && reviewList.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text>리뷰가 존재하지 않습니다.</Text>
+        </View>
+      ) : (
+        <ReviewSection reviews={reviewList} />
+      )}
     </View>
   );
 }

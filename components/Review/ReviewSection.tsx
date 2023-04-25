@@ -40,7 +40,7 @@ const ReviewSection: FunctionComponent<ReviewSectionProps> = (props) => {
         numColumns={1}
         horizontal={false}
         showsVerticalScrollIndicator={false}
-        keyExtractor={({ review_id }: any) => review_id}
+        keyExtractor={({ id }: any) => id}
         renderItem={({ item }: any) => <ReviewItem {...item} />}
       ></ReviewList>
     </ReviewListContainer>

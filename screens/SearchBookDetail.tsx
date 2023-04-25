@@ -246,7 +246,7 @@ export default function SearchBookDetail({
             color: colors.semiblack,
           }}
         >
-          {isFromBookResult ? "도서 검색" : "도서 상세정보"}
+          {"이전으로"}
         </Text>
       </DetailHeader>
       <BookItem

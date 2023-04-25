@@ -100,21 +100,21 @@ export default function SearchBook({
 
       getWishlistById(user.user_id).then((data) => {
         setWishlist(data);
+        data.map((item) => {
+          let bookIsbn = Number(item.isbn);
+          console.log("bookIsbn", bookIsbn);
+          isbnList.push(bookIsbn);
+        });
+        getRecommendByBook(isbnList)
+          .then((data) => {
+            setRecommendByBookData(data);
+            console.log("recommendByBookData", data);
+          })
+          .catch((err) => {
+            console.log("err", err);
+            setRecommendByBookData([]);
+          });
       });
-      // data.map((item) => {
-      //   let bookIsbn = Number(item.isbn);
-      //   console.log("bookIsbn", bookIsbn);
-      //   isbnList.push(bookIsbn);
-      // });
-      // getRecommendByBook(isbnList)
-      //   .then((data) => {
-      //     setRecommendByBookData(data);
-      //     console.log("recommendByBookData", data);
-      //   })
-      //   .catch((err) => {
-      //     console.log("err", err);
-      //     setRecommendByBookData([]);
-      //   });
 
       // setWishlist(wishlistData);
 
@@ -172,9 +172,9 @@ export default function SearchBook({
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Text style={{ fontSize: 16 }}>불러오는 중...</Text>
+          <Text style={{ fontSize: 16 }}>추천 결과 불러오는 중...</Text>
         </View>
-      ) : isWishlistLoaded && recommendByBookData.length === 0 ? (
+      ) : isWishlistLoaded && wishlist.length === 0 ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >

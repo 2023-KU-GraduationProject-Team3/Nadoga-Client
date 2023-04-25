@@ -487,7 +487,7 @@ const MapViewComponent: FunctionComponent = () => {
       </ShowClosestLibraryButton>
       {isLookingForBook ? (
         <CurrentBookSection>
-          <Text>{`현재 찾고있는 책 : ${lookingBookInfo.book_name}`}</Text>
+          <Text>{`현재 찾고있는 책 : ${lookingBookInfo.bookname}`}</Text>
         </CurrentBookSection>
       ) : null}
       <Animated.ScrollView

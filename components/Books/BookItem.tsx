@@ -165,7 +165,7 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
         isDetail={props.isDetail}
         onPress={() => {
           navigation.navigate("Rating", {
-            bookIsbn: props.isbn,
+            bookIsbn: props.isbn13,
             bookName: props.bookname,
           });
         }}
