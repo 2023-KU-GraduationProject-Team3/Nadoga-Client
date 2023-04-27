@@ -318,7 +318,7 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
         >
           <Text>불러오는 중...</Text>
         </View>
-      ) : isWishlistLoaded && wishlistData.length === 0 ? (
+      ) : isWishlistLoaded && wishlistData.length === 0 && menuNum === 0 ? (
         <View
           style={{
             flex: 1,
@@ -327,6 +327,16 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
           }}
         >
           <Text>찜을 한 도서가 존재하지 않습니다.</Text>
+        </View>
+      ) : menuNum === 1 && reviewData.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text>평가를 한 도서가 존재하지 않습니다.</Text>
         </View>
       ) : (
         <BookSection

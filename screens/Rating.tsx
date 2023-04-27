@@ -43,9 +43,11 @@ const DetailHeader = styled.TouchableOpacity`
 
 const BookRatingInfoContainer = styled.View`
   flex-direction: row;
-  width: ${Layout.window.width - 50}px;
+  width: ${Layout.window.width}px;
   height: 80px;
   background-color: ${colors.bgGray};
+  justify-content: space-between;
+  padding-left: 20px;
   align-items: center;
   margin-bottom: 30px;
 `;
@@ -89,6 +91,8 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
   const [reviewList, setReviewList] = useState<any>([]);
   const [isReviewLoaded, setIsReviewLoaded] = useState<boolean>(false);
 
+  const [reviewStarData, setReviewStarData] = useState<any>([]);
+
   const {
     data: reviewData,
     isLoading: reviewIsLoading,
@@ -121,24 +125,25 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
     },
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      setReviewInfo({});
-      console.log("bookisbn", bookIsbn);
+  useEffect(() => {
+    // setReviewInfo({});
 
-      const userReview = reviewData.filter(
+    setIsReviewLoaded(false);
+
+    console.log("bookisbn", bookIsbn);
+
+    getReviewByBook(bookIsbn).then((data) => {
+      const userReview = data.filter(
         (item) => item.user.id === user.user_id
       )[0];
 
       if (userReview !== undefined) {
         console.log("has rated");
         setHasRated(true);
-        setReviewList(
-          reviewData.filter((item) => item.user.id !== user.user_id)
-        );
+        setReviewList(data.filter((item) => item.user.id !== user.user_id));
         setReviewInfo({
           user: {
-            name: userReview.user.name,
+            name: user.user_name,
           },
           review_id: userReview.id,
           rating: userReview.rating,
@@ -146,11 +151,18 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
         });
       } else {
         console.log("has not rated");
-        setReviewList(reviewData);
+        setReviewList(data);
         setHasRated(false);
       }
-    }, [])
-  );
+
+      setIsReviewLoaded(true);
+    });
+
+    getReviewStarByBook(bookIsbn).then((data) => {
+      console.log("review star data", data);
+      setReviewStarData({ ...data, ratingCounts: data.ratingCounts.reverse() });
+    });
+  }, [reviewIsFetched, reviewIsLoading, bookIsbn, hasRated]);
 
   return (
     <View style={styles.container}>
@@ -195,17 +207,17 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
             marginRight: 15,
           }}
         >
-          4.5
+          {Math.round(reviewStarData?.totalAverage * 10) / 10 ?? 0.0}
         </Text>
         <FontAwesome name="star" size={30} color={colors.yellow} />
         <View
           style={{
+            width: 200,
             flexDirection: "column",
             alignItems: "center",
-            marginLeft: -10,
           }}
         >
-          {[3, 2, 0, 0, 1].map((item, index) => {
+          {reviewStarData?.ratingCounts?.map((item, index) => {
             return (
               <View
                 style={{
@@ -234,7 +246,7 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
                 >
                   <View
                     style={{
-                      width: item * 20,
+                      width: item.num * 20,
                       height: 5,
                       backgroundColor: colors.yellow,
                       borderRadius: 5,
@@ -373,13 +385,14 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
                             rating,
                             content,
                             bookIsbn
-                          ).then(() => {
+                          ).then((data) => {
                             setReviewInfo({
                               user: {
                                 name: user.user_name,
                               },
                               rating,
                               content,
+                              review_id: data.review_id,
                             });
                           });
                           setHasRated(true);
@@ -483,7 +496,7 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
         >
           <Text>리뷰 불러오는 중...</Text>
         </View>
-      ) : reviewIsFetched && reviewList.length === 0 ? (
+      ) : reviewIsFetched && reviewList?.length === 0 ? (
         <View
           style={{
             flex: 1,
