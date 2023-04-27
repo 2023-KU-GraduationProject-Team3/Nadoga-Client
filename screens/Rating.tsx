@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,11 @@ import {
 } from "react-native";
 import styled from "styled-components/native";
 import StarRating from "react-native-star-rating-widget";
+import {
+  useFocusEffect,
+  useNavigationState,
+  useRoute,
+} from "@react-navigation/native";
 
 // types
 import { RootTabScreenProps, RatingScreenProps } from "../types";
@@ -81,95 +86,71 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
   const [rating, setRating] = useState<number>(0);
   const [content, setContent] = useState<string>("");
 
-  const [reviewList, setReviewList] = useState<any>([
-    {
-      review_id: 1,
-      user_name: "홍길동",
-      rating: 4.5,
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
-      profile_url: "https://i.pravatar.cc/150?img=4",
-    },
-    {
-      review_id: 2,
-
-      user_name: "홍길동",
-      rating: 4.5,
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
-      profile_url: "https://i.pravatar.cc/150?img=4",
-    },
-    {
-      review_id: 3,
-      user_name: "홍길동",
-      rating: 4.5,
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
-      profile_url: "https://i.pravatar.cc/150?img=4",
-    },
-    {
-      review_id: 4,
-      user_name: "홍길동",
-      rating: 4.5,
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
-      profile_url: "https://i.pravatar.cc/150?img=4",
-    },
-    {
-      review_id: 5,
-      user_name: "홍길동",
-      rating: 4.5,
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
-      profile_url: "https://i.pravatar.cc/150?img=4",
-    },
-    {
-      review_id: 6,
-      user_name: "홍길동",
-      rating: 4.5,
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquet cursus ante, eget augue.",
-      profile_url: "https://i.pravatar.cc/150?img=4",
-    },
-  ]);
+  const [reviewList, setReviewList] = useState<any>([]);
   const [isReviewLoaded, setIsReviewLoaded] = useState<boolean>(false);
 
-  // const {
-  //   data: reviewData,
-  //   isLoading: reviewIsLoading,
-  //   isFetched: reviewIsFetched,
-  // } = useQuery("GET_REVIEW", () => getReviewByBook(bookIsbn));
+  const {
+    data: reviewData,
+    isLoading: reviewIsLoading,
+    isFetched: reviewIsFetched,
+    refetch: reviewRefetch,
+  } = useQuery("GET_REVIEW", () => getReviewByBook(bookIsbn), {
+    onSuccess: () => {
+      // const userReview = reviewData.filter(
+      //   (item) => item.user.id === user.user_id
+      // )[0];
+      // if (userReview !== undefined) {
+      //   console.log("has rated");
+      //   setHasRated(true);
+      //   setReviewList(
+      //     reviewData.filter((item) => item.user.id !== user.user_id)
+      //   );
+      //   setReviewInfo({
+      //     user: {
+      //       name: userReview.user.name,
+      //     },
+      //     review_id: userReview.id,
+      //     rating: userReview.rating,
+      //     content: userReview.content,
+      //   });
+      // } else {
+      //   console.log("has not rated");
+      //   setReviewList(reviewData);
+      //   setHasRated(false);
+      // }
+    },
+  });
 
-  useEffect(() => {
-    if (!isReviewLoaded) {
-      getReviewByBook(bookIsbn).then((res) => {
-        console.log(res);
+  useFocusEffect(
+    useCallback(() => {
+      setReviewInfo({});
+      console.log("bookisbn", bookIsbn);
 
-        const userReview = res.filter(
-          (item) => item.user.id === user.user_id
-        )[0];
+      const userReview = reviewData.filter(
+        (item) => item.user.id === user.user_id
+      )[0];
 
-        if (userReview !== undefined) {
-          console.log("has rated");
-          setHasRated(true);
-          setReviewList(res.filter((item) => item.user.id !== user.user_id));
-          setReviewInfo({
-            user: {
-              name: userReview.user.name,
-            },
-            review_id: userReview.id,
-            rating: userReview.rating,
-            content: userReview.content,
-          });
-        } else {
-          console.log("has not rated");
-          setReviewList(res);
-          setHasRated(false);
-        }
-        setIsReviewLoaded(true);
-      });
-    }
-  }, [isReviewLoaded]);
+      if (userReview !== undefined) {
+        console.log("has rated");
+        setHasRated(true);
+        setReviewList(
+          reviewData.filter((item) => item.user.id !== user.user_id)
+        );
+        setReviewInfo({
+          user: {
+            name: userReview.user.name,
+          },
+          review_id: userReview.id,
+          rating: userReview.rating,
+          content: userReview.content,
+        });
+      } else {
+        console.log("has not rated");
+        setReviewList(reviewData);
+        setHasRated(false);
+      }
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -377,8 +358,36 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
                     alert("한줄평을 작성해주세요.");
                     return;
                   } else {
-                    setHasRated(true);
-                    setReviewModalVisible(false);
+                    Alert.alert("알림", "정말로 리뷰를 등록하시겠습니까?", [
+                      {
+                        text: "취소",
+                        onPress: () => {
+                          return;
+                        },
+                      },
+                      {
+                        text: "확인",
+                        onPress: () => {
+                          addReview(
+                            user.user_id,
+                            rating,
+                            content,
+                            bookIsbn
+                          ).then(() => {
+                            setReviewInfo({
+                              user: {
+                                name: user.user_name,
+                              },
+                              rating,
+                              content,
+                            });
+                          });
+                          setHasRated(true);
+                          setReviewModalVisible(false);
+                          reviewRefetch();
+                        },
+                      },
+                    ]);
                   }
                 }}
               >
@@ -441,6 +450,8 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
                         deleteReview(reviewInfo.review_id);
                         setHasRated(false);
                         setReviewModalVisible(false);
+                        reviewRefetch();
+                        setContent("");
                       },
                     },
                   ]);
@@ -462,7 +473,7 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
         </View>
       </View>
       {hasRated ? <View style={styles.seperator}></View> : null}
-      {!isReviewLoaded ? (
+      {reviewIsLoading ? (
         <View
           style={{
             flex: 1,
@@ -472,7 +483,7 @@ export default function Rating({ navigation, route }: RatingScreenProps) {
         >
           <Text>리뷰 불러오는 중...</Text>
         </View>
-      ) : isReviewLoaded && reviewList.length === 0 ? (
+      ) : reviewIsFetched && reviewList.length === 0 ? (
         <View
           style={{
             flex: 1,

@@ -26,6 +26,7 @@ const AUTHKEY =
 
 // apis
 import { getWishlistById, addWishlist, deleteWishlist } from "../apis/wishlist";
+import { getReviewByUserId } from "../apis/review";
 import { getWithURI } from "../apis/data4library";
 
 // useContext
@@ -38,6 +39,7 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   const [menuNum, setMenuNum] = useState(0);
   const [isModal, setIsModal] = useState(false);
   const [wishlistData, setWishlistData] = useState([]);
+  const [reviewData, setReviewData] = useState([]);
 
   const [isWishlistLoaded, setIsWishlistLoaded] = useState(false);
 
@@ -71,117 +73,6 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
     navigation.navigate("MyLibrary");
   };
 
-  // recommend Result
-  // const recommendResult = [
-  //   {
-  //     book_isbn: 9791133469727,
-  //     book_name: "노인과 바다1",
-  //     book_publisher: "출판사아",
-  //     book_author: "헤밍웨이",
-  //     book_image_url:
-  //       "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 9791130635712,
-  //     book_publisher: "출판사아",
-  //     book_name: "노인과 바다2",
-  //     book_author: "헤밍웨이",
-  //     book_image_url:
-  //       "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 9791164137176,
-  //     book_publisher: "출판사아",
-  //     book_name: "노인과 바다3",
-  //     book_author: "헤밍웨이",
-  //     book_image_url:
-  //       "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 9791133469727,
-  //     book_publisher: "출판사아",
-  //     book_name: "노인과 바다",
-  //     book_author: "헤밍웨이",
-  //     book_image_url:
-  //       "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 9791164137879,
-  //     book_publisher: "출판사아",
-  //     book_name: "노인과 바다",
-  //     book_author: "헤밍웨이",
-  //     book_image_url:
-  //       "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 9791130637594,
-  //     book_publisher: "출판사아",
-  //     book_name: "노인과 바다",
-  //     book_author: "헤밍웨이",
-  //     book_image_url:
-  //       "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 9791161722344,
-  //     book_publisher: "출판사아",
-  //     book_name: "노인과 바다",
-  //     book_author: "헤밍웨이",
-  //     book_image_url:
-  //       "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 9791188862290,
-  //     book_publisher: "출판사아",
-  //     book_name: "노인과 바다",
-  //     book_author: "헤밍웨이",
-  //     book_image_url:
-  //       "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  //   {
-  //     book_isbn: 8809264181522,
-  //     book_publisher: "출판사아",
-  //     book_name: "노인과 바다",
-  //     book_author: "헤밍웨이",
-  //     book_image_url:
-  //       "https://image.aladin.co.kr/product/5006/34/cover150/1185564233_1.jpg",
-  //     book_rating: 4.5,
-  //     book_description:
-  //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et orci eu mauris porta ornare. Suspendisse gravida justo ligula, sit amet condimentum mi fermentum ut. Quisque eget facilisis tellus. Integer vel consectetur risus. Donec volutpat ac massa id ultricies. Nulla facilisi. Praesent tincidunt scelerisque velit.",
-  //     is_wishlist: false,
-  //   },
-  // ];
   const getDistance = (
     lat1: number,
     lon1: number,
@@ -275,34 +166,68 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   useFocusEffect(
     useCallback(() => {
       setWishlistData([]);
+      setReviewData([]);
+
       setIsWishlistLoaded(false);
       getCurrentPos();
       refetch();
       console.log("user_id", user.user_id);
 
-      getWishlistById(user.user_id).then((data) => {
-        data.map((item) => {
-          let bookIsbn = Number(item.isbn);
+      getWishlistById(user.user_id)
+        .then((data) => {
+          data.map((item) => {
+            let bookIsbn = Number(item.isbn);
 
-          getBookDetail(bookIsbn).then((data) => {
-            let book = data.response.detail[0].book;
-            let bookDetail = {
-              isbn13: book.isbn13,
-              bookname: book.bookname,
-              authors: book.authors,
-              publisher: book.publisher,
-              description: book.description,
-              bookImageURL: book.bookImageURL,
-              bookRating: 0.0,
-              isWishlist: true,
-              createdAt: item.createdAt,
-            };
+            getBookDetail(bookIsbn).then((data) => {
+              let book = data.response.detail[0].book;
+              let bookDetail = {
+                isbn13: book.isbn13,
+                bookname: book.bookname,
+                authors: book.authors,
+                publisher: book.publisher,
+                description: book.description,
+                bookImageURL: book.bookImageURL,
+                bookRating: 0.0,
+                isWishlist: true,
+                createdAt: item.createdAt,
+              };
 
-            setWishlistData((prev) => [...prev, bookDetail]);
-            // updatedWishlistData.push(bookDetail);
+              setWishlistData((prev) => [...prev, bookDetail]);
+              // updatedWishlistData.push(bookDetail);
+            });
+          });
+        })
+        .then(() => {
+          getReviewByUserId(user.user_id).then((data) => {
+            data.map((item) => {
+              let bookIsbn = Number(item.isbn);
+
+              getBookDetail(bookIsbn).then((data) => {
+                let book = data.response.detail[0].book;
+
+                let bookDetail = {
+                  isbn13: book.isbn13,
+                  bookname: book.bookname,
+                  authors: book.authors,
+                  publisher: book.publisher,
+                  description: book.description,
+                  bookImageURL: book.bookImageURL,
+                  isWishlist: false,
+                  createdAt: item.createdAt,
+                };
+
+                wishlistData.some((item) => {
+                  if (item.isbn13 === bookDetail.isbn13) {
+                    bookDetail["isWishlist"] = true;
+                  }
+                });
+
+                setReviewData((prev) => [...prev, bookDetail]);
+                // updatedReviewData.push(bookDetail);
+              });
+            });
           });
         });
-      });
 
       // order by created_at
 
@@ -405,7 +330,13 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
         </View>
       ) : (
         <BookSection
-          books={menuNum === 0 ? wishlistData : recommendResult}
+          books={
+            menuNum === 0
+              ? wishlistData
+              : menuNum === 1
+              ? reviewData
+              : wishlistData
+          }
           isSearchResult={false}
           isFromBookResult={true}
           isDetail={false}
