@@ -48,6 +48,7 @@ import {
   addWishlist,
   deleteWishlist,
 } from "../apis/wishlist";
+import { addSearch } from "../apis/search";
 
 export default function SearchBookResult({
   navigation,
@@ -72,6 +73,10 @@ export default function SearchBookResult({
   const handleDeleteWishlist = (userId: string, book_isbn: number) => {
     // updateWishlist();
     deleteWishlist(userId, book_isbn);
+  };
+
+  const handleSearch = (userId: string, book_isbn: number) => {
+    addSearch(userId, book_isbn);
   };
 
   const updateWishlist = () => {
@@ -217,6 +222,7 @@ export default function SearchBookResult({
           addWishlist={handleAddWishlist}
           deleteWishlist={handleDeleteWishlist}
           updateWishlist={updateWishlist}
+          addSearch={handleSearch}
         />
       ) : (
         <View

@@ -29,6 +29,7 @@ import { getWishlistById, addWishlist, deleteWishlist } from "../apis/wishlist";
 import { getWithURI } from "../apis/data4library";
 import { getRecommendByBook, getRecommendByUser } from "../apis/recommend";
 
+// types
 import { SearchBookScreenProps } from "../types";
 import React from "react";
 
@@ -72,6 +73,8 @@ export default function SearchBook({
     deleteWishlist(userId, book_isbn);
     // setWishlist((prev) => prev.filter((item) => item.isbn !== book_isbn));
   };
+
+  const handleAddSearch = (userId: string, book_isbn: number) => {};
 
   // API function - 6. 도서 상세 조회
   const getBookDetail = async (bookIsbn: number) => {

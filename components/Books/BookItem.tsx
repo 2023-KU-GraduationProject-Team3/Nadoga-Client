@@ -139,6 +139,10 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
           updateWishlist: props.updateWishlist,
           isWishlist: props.isWishlist,
         });
+
+        if (props.isFromBookResult) {
+          props.addSearch(user.user_id, props.isbn13);
+        }
       }}
       isSearchResult={props.isSearchResult}
       disabled={props.isDetail}

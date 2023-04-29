@@ -28,6 +28,7 @@ const AUTHKEY =
 import { getWishlistById, addWishlist, deleteWishlist } from "../apis/wishlist";
 import { getReviewByUserId } from "../apis/review";
 import { getWithURI } from "../apis/data4library";
+import { getSearchByUserId, deleteSearch } from "../apis/search";
 
 // useContext
 import UserContext from "../context/userContext";
@@ -40,6 +41,7 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   const [isModal, setIsModal] = useState(false);
   const [wishlistData, setWishlistData] = useState([]);
   const [reviewData, setReviewData] = useState([]);
+  const [searchData, setSearchData] = useState([]);
 
   const [isWishlistLoaded, setIsWishlistLoaded] = useState(false);
 
@@ -227,6 +229,37 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
               });
             });
           });
+        })
+        .then(() => {
+          getSearchByUserId(user.user_id).then((data) => {
+            data.map((item) => {
+              let bookIsbn = Number(item.isbn);
+
+              getBookDetail(bookIsbn).then((data) => {
+                let book = data.response.detail[0].book;
+
+                let bookDetail = {
+                  isbn13: book.isbn13,
+                  bookname: book.bookname,
+                  authors: book.authors,
+                  publisher: book.publisher,
+                  description: book.description,
+                  bookImageURL: book.bookImageURL,
+                  isWishlist: false,
+                  createdAt: item.createdAt,
+                };
+
+                wishlistData.some((item) => {
+                  if (item.isbn13 === bookDetail.isbn13) {
+                    bookDetail["isWishlist"] = true;
+                  }
+                });
+
+                setSearchData((prev) => [...prev, bookDetail]);
+                // updatedReviewData.push(bookDetail);
+              });
+            });
+          });
         });
 
       // order by created_at
@@ -268,6 +301,11 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
       //refetch();
       console.log("position", position);
     });
+  };
+
+  const handlePressHold = () => {
+    if (menuNum == 2) {
+    }
   };
 
   return (
@@ -338,6 +376,16 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
         >
           <Text>평가를 한 도서가 존재하지 않습니다.</Text>
         </View>
+      ) : menuNum === 2 && searchData.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text>검색을 한 도서가 존재하지 않습니다.</Text>
+        </View>
       ) : (
         <BookSection
           books={
@@ -345,7 +393,7 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
               ? wishlistData
               : menuNum === 1
               ? reviewData
-              : wishlistData
+              : searchData
           }
           isSearchResult={false}
           isFromBookResult={true}
