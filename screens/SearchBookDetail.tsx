@@ -94,6 +94,7 @@ export default function SearchBookDetail({
   );
 
   const [isWishlist, setIsWishlist] = useState(route.params.isWishlist);
+  const [bookRating, setBookRating] = useState(route.params.bookRating);
   const [isWishlistLoaded, setIsWishlistLoaded] = useState(false);
 
   const updateWishlist = () => {
@@ -144,8 +145,8 @@ export default function SearchBookDetail({
           publisher: book.publisher,
           bookDescription: book.description,
           bookImageURL: book.bookImageURL,
-          bookRating: 4.5,
-          isWishlist: book.isWishlist,
+          bookRating,
+          isWishlist,
         });
 
         setLookingBookInfo({
@@ -155,8 +156,8 @@ export default function SearchBookDetail({
           publisher: book.publisher,
           bookDescription: book.description,
           bookImageURL: book.bookImageURL,
-          bookRating: 4.5,
-          isWishlist: book.isWishlist,
+          bookRating,
+          isWishlist,
         });
         let updatedLoanList = [];
         closestLibraryList.map(async (library) => {
@@ -263,6 +264,7 @@ export default function SearchBookDetail({
         addWishlist={route.params.addWishlist}
         deleteWishlist={route.params.deleteWishlist}
         updateWishlist={updateWishlist}
+        bookRating={bookRating}
       />
       <SearchLibraryContainer
         onPress={() => {

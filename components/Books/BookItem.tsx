@@ -138,6 +138,7 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
           deleteWishlist: props.deleteWishlist,
           updateWishlist: props.updateWishlist,
           isWishlist: props.isWishlist,
+          bookRating: props.bookRating,
         });
 
         if (props.isFromBookResult && props.isMyLibrary === false) {

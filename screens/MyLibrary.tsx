@@ -43,6 +43,9 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   const [reviewData, setReviewData] = useState([]);
   const [searchData, setSearchData] = useState([]);
 
+  const [wishlist, setWishlist] = useState([]);
+  const [review, setReview] = useState([]);
+
   const [isWishlistLoaded, setIsWishlistLoaded] = useState(false);
 
   const {
@@ -165,6 +168,15 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
     }
   );
 
+  const getPreviousData = async () => {
+    const [data1, data2] = await Promise.all([
+      getWishlistById(user.user_id),
+      getReviewByUserId(user.user_id),
+    ]);
+    setWishlist(data1);
+    setReview(data2);
+  };
+
   useFocusEffect(
     useCallback(() => {
       setWishlistData([]);
@@ -176,87 +188,113 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
       refetch();
       console.log("user_id", user.user_id);
 
-      getWishlistById(user.user_id).then((data) => {
-        data.map((item) => {
-          let bookIsbn = Number(item.isbn);
+      Promise.all([
+        getWishlistById(user.user_id),
+        getReviewByUserId(user.user_id),
+      ]).then((values) => {
+        getWishlistById(user.user_id).then((data) => {
+          data.map((item) => {
+            let bookIsbn = Number(item.isbn);
 
-          getBookDetail(bookIsbn).then((data) => {
-            let book = data.response.detail[0].book;
-            let bookDetail = {
-              isbn13: book.isbn13,
-              bookname: book.bookname,
-              authors: book.authors,
-              publisher: book.publisher,
-              description: book.description,
-              bookImageURL: book.bookImageURL,
-              bookRating: 0.0,
-              isWishlist: true,
-              createdAt: item.createdAt,
-            };
+            getBookDetail(bookIsbn).then((data) => {
+              let book = data.response.detail[0].book;
+              let bookDetail = {
+                isbn13: book.isbn13,
+                bookname: book.bookname,
+                authors: book.authors,
+                publisher: book.publisher,
+                description: book.description,
+                bookImageURL: book.bookImageURL,
+                bookRating: values[1].some((item) => {
+                  return Number(item.isbn) === bookIsbn;
+                })
+                  ? values[1].find((item) => {
+                      return Number(item.isbn) === bookIsbn;
+                    }).rating
+                  : "-",
+                isWishlist: true,
+                createdAt: item.createdAt,
+              };
 
-            setWishlistData((prev) => [...prev, bookDetail]);
-            // updatedWishlistData.push(bookDetail);
-          });
-        });
-      });
-      getReviewByUserId(user.user_id).then((data) => {
-        data.map((item) => {
-          let bookIsbn = Number(item.isbn);
-
-          getBookDetail(bookIsbn).then((data) => {
-            let book = data.response.detail[0].book;
-
-            let bookDetail = {
-              isbn13: book.isbn13,
-              bookname: book.bookname,
-              authors: book.authors,
-              publisher: book.publisher,
-              description: book.description,
-              bookImageURL: book.bookImageURL,
-              isWishlist: false,
-              createdAt: item.createdAt,
-            };
-
-            wishlistData.some((item) => {
-              if (item.isbn13 === bookDetail.isbn13) {
-                bookDetail["isWishlist"] = true;
-              }
+              setWishlistData((prev) => [...prev, bookDetail]);
+              // updatedWishlistData.push(bookDetail);
             });
-
-            setReviewData((prev) => [...prev, bookDetail]);
-            // updatedReviewData.push(bookDetail);
           });
         });
-      });
-      getSearchByUserId(user.user_id).then((data) => {
-        data.map((item) => {
-          let bookIsbn = Number(item.isbn);
+        getReviewByUserId(user.user_id).then((data) => {
+          data.map((item) => {
+            let bookIsbn = Number(item.isbn);
 
-          getBookDetail(bookIsbn).then((data) => {
-            let book = data.response.detail[0].book;
+            getBookDetail(bookIsbn).then((data) => {
+              let book = data.response.detail[0].book;
 
-            let bookDetail = {
-              isbn13: book.isbn13,
-              bookname: book.bookname,
-              authors: book.authors,
-              publisher: book.publisher,
-              description: book.description,
-              bookImageURL: book.bookImageURL,
-              isWishlist: false,
-              createdAt: item.createdAt,
-            };
+              let bookDetail = {
+                isbn13: book.isbn13,
+                bookname: book.bookname,
+                authors: book.authors,
+                publisher: book.publisher,
+                description: book.description,
+                bookImageURL: book.bookImageURL,
+                bookRating: item.rating,
+                isWishlist: values[0].some((item) => {
+                  return Number(item.isbn) === bookIsbn;
+                }),
+                createdAt: item.createdAt,
+              };
 
-            wishlistData.some((item) => {
-              if (item.isbn13 === bookDetail.isbn13) {
-                bookDetail["isWishlist"] = true;
-              }
+              setReviewData((prev) => [...prev, bookDetail]);
+              // updatedReviewData.push(bookDetail);
             });
+          });
+        });
+        getSearchByUserId(user.user_id).then((data) => {
+          data.map((item) => {
+            let bookIsbn = Number(item.isbn);
 
-            setSearchData((prev) => [...prev, bookDetail]);
-            // updatedReviewData.push(bookDetail);
+            getBookDetail(bookIsbn).then((data) => {
+              let book = data.response.detail[0].book;
+
+              let bookDetail = {
+                isbn13: book.isbn13,
+                bookname: book.bookname,
+                authors: book.authors,
+                publisher: book.publisher,
+                description: book.description,
+                bookImageURL: book.bookImageURL,
+                isWishlist: values[0].some((item) => {
+                  return Number(item.isbn) === bookIsbn;
+                }),
+                bookRating: values[1].some((item) => {
+                  return Number(item.isbn) === bookIsbn;
+                })
+                  ? values[1].find((item) => {
+                      return Number(item.isbn) === bookIsbn;
+                    }).rating
+                  : "-",
+                createdAt: item.createdAt,
+              };
+
+              // wishlistData.some((item) => {
+              //   if (item.isbn13 === bookDetail.isbn13) {
+              //     bookDetail["isWishlist"] = true;
+              //   }
+              // });
+
+              setSearchData((prev) => [...prev, bookDetail]);
+              // updatedReviewData.push(bookDetail);
+            });
           });
         });
       });
+
+      // Promise.all([
+      //   getWishlistById(user.user_id),
+      //   getReviewByUserId(user.user_id),
+      // ]).then((values) => {
+      //   // wishlist : values[0]
+      //   // review : values[1]
+
+      // });
 
       // order by created_at
 

@@ -49,6 +49,7 @@ import {
   deleteWishlist,
 } from "../apis/wishlist";
 import { addSearch } from "../apis/search";
+import { getReviewByUserId } from "../apis/review";
 
 export default function SearchBookResult({
   navigation,
@@ -63,6 +64,7 @@ export default function SearchBookResult({
 
   const { user } = useContext(UserContext);
   const [wishlist, setWishlist] = useState(route.params.wishlist);
+  const [reviewlist, setReviewlist] = useState();
 
   const handleAddWishlist = (userId: string, book_isbn: number) => {
     addWishlist(userId, book_isbn);
@@ -82,9 +84,13 @@ export default function SearchBookResult({
   const updateWishlist = () => {
     setIsWishlistLoaded(false);
 
-    getWishlistById(user.user_id)
+    Promise.all([
+      getWishlistById(user.user_id),
+      getReviewByUserId(user.user_id),
+    ])
       .then((res) => {
-        setWishlist(res);
+        setWishlist(res[0]);
+        setReviewlist(res[1]);
         setIsWishlistLoaded(true);
       })
       .then(() => {
@@ -96,10 +102,13 @@ export default function SearchBookResult({
     useCallback(() => {
       setIsKeywordBooksLoaded(false);
       setKeywordBooks([]);
-      getWishlistById(user.user_id)
+      Promise.all([
+        getWishlistById(user.user_id),
+        getReviewByUserId(user.user_id),
+      ])
         .then((res) => {
-          setWishlist(res);
-          console.log("wishlist", res);
+          setWishlist(res[0]);
+          setReviewlist(res[1]);
         })
         .then(() => {
           refetch();
@@ -172,13 +181,18 @@ export default function SearchBookResult({
             authors: bookInfo.authors,
             publisher: bookInfo.publisher,
             bookImageURL: bookInfo.bookImageURL,
-            bookRating: 4.5,
+            bookRating: reviewlist.some((item) => {
+              return Number(item.isbn) === Number(bookInfo.isbn13);
+            })
+              ? reviewlist.find((item) => {
+                  return Number(item.isbn) === Number(bookInfo.isbn13);
+                }).rating
+              : "-",
             isWishlist: wishlist.some((wishlistItem) => {
               return Number(wishlistItem.isbn) === Number(bookInfo.isbn13);
             }),
           });
         });
-
         setKeywordBooks([...keywordBooks]);
       },
     }

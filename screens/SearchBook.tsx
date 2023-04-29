@@ -28,6 +28,7 @@ const AUTHKEY =
 import { getWishlistById, addWishlist, deleteWishlist } from "../apis/wishlist";
 import { getWithURI } from "../apis/data4library";
 import { getRecommendByBook, getRecommendByUser } from "../apis/recommend";
+import { getReviewByUserId } from "../apis/review";
 
 // types
 import { SearchBookScreenProps } from "../types";
@@ -108,10 +109,42 @@ export default function SearchBook({
           console.log("bookIsbn", bookIsbn);
           isbnList.push(bookIsbn);
         });
-        getRecommendByBook(isbnList)
-          .then((data) => {
-            setRecommendByBookData(data);
-            console.log("recommendByBookData", data);
+
+        Promise.all([
+          getWishlistById(user.user_id),
+          getReviewByUserId(user.user_id),
+          getRecommendByBook(isbnList),
+        ])
+          .then((values) => {
+            values[2].map((item) => {
+              let bookIsbn = item.isbn13;
+
+              getBookDetail(bookIsbn).then((data) => {
+                let book = data.response.detail[0].book;
+
+                let bookDetail = {
+                  isbn13: book.isbn13,
+                  bookname: book.bookname,
+                  authors: book.authors,
+                  publisher: book.publisher,
+                  description: book.description,
+                  bookImageURL: book.bookImageURL,
+                  isWishlist: values[0].some((item) => {
+                    return Number(item.isbn) === bookIsbn;
+                  }),
+                  bookRating: values[1].some((item) => {
+                    return Number(item.isbn) === bookIsbn;
+                  })
+                    ? values[1].find((item) => {
+                        return Number(item.isbn) === bookIsbn;
+                      }).rating
+                    : "-",
+                  createdAt: item.createdAt,
+                };
+
+                setRecommendByBookData((prev) => [...prev, bookDetail]);
+              });
+            });
           })
           .catch((err) => {
             console.log("err", err);

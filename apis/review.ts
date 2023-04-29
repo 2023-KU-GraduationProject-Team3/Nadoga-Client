@@ -22,7 +22,9 @@ export const getReviewStarByBook = async (book_isbn: number) => {
   }
 };
 
-export const getReviewByUserId = async (user_id: number) => {
+export const getReviewByUserId = async (
+  user_id: number
+): Promise<boolean | any[]> => {
   try {
     const response = await axios.get(
       `http://43.200.106.28:4000/review/id/${user_id}`
