@@ -140,8 +140,13 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
           isWishlist: props.isWishlist,
         });
 
-        if (props.isFromBookResult) {
+        if (props.isFromBookResult && props.isMyLibrary === false) {
           props.addSearch(user.user_id, props.isbn13);
+        }
+      }}
+      onLongPress={() => {
+        if (props.menuNum === 2 && props.isMyLibrary === true) {
+          props.handlePressHold(props.isbn13);
         }
       }}
       isSearchResult={props.isSearchResult}

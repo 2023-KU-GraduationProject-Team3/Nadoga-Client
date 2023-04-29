@@ -137,7 +137,7 @@ export default function SearchBook({
 
         console.log("isWishlistLoaded", isWishlistLoaded);
         console.log("wishlist", wishlist);
-      }, 2000);
+      }, 1000);
     }, [])
   );
 
@@ -191,6 +191,8 @@ export default function SearchBook({
           isDetail={false}
           addWishlist={handleAddWishlist}
           deleteWishlist={handleDeleteWishlist}
+          isMyLibrary={false}
+          menuNum={3}
         />
       )}
     </View>

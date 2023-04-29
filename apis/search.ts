@@ -34,10 +34,10 @@ export const addSearch = async (user_id: string, book_isbn: number) => {
   }
 };
 
-export const deleteSearch = async (search_id: number) => {
+export const deleteSearch = async (user_id: string, book_isbn: number) => {
   try {
     const response = await axios.delete(
-      `http://43.200.106.28:4000/search/${search_id}`
+      `http://43.200.106.28:4000/search/${user_id}/${book_isbn}`
     );
     return response.data;
   } catch (error) {

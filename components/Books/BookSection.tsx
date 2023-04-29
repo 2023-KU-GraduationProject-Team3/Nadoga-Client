@@ -68,6 +68,9 @@ const BookSection: FunctionComponent<BookSectionProps & BookScreenProps> = (
             // isWishlist={item.isWishlist}
             isWishlist={item.isWishlist}
             addSearch={props.addSearch}
+            isMyLibrary={props.isMyLibrary}
+            menuNum={props.menuNum}
+            handlePressHold={props.handlePressHold}
             {...item}
           />
         )}

@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 import { StyleSheet, View, Text } from "react-native";
 import { useFocusEffect, useNavigationState } from "@react-navigation/native";
 import { colors } from "../constants/Colors";
-import { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 // types
@@ -29,8 +29,6 @@ const AUTHKEY =
 import SearchBar from "../components/SearchBar/SearchBar";
 import RecommendHeader from "../components/Header/Recommend";
 import BookItem from "../components/Books/BookItem";
-import BookSection from "../components/Books/BookSection";
-import React from "react";
 
 const DetailHeader = styled.TouchableOpacity`
   flex-direction: row;

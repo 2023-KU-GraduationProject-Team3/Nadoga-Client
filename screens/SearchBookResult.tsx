@@ -110,7 +110,7 @@ export default function SearchBookResult({
       setTimeout(() => {
         setIsKeywordBooksLoaded(true);
         console.log("isWishlistLoaded", isKeywordBooksLoaded);
-      }, 2000);
+      }, 1000);
     }, [])
   );
 
@@ -223,6 +223,8 @@ export default function SearchBookResult({
           deleteWishlist={handleDeleteWishlist}
           updateWishlist={updateWishlist}
           addSearch={handleSearch}
+          isMyLibrary={false}
+          menuNum={3}
         />
       ) : (
         <View
