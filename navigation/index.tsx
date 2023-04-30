@@ -41,6 +41,7 @@ import SearchBookDetail from "../screens/SearchBookDetail";
 import Rating from "../screens/Rating";
 import PopularBookDetail from "../screens/PopularBookDetail";
 import MyLibrary from "../screens/MyLibrary";
+import UserInfoChange from "../screens/UserInfoChange";
 
 // import SearchLibraryIcon from '../assets/icons/searchLibrary';
 
@@ -205,6 +206,24 @@ function MyLibraryNavigator() {
   );
 }
 
+function SettingNavigator() {
+  return (
+    <SearchLibraryStack.Navigator initialRouteName="Settings">
+      <SearchLibraryStack.Screen
+        name="Settings"
+        component={SettingScreen}
+        options={{ headerShown: false }}
+      />
+
+      <SearchLibraryStack.Screen
+        name="UserInfoChange"
+        component={UserInfoChange}
+        options={{ headerShown: false }}
+      />
+    </SearchLibraryStack.Navigator>
+  );
+}
+
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
  * https://reactnavigation.org/docs/bottom-tab-navigator
@@ -284,8 +303,8 @@ function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="Settings"
-        component={SettingScreen}
+        name="SettingsRoot"
+        component={SettingNavigator}
         options={{
           title: "설정",
           tabBarIcon: ({ focused }) => (

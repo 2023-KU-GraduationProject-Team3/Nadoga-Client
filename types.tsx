@@ -95,6 +95,11 @@ export type MyLibraryParamsList = {
   };
 };
 
+export type SettingParamsList = {
+  Setting: undefined;
+  UserInfoChange: undefined;
+};
+
 export type LoginScreenProps = NativeStackScreenProps<
   AuthStackParamList,
   "Login"
@@ -138,6 +143,11 @@ export type MyLibraryScreenProps = NativeStackScreenProps<
 export type RatingScreenProps = NativeStackScreenProps<
   MyLibraryParamsList,
   "Rating"
+>;
+
+export type SettingScreenProps = NativeStackScreenProps<
+  SettingParamsList,
+  "Setting"
 >;
 
 export type RootTabScreenProps<Screen extends keyof MainTabParamsList> =

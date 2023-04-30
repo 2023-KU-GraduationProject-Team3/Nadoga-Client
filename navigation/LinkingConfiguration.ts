@@ -37,9 +37,10 @@ const linking: LinkingOptions<RootStackParamList> = {
               RatingScreen: "Rating",
             },
           },
-          Settings: {
+          SettingsRoot: {
             screens: {
               SettingScreen: "Settings",
+              UserInfoChangeScreen: "UserInfoChange",
             },
           },
         },
