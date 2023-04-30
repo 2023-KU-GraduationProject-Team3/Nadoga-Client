@@ -61,7 +61,6 @@ export default function SearchBook({
   const handleSearchBookResult = () => {
     navigation.navigate("SearchBookResult", {
       bookName: searchValue,
-      wishlist: wishlist,
       // wishlist: wishlist,
       // getWishlist: getWishlist,
     });

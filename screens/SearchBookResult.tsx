@@ -152,6 +152,8 @@ export default function SearchBookResult({
     {
       enabled: isKeywordBooksLoaded,
       onSuccess: (data) => {
+        setBookName(bookName);
+
         const books = data.response.docs;
         const keywordBooks: Array<BookProps> = [];
 
@@ -194,6 +196,7 @@ export default function SearchBookResult({
           });
         });
         setKeywordBooks([...keywordBooks]);
+        // setIsKeywordBooksLoaded(true);
       },
     }
   );
@@ -202,26 +205,37 @@ export default function SearchBookResult({
     // alert(bookName);
   }, []);
 
-  // const handleSearchBookResult = () => {
-  //   // setBookName(bookName);
-  //   refetch();
-  // };
   const handleSearchBookResult = () => {
-    navigation.navigate("SearchBookResult", {
-      bookName,
-      // wishlist: wishlist,
-      // getWishlist: getWishlist,
-    });
+    // setIsKeywordBooksLoaded(false);
+    setKeywordBooks([]);
+    refetch();
   };
 
   return (
     <View style={styles.container}>
-      <SearchBar
+      {/* <SearchBar
         placeholder="도서명을 입력해주세요"
         searchValue={bookName}
         setSearchValue={setBookName}
         handleSearch={handleSearchBookResult}
-      />
+      /> */}
+      <DetailHeader
+        onPress={() => {
+          navigation.goBack();
+        }}
+      >
+        <Ionicons name="chevron-back-outline" size={24} color="black" />
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: "bold",
+            fontFamily: "NotoSansKR_Bold",
+            color: colors.semiblack,
+          }}
+        >
+          {"이전으로"}
+        </Text>
+      </DetailHeader>
 
       {isKeywordBooksLoaded && keywordBooks?.length === 0 ? (
         <View
@@ -267,7 +281,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: colors.bgGray,
-    paddingTop: 70,
+    paddingTop: 30,
   },
   title: {
     fontSize: 20,

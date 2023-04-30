@@ -55,18 +55,19 @@ const ShowClosestLibraryButton = styled.TouchableOpacity`
   right: 25px;
 `;
 
-const CurrentBookSection = styled.View`
+const CurrentBookSection = styled.TouchableOpacity`
   position: absolute;
   bottom: 180px;
   left: 20px;
   width: ${Layout.window.width - 40}px;
-  height: 50px;
+  height: 40px;
   background-color: ${colors.white};
   border-radius: 10px;
   padding: 10px;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 `;
 
 // api authkey
@@ -486,8 +487,12 @@ const MapViewComponent: FunctionComponent = () => {
         ></Image>
       </ShowClosestLibraryButton>
       {isLookingForBook ? (
-        <CurrentBookSection>
-          <Text>{`현재 찾고있는 책 : ${lookingBookInfo.bookname}`}</Text>
+        <CurrentBookSection
+          onPress={() => {
+            Alert.alert("현재 찾고 있는 책", lookingBookInfo.bookname);
+          }}
+        >
+          <Text numberOfLines={1}>{lookingBookInfo.bookname}</Text>
         </CurrentBookSection>
       ) : null}
       <Animated.ScrollView
