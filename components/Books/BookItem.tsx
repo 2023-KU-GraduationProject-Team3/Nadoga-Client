@@ -141,7 +141,7 @@ const BookItem: FunctionComponent<BookProps & BookScreenProps> = (props) => {
           bookRating: props.bookRating,
         });
 
-        if (props.isFromBookResult && props.isMyLibrary === false) {
+        if (props.isSearchResult && props.isMyLibrary === false) {
           props.addSearch(user.user_id, props.isbn13);
         }
       }}

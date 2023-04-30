@@ -51,8 +51,6 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
   handleSearch,
 }) => {
   // navigation hooks
-  const route = useRoute<SearchBookResultScreenProps["route"]>();
-  const navigation = useNavigation<SearchBookResultScreenProps["navigation"]>();
 
   return (
     <SearchBarContainer style={{ ...searchBarStyles }}>

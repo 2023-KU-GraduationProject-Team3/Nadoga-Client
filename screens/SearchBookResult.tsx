@@ -63,7 +63,7 @@ export default function SearchBookResult({
   const [isWishlistLoaded, setIsWishlistLoaded] = useState<boolean>(false);
 
   const { user } = useContext(UserContext);
-  const [wishlist, setWishlist] = useState(route.params.wishlist);
+  const [wishlist, setWishlist] = useState();
   const [reviewlist, setReviewlist] = useState();
 
   const handleAddWishlist = (userId: string, book_isbn: number) => {
@@ -206,15 +206,22 @@ export default function SearchBookResult({
   //   // setBookName(bookName);
   //   refetch();
   // };
+  const handleSearchBookResult = () => {
+    navigation.navigate("SearchBookResult", {
+      bookName,
+      // wishlist: wishlist,
+      // getWishlist: getWishlist,
+    });
+  };
 
   return (
     <View style={styles.container}>
-      {/* <SearchBar
+      <SearchBar
         placeholder="도서명을 입력해주세요"
         searchValue={bookName}
         setSearchValue={setBookName}
         handleSearch={handleSearchBookResult}
-      /> */}
+      />
 
       {isKeywordBooksLoaded && keywordBooks?.length === 0 ? (
         <View

@@ -47,6 +47,7 @@ export default function SearchBook({
     setMenuNum(num);
   };
   const [recommendByBookData, setRecommendByBookData] = useState([]);
+  const [recommendByUserData, setRecommendByUserData] = useState([]);
 
   const [isWishlistLoaded, setIsWishlistLoaded] = useState(false);
 
@@ -55,6 +56,7 @@ export default function SearchBook({
   const [searchValue, setSearchValue] = useState<string>("");
   const [isbn_list, setIsbnList] = useState<number[]>([]);
   const [wishlist, setWishlist] = useState([]);
+  const [reviewlist, setReviewlist] = useState([]);
 
   const handleSearchBookResult = () => {
     navigation.navigate("SearchBookResult", {
@@ -74,8 +76,6 @@ export default function SearchBook({
     deleteWishlist(userId, book_isbn);
     // setWishlist((prev) => prev.filter((item) => item.isbn !== book_isbn));
   };
-
-  const handleAddSearch = (userId: string, book_isbn: number) => {};
 
   // API function - 6. 도서 상세 조회
   const getBookDetail = async (bookIsbn: number) => {
@@ -102,54 +102,92 @@ export default function SearchBook({
       console.log("user_id", user.user_id);
       let isbnList = [];
 
-      getWishlistById(user.user_id).then((data) => {
-        setWishlist(data);
-        data.map((item) => {
+      Promise.all([
+        getWishlistById(user.user_id),
+        getReviewByUserId(user.user_id),
+      ]).then((values) => {
+        values[0].sort((a, b) => {
+          // order by createdAt
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        values[1].sort((a, b) => {
+          // order by createdAt
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        setWishlist(values[0]);
+        setReviewlist(values[1]);
+
+        values[0].map((item) => {
           let bookIsbn = Number(item.isbn);
           console.log("bookIsbn", bookIsbn);
           isbnList.push(bookIsbn);
         });
 
-        Promise.all([
-          getWishlistById(user.user_id),
-          getReviewByUserId(user.user_id),
-          getRecommendByBook(isbnList),
-        ])
-          .then((values) => {
-            values[2].map((item) => {
-              let bookIsbn = item.isbn13;
+        getRecommendByBook(isbnList).then((data) => {
+          data.map((item) => {
+            let bookIsbn = item.isbn13;
 
-              getBookDetail(bookIsbn).then((data) => {
-                let book = data.response.detail[0].book;
+            getBookDetail(bookIsbn).then((data) => {
+              let book = data.response.detail[0].book;
 
-                let bookDetail = {
-                  isbn13: book.isbn13,
-                  bookname: book.bookname,
-                  authors: book.authors,
-                  publisher: book.publisher,
-                  description: book.description,
-                  bookImageURL: book.bookImageURL,
-                  isWishlist: values[0].some((item) => {
-                    return Number(item.isbn) === bookIsbn;
-                  }),
-                  bookRating: values[1].some((item) => {
-                    return Number(item.isbn) === bookIsbn;
-                  })
-                    ? values[1].find((item) => {
-                        return Number(item.isbn) === bookIsbn;
-                      }).rating
-                    : "-",
-                  createdAt: item.createdAt,
-                };
+              let bookDetail = {
+                isbn13: book.isbn13,
+                bookname: book.bookname,
+                authors: book.authors,
+                publisher: book.publisher,
+                description: book.description,
+                bookImageURL: book.bookImageURL,
+                isWishlist: values[0].some((item) => {
+                  return Number(item.isbn) === bookIsbn;
+                }),
+                bookRating: values[1].some((item) => {
+                  return Number(item.isbn) === bookIsbn;
+                })
+                  ? values[1].find((item) => {
+                      return Number(item.isbn) === bookIsbn;
+                    }).rating
+                  : "-",
+                createdAt: item.createdAt,
+              };
 
-                setRecommendByBookData((prev) => [...prev, bookDetail]);
-              });
+              setRecommendByBookData((prev) => [...prev, bookDetail]);
             });
-          })
-          .catch((err) => {
-            console.log("err", err);
-            setRecommendByBookData([]);
           });
+        });
+
+        getRecommendByUser(user.user_id, 10).then((data) => {
+          data.map((item) => {
+            let bookIsbn = item.isbn13;
+
+            getBookDetail(bookIsbn).then((data) => {
+              let book = data.response.detail[0].book;
+
+              let bookDetail = {
+                isbn13: book.isbn13,
+                bookname: book.bookname,
+                authors: book.authors,
+                publisher: book.publisher,
+                description: book.description,
+                bookImageURL: book.bookImageURL,
+                isWishlist: values[0].some((item) => {
+                  return Number(item.isbn) === bookIsbn;
+                }),
+                bookRating: values[1].some((item) => {
+                  return Number(item.isbn) === bookIsbn;
+                })
+                  ? values[1].find((item) => {
+                      return Number(item.isbn) === bookIsbn;
+                    }).rating
+                  : "-",
+                createdAt: item.createdAt,
+              };
+
+              setRecommendByUserData((prev) => [...prev, bookDetail]);
+            });
+          });
+        });
       });
 
       // setWishlist(wishlistData);
@@ -210,15 +248,21 @@ export default function SearchBook({
         >
           <Text style={{ fontSize: 16 }}>추천 결과 불러오는 중...</Text>
         </View>
-      ) : isWishlistLoaded && wishlist.length === 0 ? (
+      ) : isWishlistLoaded && menuNum === 0 && wishlist.length === 0 ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <Text style={{ fontSize: 16 }}>찜을 한 도서가 없습니다.</Text>
         </View>
+      ) : isWishlistLoaded && menuNum === 1 && reviewlist.length === 0 ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text style={{ fontSize: 16 }}>평가를 한 도서가 없습니다.</Text>
+        </View>
       ) : (
         <BookSection
-          books={recommendByBookData}
+          books={menuNum === 0 ? recommendByBookData : recommendByUserData}
           isSearchResult={false}
           isFromBookResult={true}
           isDetail={false}
