@@ -8,6 +8,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import {
+  useRoute,
+  useNavigation,
+  useFocusEffect,
+} from "@react-navigation/native";
+
 // constants
 import { colors } from "../../constants/Colors";
 import layout from "../../constants/Layout";
@@ -51,6 +57,7 @@ interface HeaderProps {
   email: string;
   profile_img_url: string;
   wishlist_num: number;
+  review_num: number;
   search_num: number;
   menuNum: number;
   handleMenuNum: (num: number) => void;
@@ -142,7 +149,7 @@ const MyInfo: FunctionComponent<HeaderProps> = (props) => {
                   fontFamily: "NotoSans_Medium",
                 }}
               >
-                {props.wishlist_num}
+                {props.review_num}
               </Text>
               <Text
                 style={{
@@ -174,7 +181,7 @@ const MyInfo: FunctionComponent<HeaderProps> = (props) => {
                   fontFamily: "NotoSans_Medium",
                 }}
               >
-                {props.wishlist_num}
+                {props.search_num}
               </Text>
               <Text
                 style={{

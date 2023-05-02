@@ -38,7 +38,6 @@ import { useQuery } from "react-query";
 
 export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   const [menuNum, setMenuNum] = useState(0);
-  const [isModal, setIsModal] = useState(false);
   const [wishlistData, setWishlistData] = useState([]);
   const [reviewData, setReviewData] = useState([]);
   const [searchData, setSearchData] = useState([]);
@@ -66,7 +65,7 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   };
 
   const handleModal = () => {
-    setIsModal(true);
+    navigation.navigate("Statistics");
   };
 
   const handleAddWishlist = (userId: string, book_isbn: number) => {
@@ -373,8 +372,9 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
         name="신성준"
         email="shinsj4653@gmail.com"
         profile_img_url="../../assets/images/icon.png"
-        wishlist_num={10}
-        search_num={10}
+        wishlist_num={wishlistData.length}
+        review_num={reviewData.length}
+        search_num={searchData.length}
         nameTextStyle={styles.name}
         emailTextStyle={styles.email}
         menuNum={menuNum}

@@ -42,6 +42,7 @@ import Rating from "../screens/Rating";
 import PopularBookDetail from "../screens/PopularBookDetail";
 import MyLibrary from "../screens/MyLibrary";
 import UserInfoChange from "../screens/UserInfoChange";
+import Statistics from "../screens/Statistics";
 
 // import SearchLibraryIcon from '../assets/icons/searchLibrary';
 
@@ -200,6 +201,11 @@ function MyLibraryNavigator() {
       <SearchLibraryStack.Screen
         name="Rating"
         component={Rating}
+        options={{ headerShown: false }}
+      />
+      <SearchLibraryStack.Screen
+        name="Statistics"
+        component={Statistics}
         options={{ headerShown: false }}
       />
     </SearchLibraryStack.Navigator>

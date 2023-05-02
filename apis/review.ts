@@ -35,6 +35,17 @@ export const getReviewByUserId = async (
   }
 };
 
+export const getReviewRankByUserId = async (user_id: number) => {
+  try {
+    const response = await axios.get(
+      `http://43.200.106.28:4000/review/rank/${user_id}`
+    );
+    return response.data;
+  } catch (error) {
+    return false;
+  }
+};
+
 export const addReview = async (
   user_id: string,
   rating: number,

@@ -93,6 +93,7 @@ export type MyLibraryParamsList = {
     bookIsbn: number;
     bookName: string;
   };
+  Statistics: undefined;
 };
 
 export type SettingParamsList = {
@@ -143,6 +144,11 @@ export type MyLibraryScreenProps = NativeStackScreenProps<
 export type RatingScreenProps = NativeStackScreenProps<
   MyLibraryParamsList,
   "Rating"
+>;
+
+export type StatisticsScreenProps = NativeStackScreenProps<
+  MyLibraryParamsList,
+  "Statistics"
 >;
 
 export type SettingScreenProps = NativeStackScreenProps<

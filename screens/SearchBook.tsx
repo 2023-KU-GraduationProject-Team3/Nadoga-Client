@@ -96,6 +96,7 @@ export default function SearchBook({
   useFocusEffect(
     useCallback(() => {
       setRecommendByBookData([]);
+      setRecommendByUserData([]);
       setIsbnList([]);
       setIsWishlistLoaded(false);
       console.log("user_id", user.user_id);
