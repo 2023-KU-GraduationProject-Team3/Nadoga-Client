@@ -48,6 +48,25 @@ export const emailCheck = async (email: string) => {
   }
 };
 
+export const updateUser = async (user_id: string, userInfo: any) => {
+  try {
+    const response = await axios.patch(
+      `http://43.200.106.28:4000/user/update-up/${user_id}`,
+      {
+        email: userInfo.email,
+        name: userInfo.name,
+        age: userInfo.age,
+        gender: userInfo.gender,
+        genre: userInfo.genre,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    return false;
+  }
+};
+
 export const deleteUser = async (user_id: string) => {
   try {
     const response = await axios.delete(

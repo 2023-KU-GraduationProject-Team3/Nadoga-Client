@@ -150,6 +150,11 @@ export type SettingScreenProps = NativeStackScreenProps<
   "Setting"
 >;
 
+export type UserInfoChangeScreenProps = NativeStackScreenProps<
+  SettingParamsList,
+  "UserInfoChange"
+>;
+
 export type RootTabScreenProps<Screen extends keyof MainTabParamsList> =
   CompositeScreenProps<
     BottomTabScreenProps<MainTabParamsList, Screen>,

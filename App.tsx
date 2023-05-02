@@ -112,6 +112,7 @@ export default function App() {
           <UserContext.Provider
             value={{
               user,
+              setUser,
               loginUser,
               logoutUser,
               isLookingForBook,

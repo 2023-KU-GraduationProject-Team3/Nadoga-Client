@@ -208,9 +208,9 @@ function MyLibraryNavigator() {
 
 function SettingNavigator() {
   return (
-    <SearchLibraryStack.Navigator initialRouteName="Settings">
+    <SearchLibraryStack.Navigator initialRouteName="Setting">
       <SearchLibraryStack.Screen
-        name="Settings"
+        name="Setting"
         component={SettingScreen}
         options={{ headerShown: false }}
       />
