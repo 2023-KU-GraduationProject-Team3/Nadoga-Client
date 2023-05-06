@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Alert } from "react-native";
+import { StyleSheet, View, Text, Alert, ActivityIndicator } from "react-native";
 import { colors } from "../constants/Colors";
 import { useState, useContext, useCallback } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -246,7 +246,7 @@ export default function SearchBook({
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Text style={{ fontSize: 16 }}>추천 결과 불러오는 중...</Text>
+          <ActivityIndicator size="large" color={colors.lightgreen} />
         </View>
       ) : isWishlistLoaded && menuNum === 0 && wishlist.length === 0 ? (
         <View

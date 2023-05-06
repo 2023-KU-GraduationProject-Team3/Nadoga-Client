@@ -1,5 +1,11 @@
 import { useEffect, useState, useCallback, useContext } from "react";
-import React, { StyleSheet, View, Text, Alert } from "react-native";
+import React, {
+  StyleSheet,
+  View,
+  Text,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import {
   useFocusEffect,
   useNavigationState,
@@ -369,8 +375,8 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
   return (
     <View style={styles.container}>
       <MyInfo
-        name="신성준"
-        email="shinsj4653@gmail.com"
+        name={user.user_name}
+        email={user.user_email}
         profile_img_url="../../assets/images/icon.png"
         wishlist_num={wishlistData.length}
         review_num={reviewData.length}
@@ -413,7 +419,7 @@ export default function MyLibrary({ navigation, route }: MyLibraryScreenProps) {
             alignItems: "center",
           }}
         >
-          <Text>불러오는 중...</Text>
+          <ActivityIndicator size="large" color={colors.lightgreen} />
         </View>
       ) : isWishlistLoaded && wishlistData.length === 0 && menuNum === 0 ? (
         <View

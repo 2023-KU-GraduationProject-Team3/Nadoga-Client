@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 import { colors } from "../constants/Colors";
 import { useState, useEffect, useContext, useCallback } from "react";
@@ -269,7 +269,7 @@ export default function SearchBookResult({
             alignItems: "center",
           }}
         >
-          <Text>도서 검색 결과 불러오는 중...</Text>
+          <ActivityIndicator size="large" color={colors.lightgreen} />
         </View>
       )}
     </View>

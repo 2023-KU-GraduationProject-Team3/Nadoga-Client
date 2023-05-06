@@ -11,6 +11,9 @@ export const colors = {
   red: "#a60028",
   bgGray: "#F8F8F8",
   yellow: "#FFC403",
+  pink: "#FFA1A1",
+  lightyellow: "#FFD757",
+  lightblue: "#B6E1FF",
 };
 
 // export default {

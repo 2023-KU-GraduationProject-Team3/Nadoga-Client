@@ -7,6 +7,7 @@ import {
   Platform,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, {
   useState,
@@ -548,15 +549,7 @@ const MapViewComponent: FunctionComponent = () => {
               marginBottom: 10,
             }}
           >
-            <Text
-              style={{
-                fontSize: 14,
-                fontFamily: "NotoSansKR_Medium",
-                color: colors.gray3,
-              }}
-            >
-              불러오는 중....
-            </Text>
+            <ActivityIndicator size="large" color={colors.lightgreen} />
           </View>
         ) : markers.length === 0 ? (
           <View
